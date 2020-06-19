@@ -1,0 +1,7 @@
+Host sbas-oregon
+    HostName 52.12.25.61
+    User scionlab
+
+Host sbas-frankfurt
+    HostName 52.58.224.202
+    User scionlab
