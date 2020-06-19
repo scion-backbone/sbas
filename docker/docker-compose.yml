@@ -1,8 +1,10 @@
-version: "3.8"
+version: "3.5"
 services:
     vpn:
         image: kylemanna/openvpn
-        environment:
-            OVPN_DATA: ovpn-data-sbas
-    # router:
-    # sig:
+        # environment:
+        #     OVPN_DATA: ovpn-data-sbas
+    router:
+        image: calico/bird
+    sig:
+        image: ethznetsec/scion_base
