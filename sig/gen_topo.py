@@ -10,7 +10,7 @@ if ENV_NODE in os.environ:
     path = sys.argv[1]
     ia = sys.argv[2]
 
-    with open(path, 'r') as f:
+    with open(path, 'r+') as f:
         cfg = json.loads(f.read())
         cfg['SIG'] = {
             f"sig{ia}-1": {
@@ -24,6 +24,8 @@ if ENV_NODE in os.environ:
                 }
             }
         }
+        f.seek(0)
         f.write(json.dumps(cfg, indent=2, sort_keys=True))
+        f.truncate()
 else:
     print("Environment variable $SBAS_NODE not set.")
