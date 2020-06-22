@@ -6,5 +6,3 @@ services:
         #     OVPN_DATA: ovpn-data-sbas
     router:
         image: calico/bird
-    sig:
-        image: ethznetsec/scion_base
