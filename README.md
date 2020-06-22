@@ -3,12 +3,15 @@
 ## Overview
 
 This repository serves the configuration for SBAS nodes.
+It is dynamically generated from the information in `nodes.json`.
 
-`sshconfig` contains configuration to access current points of presence at the following locations:
+Run `python3 gen.py` to create the configuration files, with argument `-n {node}` to generate node-specific files.
 
-- AWS Frankfurt (connected to SCIONLab node in Amsterdam)
-- AWS Oregon (connected to SCIONLab node in Seattle)
+## SSH Access
 
-*To install:*
-```cat sshconfig >> ~/.ssh/config```
+The generated file `sshconfig` contains configuration to access the nodes.
+To install, run:
+```
+cat sshconfig >> ~/.ssh/config
+```
 
