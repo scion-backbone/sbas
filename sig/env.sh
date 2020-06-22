@@ -11,7 +11,7 @@ tar -xvf go*.tar.gz
 sudo mv go /usr/local
 echo 'export GOPATH="$HOME/go"' >> ~/.profile
 echo 'export GOROOT="/usr/local/go"' >> ~/.profile
-echo 'export PATH="$HOME/.local/bin:$GOPATH/bin:$GOROOT:$PATH"' >> ~/.profile
+echo 'export PATH="$HOME/.local/bin:$GOPATH/bin:$GOROOT/bin:$PATH"' >> ~/.profile
 source ~/.profile
 mkdir -p "$GOPATH"
 
@@ -21,4 +21,3 @@ git clone https://github.com/netsec-ethz/scion
 cd scion
 pip3 install setuptools
 ./env/deps
-./scion.sh test
