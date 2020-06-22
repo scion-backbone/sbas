@@ -25,7 +25,7 @@ if ENV_NODE in os.environ:
             }
         }
         f.seek(0)
-        f.write(json.dumps(cfg, indent=2, sort_keys=True))
+        f.write(json.dumps(cfg, indent=2))
         f.truncate()
 else:
     print("Environment variable $SBAS_NODE not set.")
