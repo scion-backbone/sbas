@@ -1,10 +1,8 @@
 import json
-import argparse
+import os
 
 GEN_DIR = 'gen'
-
-def pretty_json(o):
-    return json.dumps(o, indent=4, sort_keys=True)
+ENV_NODE = 'SBAS_NODE'
 
 def gen_sshconfig(nodes):
     with open(f"{GEN_DIR}/sshconfig", 'w') as f:
@@ -20,20 +18,17 @@ def gen_sig_rules(local, remote):
             node['scion-ia']: {'Nets': [f"{node['vaddr']}/32"]}
             for node in remote
         }
-        f.write(pretty_json(cfg))
+        f.write(json.dumps(cfg, indent=2, sort_keys=True))
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--node", "-n", help="local node name")
-    args = parser.parse_args()
-
     with open('nodes.json', 'r') as f:
         nodes = json.loads(f.read())
         gen_sshconfig(nodes)
 
-        if args.node:
-            if args.node in [n['name'] for n in nodes]:
-                remote = [n for n in nodes if n['name'] != args.node]
-                gen_sig_rules(args.node, remote)
+        if ENV_NODE in os.environ:
+            local = os.environ[ENV_NODE]
+            if local in [n['name'] for n in nodes]:
+                remote = [n for n in nodes if n['name'] != local]
+                gen_sig_rules(local, remote)
             else:
-                print(f"Node '{args.node}' does not exist")
+                print(f"Node '{local}' does not exist")

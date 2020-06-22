@@ -8,6 +8,7 @@ rm ./bazel-1.2.0-installer-linux-x86_64.sh
 cd ~
 wget https://dl.google.com/go/go1.13.3.linux-amd64.tar.gz
 tar -xvf go*.tar.gz
+rm go*.tar.gz
 sudo mv go /usr/local
 echo 'export GOPATH="$HOME/go"' >> ~/.profile
 echo 'export GOROOT="/usr/local/go"' >> ~/.profile

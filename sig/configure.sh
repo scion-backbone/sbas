@@ -5,15 +5,21 @@ export AS=$(ls /etc/scion/gen/ISD${ISD}/ | grep AS | awk -F 'AS' '{ print $2 }')
 export IA=${ISD}-${AS}
 export IAd=$(echo $IA | sed 's/_/\:/g')
 export sigID='sigSBAS'
+export sigIP='127.18.0.2'
 
-export SIGCONF=${SC}/gen/ISD${ISD}/AS${AS}/sig${IA}-1/${sigID}.config
+ASDIR=${SC}/gen/ISD${ISD}/AS${AS}
+SIGDIR=${ASDIR}/sig${IA}-1
+SIGCONF=${SIGDIR}/${sigID}.config
 sudo cp sig.config $SIGCONF
 
 # Replace variables in config file
-for var in 'SC' 'LOG' 'ISD' 'AS' 'IA' 'IAd' 'sigID' 'sigIP'
-do
-    sudo sed -i "s/\${$var}/$var/g" $SIGCONF
+for var in 'SC' 'LOG' 'ISD' 'AS' 'IA' 'IAd' 'sigID' 'sigIP'; do
+    sudo sed -i "s/\${${var}}/${var}/g" ${SIGCONF}
 done
 
-# TODO: Generate traffic rules from SBAS node list (../nodes.json)
-# TODO: Add SIG entry to topology files
+sudo cp ../gen/sig.json ${SIGDIR}/${sigID}.json
+for topo in ${ASDIR}/*/topology.json; do
+    sudo python3 gen_topo.py ${topo} ${IA}
+done
+
+sudo systemctl restart scionlab.target

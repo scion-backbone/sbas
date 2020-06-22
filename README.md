@@ -5,7 +5,8 @@
 This repository serves the configuration for SBAS nodes.
 It is dynamically generated from the information in `nodes.json`.
 
-Run `python3 gen.py` to create the configuration files, with argument `-n {node}` to generate node-specific files.
+Run `python3 gen.py` to create the configuration files.
+To to generate node-specific files, set the variable `$SBAS_NODE`.
 
 ## SSH access
 
@@ -19,7 +20,8 @@ cat sshconfig >> ~/.ssh/config
 
 ### SCION-IP Gateway (SIG)
 
-On a SCIONLab node with a running SCION setup, run the following scripts in order to set up the SIG:
+On a SCIONLab node with a running SCION setup, first set the variable `$SBAS_NODE` to the local node name.
+Then, run the following scripts in order to set up the SIG:
 
 ```
 cd sig
