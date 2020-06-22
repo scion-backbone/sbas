@@ -19,7 +19,7 @@ done
 
 sudo cp ../gen/sig.json ${SIGDIR}/${sigID}.json
 for topo in ${ASDIR}/*/topology.json; do
-    sudo python3 gen_topo.py ${topo} ${IA}
+    sudo -E python3 gen_topo.py ${topo} ${IA}
 done
 
 sudo systemctl restart scionlab.target
