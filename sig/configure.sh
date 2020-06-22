@@ -14,7 +14,7 @@ sudo cp sig.config $SIGCONF
 
 # Replace variables in config file
 for var in 'SC' 'LOG' 'ISD' 'AS' 'IA' 'IAd' 'sigID' 'sigIP'; do
-    sudo sed -i "s/\${${var}}/${!var}/g" ${SIGCONF}
+    sudo sed -i "s%\${${var}}%${!var}%g" ${SIGCONF}
 done
 
 sudo cp ../gen/sig.json ${SIGDIR}/${sigID}.json
