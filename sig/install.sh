@@ -18,3 +18,8 @@ sudo setcap cap_net_admin+eip ${GOBIN}
 sudo sysctl net.ipv4.conf.default.rp_filter=0
 sudo sysctl net.ipv4.conf.all.rp_filter=0
 sudo sysctl net.ipv4.ip_forward=1
+
+# Create link
+SIGBIN=/usr/bin/sig
+sudo rm -f ${SIGBIN}
+sudo ln -s ${GOBIN} ${SIGBIN}
