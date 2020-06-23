@@ -17,13 +17,14 @@ for var in 'SC' 'LOG' 'ISD' 'AS' 'IA' 'IAd' 'sigID' 'sigIP'; do
     sudo sed -i "s%\${${var}}%${!var}%g" ${SIGCONF}
 done
 
+# Configure AS topology
 sudo cp ../gen/sig.json ${SIGDIR}/${sigID}.json
 for topo in ${ASDIR}/*/topology.json; do
     sudo -E python3 gen_topo.py ${topo} ${IA}
 done
 
-echo "${GOPATH}/bin/sig -config=${SIGCONF}" | tee /usr/bin/sig
-sudo chmod +x /usr/bin/sig
-sudo cp scion-sig@.service /lib/systemd/system/scion-sig@.service
-
+# Create SIG service
+sudo ln -s ${GOPATH}/bin/sig /usr/bin/sig
+sudo cp scion-sig@.service /lib/systemd/system
+sudo systemctl enable scion-sig@.service
 sudo systemctl restart scionlab.target
