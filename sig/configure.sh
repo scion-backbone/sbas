@@ -22,4 +22,8 @@ for topo in ${ASDIR}/*/topology.json; do
     sudo -E python3 gen_topo.py ${topo} ${IA}
 done
 
+echo "${GOPATH}/bin/sig -config=${SIGCONF}" | tee /usr/bin/sig
+sudo chmod +x /usr/bin/sig
+sudo cp scion-sig@.service /lib/systemd/system/scion-sig@.service
+
 sudo systemctl restart scionlab.target
