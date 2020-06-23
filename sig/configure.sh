@@ -23,7 +23,8 @@ for topo in ${ASDIR}/*/topology.json; do
 done
 
 # Create SIG service
+sudo rm -f /usr/bin/sig
 sudo ln -s ${GOPATH}/bin/sig /usr/bin/sig
 sudo cp scion-sig@.service /lib/systemd/system
-sudo systemctl enable scion-sig@.service
+sudo systemctl enable scion-sig@${IA}-1.service
 sudo systemctl restart scionlab.target
