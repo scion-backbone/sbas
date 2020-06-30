@@ -1,7 +1,19 @@
 version: "3.5"
 services:
     vpn:
-        image: kylemanna/openvpn
+       build: wireguard/
+       volumes:
+          - ./wireguard/client/conf:/etc/wireguard
+       ports:
+          - 55556:55556/udp
+       restart: unless-stopped
+       sysctls:
+            - net.ipv6.conf.all.disable_ipv6=0
+            - net.ipv4.ip_forward=1
+            - net.ipv6.conf.all.forwarding=1
+       cap_add:
+          - NET_ADMIN
+          - SYS_MODULE
         # environment:
         #     OVPN_DATA: ovpn-data-sbas
     router:
