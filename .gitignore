@@ -1,2 +1,4 @@
 gen/*
 !gen/.keep
+
+docker/peering/certs/*.key
