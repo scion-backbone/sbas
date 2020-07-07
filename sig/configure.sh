@@ -4,7 +4,7 @@ export ISD=$(ls /etc/scion/gen/ | grep ISD | awk -F 'ISD' '{ print $2 }')
 export AS=$(ls /etc/scion/gen/ISD${ISD}/ | grep AS | awk -F 'AS' '{ print $2 }')
 export IA=${ISD}-${AS}
 export IAd=$(echo $IA | sed 's/_/\:/g')
-export sigIP='172.22.0.1'
+export sigIP='127.0.0.1'
 export sigID='sigSBAS'
 
 ASDIR=${SC}/gen/ISD${ISD}/AS${AS}
