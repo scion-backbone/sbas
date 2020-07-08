@@ -17,7 +17,7 @@ if ENV_NODE in os.environ:
                 'Addrs': {
                     'IPv4': {
                         'Public': {
-                            'Addr': "172.22.0.1",
+                            'Addr': "127.0.0.1",
                             'L4Port': 31056
                         }
                     }
