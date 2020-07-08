@@ -6,9 +6,9 @@ ENV_NODE = 'SBAS_NODE'
 
 def gen_sshconfig(nodes):
     with open(f"{GEN_DIR}/sshconfig", 'w') as f:
-        for node in nodes:
-            f.write(f"Host sbas-{node['name']}\n")
-            f.write(f"    HostName {node['ip']}\n")
+        for name in nodes:
+            f.write(f"Host sbas-{name}\n")
+            f.write(f"    HostName {nodes[name]['ip']}\n")
             f.write(f"    User scionlab\n\n")
 
 def gen_sig_rules(local, remote):
@@ -27,8 +27,8 @@ if __name__ == "__main__":
 
         if ENV_NODE in os.environ:
             local = os.environ[ENV_NODE]
-            if local in [n['name'] for n in nodes]:
-                remote = [n for n in nodes if n['name'] != local]
+            if local in nodes:
+                nodes.pop(local)
                 gen_sig_rules(local, remote)
             else:
                 print(f"Node '{local}' does not exist")
