@@ -16,7 +16,7 @@ def gen_sig_rules(local, remote):
         cfg = {'ConfigVersion': 9001}
         cfg['ASes'] = {
             node['scion-ia']: {'Nets': [f"{node['vaddr']}/32"]}
-            for node in remote
+            for node in remote.values()
         }
         f.write(json.dumps(cfg, indent=2, sort_keys=True))
 
@@ -29,6 +29,6 @@ if __name__ == "__main__":
             local = os.environ[ENV_NODE]
             if local in nodes:
                 nodes.pop(local)
-                gen_sig_rules(local, remote)
+                gen_sig_rules(local, nodes)
             else:
                 print(f"Node '{local}' does not exist")
