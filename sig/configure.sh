@@ -28,7 +28,7 @@ done
 dummyIF='sigdummy'
 sudo ip link add ${dummyIF} type dummy
 sudo ip addr add ${sigIP}/32 brd + dev ${dummyIF} label ${dummyIF}:0
-sudo ip rule add to 172.16.0.0/24 lookup 11 prio 11 # TODO: remove hardcoded subnet
+sudo ip rule add to 172.22.0.0/24 lookup 11 prio 11 # TODO: remove hardcoded subnet
 
 # Create SIG service
 SERVICE=/lib/systemd/system/scion-sig@.service
