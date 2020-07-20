@@ -12,8 +12,8 @@ RUN apt-get update && \
 WORKDIR /scripts
 ENV PATH="/scripts:${PATH}"
 
-# Use iptables masquerade NAT rule
-ENV IPTABLES_MASQ=1
+# Do not use iptables masquerade NAT rule
+ENV IPTABLES_MASQ=0
 
 # Copy scripts to containers
 COPY install-module /scripts

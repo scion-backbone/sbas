@@ -3,9 +3,9 @@ services:
     vpn:
        build: wireguard/
        volumes:
-          - ./wireguard/client/conf:/etc/wireguard
+          - ./wireguard/server/conf:/etc/wireguard
        ports:
-          - 55556:55556/udp
+          - 55555:55555/udp
        restart: unless-stopped
        sysctls:
             - net.ipv6.conf.all.disable_ipv6=0
