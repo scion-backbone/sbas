@@ -2,8 +2,6 @@ version: "3.5"
 services:
   vpn:
     build: wireguard/
-    volumes:
-      - ./wireguard/server/conf:/etc/wireguard
     ports:
       - 55555:55555/udp
     restart: unless-stopped
