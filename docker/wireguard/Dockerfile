@@ -21,6 +21,9 @@ COPY run /scripts
 COPY genkeys /scripts
 RUN chmod 755 /scripts/*
 
+# Add ip route to forward traffic to router
+ip route add 184.164.237.0/24 via 172.16.0.3 dev eth0
+
 # Wirguard interface configs go in /etc/wireguard
 VOLUME /etc/wireguard
 
