@@ -7,3 +7,4 @@ RUN rm -r /client/certs
 COPY certs/ /client/certs/
 COPY run.sh /client/
 WORKDIR /client
+RUN chmod 755 run.sh
