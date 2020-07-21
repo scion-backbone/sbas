@@ -1,4 +1,5 @@
 gen/*
 !gen/.keep
-
+docker/peering/vars/
+docker/wireguard/vars/
 docker/peering/certs/*.key
