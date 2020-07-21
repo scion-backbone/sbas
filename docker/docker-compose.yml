@@ -19,7 +19,7 @@ services:
         ipv4_address: 172.16.0.2
   router:
     build: peering/
-    command: tail -F keep-alive
+    command: ./run.sh
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=0
       - net.ipv4.ip_forward=1
