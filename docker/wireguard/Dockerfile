@@ -1,7 +1,5 @@
 FROM debian:buster
 
-ARG SBAS_VPN_NET
-
 # Add debian backports repo for wireguard packages
 RUN echo "deb http://deb.debian.org/debian/ buster-backports main" > /etc/apt/sources.list.d/buster-backports.list
 
@@ -28,6 +26,11 @@ RUN chmod 755 /scripts/*
 #VOLUME /etc/wireguard
 RUN mkdir /etc/wireguard-templates
 COPY server/conf/wg0.conf /etc/wireguard-templates/
+
+ARG SBAS_VPN_NET
+ARG SBAS_VPN_SERVER_IP
+ARG SBAS_ROUTER_MUX
+ARG SBAS_ROUTER_ANNOUNCE_PREFIX
 RUN bash -c "envsubst < /etc/wireguard-templates/wg0.conf > /etc/wireguard/wg0.conf"
 
 # Normal behavior is just to run wireguard with existing configs

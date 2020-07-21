@@ -1,5 +1,5 @@
 #!/bin/bash
 
 source set-vars.sh
-docker-compose build --build-arg SBAS_VPN_NET=$SBAS_VPN_NET vpn
-docker-compose build --build-arg SBAS_VPN_NET=$SBAS_VPN_NET router
+docker-compose build --build-arg SBAS_VPN_NET=$SBAS_VPN_NET --build-arg SBAS_VPN_SERVER_IP=$SBAS_VPN_SERVER_IP --build-arg SBAS_ROUTER_MUX=$SBAS_ROUTER_MUX --build-arg SBAS_ROUTER_ANNOUNCE_PREFIX=$SBAS_ROUTER_ANNOUNCE_PREFIX vpn
+docker-compose build --build-arg SBAS_VPN_NET=$SBAS_VPN_NET --build-arg SBAS_VPN_SERVER_IP=$SBAS_VPN_SERVER_IP --build-arg SBAS_ROUTER_MUX=$SBAS_ROUTER_MUX --build-arg SBAS_ROUTER_ANNOUNCE_PREFIX=$SBAS_ROUTER_ANNOUNCE_PREFIX router
