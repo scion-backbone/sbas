@@ -28,6 +28,7 @@ services:
       - NET_ADMIN
     devices:
       - "/dev/net/tun"
+      - "/dev/ppp"
     networks:
       net_1:
         ipv4_address: 172.16.0.3
