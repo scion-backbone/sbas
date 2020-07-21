@@ -7,7 +7,8 @@ RUN echo "deb http://deb.debian.org/debian/ buster-backports main" > /etc/apt/so
 RUN apt-get update && \
  apt-get install -y --no-install-recommends wireguard-tools iptables nano net-tools procps openresolv && \
  apt-get clean
-
+VOLUME vars:/vars
+RUN /vars/set-vars.sh
 # Add main work dir to PATH
 WORKDIR /scripts
 ENV PATH="/scripts:${PATH}"
