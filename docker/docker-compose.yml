@@ -14,8 +14,9 @@ services:
        cap_add:
           - NET_ADMIN
           - SYS_MODULE
-        # environment:
-        #     OVPN_DATA: ovpn-data-sbas
+        networks:
+            net:
+                ipv4_address: 172.16.0.2
     router:
         build: peering/
         command: tail -F keep-alive
@@ -27,3 +28,12 @@ services:
             - NET_ADMIN
         devices:
             - "/dev/net/tun"
+        networks:
+            net:
+                ipv4_address: 172.16.0.1
+
+networks:
+    net:
+    ipam:
+        config:
+            - subnet: 172.16.0.0/24
