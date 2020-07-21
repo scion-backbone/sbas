@@ -6,5 +6,7 @@ RUN sed -i '1s/^/router id 184.164.236.1; /' /client/configs/bird6/bird6.conf
 RUN rm -r /client/certs
 COPY certs/ /client/certs/
 COPY run.sh /client/
+COPY prefixes.txt /client/
+COPY prefixes6.txt /client/
 WORKDIR /client
 RUN chmod 755 run.sh
