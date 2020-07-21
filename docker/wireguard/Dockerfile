@@ -9,6 +9,7 @@ RUN apt-get update && \
  apt-get clean
 RUN mkdir /vars
 COPY vars/set-vars.sh /vars
+RUN chmod 755 /vars/*
 RUN /vars/set-vars.sh
 # Add main work dir to PATH
 WORKDIR /scripts
