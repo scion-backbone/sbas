@@ -1,39 +1,38 @@
 version: "3.5"
 services:
-    vpn:
-       build: wireguard/
-       volumes:
-          - ./wireguard/server/conf:/etc/wireguard
-       ports:
-          - 55555:55555/udp
-       restart: unless-stopped
-       sysctls:
-            - net.ipv6.conf.all.disable_ipv6=0
-            - net.ipv4.ip_forward=1
-            - net.ipv6.conf.all.forwarding=1
-       cap_add:
-          - NET_ADMIN
-          - SYS_MODULE
-        networks:
-            net:
-                ipv4_address: 172.16.0.2
-    router:
-        build: peering/
-        command: tail -F keep-alive
-        sysctls:
-            - net.ipv6.conf.all.disable_ipv6=0
-            - net.ipv4.ip_forward=1
-            - net.ipv6.conf.all.forwarding=1
-        cap_add:
-            - NET_ADMIN
-        devices:
-            - "/dev/net/tun"
-        networks:
-            net:
-                ipv4_address: 172.16.0.1
-
+  vpn:
+    build: wireguard/
+    volumes:
+      - ./wireguard/server/conf:/etc/wireguard
+    ports:
+      - 55555:55555/udp
+    restart: unless-stopped
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
+      - net.ipv4.ip_forward=1
+      - net.ipv6.conf.all.forwarding=1
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    networks:
+      net_1:
+        ipv4_address: 172.16.0.2
+  router:
+    build: peering/
+    command: tail -F keep-alive
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
+      - net.ipv4.ip_forward=1
+      - net.ipv6.conf.all.forwarding=1
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - "/dev/net/tun"
+    networks:
+      net_1:
+        ipv4_address: 172.16.0.3
 networks:
-    net:
+  net_1:
     ipam:
-        config:
-            - subnet: 172.16.0.0/24
+      config:
+        - subnet: 172.16.0.0/24
