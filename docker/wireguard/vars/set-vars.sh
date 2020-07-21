@@ -1,0 +1,2 @@
+#!/bin/bash
+EXPORT SBAS_VPN_NET=184.164.236.0/24
