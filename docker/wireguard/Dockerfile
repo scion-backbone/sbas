@@ -29,6 +29,7 @@ COPY server/conf/wg0.conf /etc/wireguard-templates/
 
 ARG SBAS_VPN_NET
 ARG SBAS_VPN_SERVER_IP
+ARG SBAS_VPN_SERVER_IP_NO_MASK
 ARG SBAS_ROUTER_MUX
 ARG SBAS_ROUTER_ANNOUNCE_PREFIX
 RUN bash -c "envsubst < /etc/wireguard-templates/wg0.conf > /etc/wireguard/wg0.conf"
