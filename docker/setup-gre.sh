@@ -1,3 +1,5 @@
+#!/bin/bash
+
 source set-vars.sh
 
 ip tunnel add sbasgre mode gre remote $SBAS_SIG_IP_REMOTE local $SBAS_SIG_IP ttl 255
