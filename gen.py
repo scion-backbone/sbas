@@ -8,14 +8,14 @@ def gen_sshconfig(nodes):
     with open(f"{GEN_DIR}/sshconfig", 'w') as f:
         for name in nodes:
             f.write(f"Host sbas-{name}\n")
-            f.write(f"    HostName {nodes[name]['ip']}\n")
+            f.write(f"    HostName {nodes[name]['public-ip']}\n")
             f.write(f"    User scionlab\n\n")
 
 def gen_sig_rules(local, remote):
     with open(f"{GEN_DIR}/sig.json", 'w') as f:
         cfg = {'ConfigVersion': 9001}
         cfg['ASes'] = {
-            node['scion-ia']: {'Nets': [f"{node['vaddr']}/32"]}
+            node['scion-ia']: {'Nets': [f"{node['int-prefix']}"]}
             for node in remote.values()
         }
         f.write(json.dumps(cfg, indent=2, sort_keys=True))
