@@ -1,11 +1,15 @@
 #!/bin/bash
+DB=../db.sh
 
-source set-vars.sh
+for remote in $($DB -r); do
+    dev=sbas${remote}
+    remote_sig=$($DB -r int-sig-ip)
+    local_sig=$($DB -l int-sig-ip)
+    ip tunnel add ${dev} mode gre remote $remote_sig local $local_sig ttl 255
+    ip link set ${dev} up
 
-ip tunnel add sbasgre mode gre remote $SBAS_SIG_IP_REMOTE local $SBAS_SIG_IP ttl 255
-ip link set sbasgre up
-
-# Since, in the future, traffic other than just traffic to the remote opt in client might go over the SBAS, this line will be a little more complex.
-ip route add $SBAS_VPN_NET_REMOTE dev sbasgre table 10
-ip route add $SBAS_VPN_NET via 10.99.0.3 table 10
-ip rule add from all lookup 10 priority 10
+    # Since, in the future, traffic other than just traffic to the remote opt in client might go over the SBAS, this line will be a little more complex.
+    ip route add $($DB -r ext-prefix) dev ${dev} table 10
+    ip route add $($DB -l ext-prefix) via 10.99.0.3 table 10
+    ip rule add from all lookup 10 priority 10
+done
