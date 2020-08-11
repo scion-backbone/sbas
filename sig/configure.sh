@@ -5,7 +5,7 @@ ISD=$(ls /etc/scion/gen/ | grep ISD | awk -F 'ISD' '{ print $2 }')
 AS=$(ls /etc/scion/gen/ISD${ISD}/ | grep AS | awk -F 'AS' '{ print $2 }')
 IA=${ISD}-${AS}
 IAd=$(echo $IA | sed 's/_/\:/g')
-sigIP=$($DB ${SBAS_NODE} int-sig-ip)
+sigIP=$($DB int-sig-ip)
 sigID='sigSBAS'
 
 ASDIR=${SC}/gen/ISD${ISD}/AS${AS}
