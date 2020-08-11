@@ -9,7 +9,7 @@ for remote in $($DB -r); do
     ip link set ${dev} up
 
     # Since, in the future, traffic other than just traffic to the remote opt in client might go over the SBAS, this line will be a little more complex.
-    ip route add $($DB -r ${remote} ext-prefix) dev ${dev} table 10
+    ip route add $($DB -r ${remote} ext-prefix) dev ${dev} table 10
     ip route add $($DB -l ext-prefix) via 10.99.0.3 table 10
     ip rule add from all lookup 10 priority 10
 done
