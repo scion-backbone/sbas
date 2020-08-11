@@ -1,6 +1,7 @@
 version: "3.5"
 services:
   vpn:
+    env_file: ../gen/docker.env
     build: wireguard/
     ports:
       - 55555:55555/udp
@@ -16,6 +17,7 @@ services:
       net_1:
         ipv4_address: 10.99.0.2
   router:
+    env_file: ../gen/docker.env
     build: peering/
     command: ./run.sh
     sysctls:

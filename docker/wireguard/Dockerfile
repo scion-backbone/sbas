@@ -5,7 +5,8 @@ RUN echo "deb http://deb.debian.org/debian/ buster-backports main" > /etc/apt/so
 
 # Install wireguard packges
 RUN apt-get update && \
- apt-get install -y --no-install-recommends wireguard-tools iptables nano gettext-base net-tools procps openresolv && \
+ apt-get install -y --no-install-recommends \
+   wireguard-tools iptables nano gettext-base net-tools procps openresolv && \
  apt-get clean
 
 # Add main work dir to PATH
@@ -28,7 +29,6 @@ RUN mkdir /etc/wireguard-templates
 COPY server/conf/wg0.conf /etc/wireguard-templates/
 
 ARG SBAS_VPN_NET
-ARG SBAS_VPN_NET_REMOTE
 ARG SBAS_VPN_SERVER_IP
 ARG SBAS_VPN_SERVER_IP_NO_MASK
 ARG SBAS_ROUTER_MUX

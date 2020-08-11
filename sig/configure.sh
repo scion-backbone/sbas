@@ -1,3 +1,4 @@
+#!/bin/bash
 DB=../db.sh
 SC=/etc/scion
 LOG=/var/log/scion
@@ -5,7 +6,7 @@ ISD=$(ls /etc/scion/gen/ | grep ISD | awk -F 'ISD' '{ print $2 }')
 AS=$(ls /etc/scion/gen/ISD${ISD}/ | grep AS | awk -F 'AS' '{ print $2 }')
 IA=${ISD}-${AS}
 IAd=$(echo $IA | sed 's/_/\:/g')
-sigIP=$($DB int-sig-ip)
+sigIP=$($DB -l int-sig-ip)
 sigID='sigSBAS'
 
 ASDIR=${SC}/gen/ISD${ISD}/AS${AS}
@@ -28,7 +29,7 @@ done
 dummyIF='sigdummy'
 sudo ip link add ${dummyIF} type dummy
 sudo ip addr add ${sigIP}/32 brd + dev ${dummyIF} label ${dummyIF}:0
-for prefix in $($DB -k int-prefix); do
+for prefix in $($DB -r int-prefix); do
     sudo ip rule add to ${prefix} lookup 11 prio 11
 done
 
