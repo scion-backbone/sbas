@@ -34,10 +34,15 @@ def gen_docker_env(local, remote):
         }.items():
             f.write(f"SBAS_{k}={v}\n")
 
+def gen_wg_clients(nodes):
+    for name in nodes:
+        pass # TODO: Use default file and envsubst
+
 if __name__ == "__main__":
     with open('nodes.json', 'r') as f:
         nodes = json.loads(f.read())
         gen_sshconfig(nodes)
+        gen_wg_clients(nodes)
 
         if ENV_NODE in os.environ:
             local_id = os.environ[ENV_NODE]

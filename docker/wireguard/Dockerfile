@@ -17,11 +17,10 @@ ENV PATH="/scripts:${PATH}"
 ENV IPTABLES_MASQ=0
 
 # Copy scripts to containers
-COPY install-module /scripts
-COPY run /scripts
-COPY genkeys /scripts
+COPY scripts/install-module /scripts
+COPY scripts/run /scripts
+COPY scripts/genkeys /scripts
 RUN chmod 755 /scripts/*
-
 
 # Wirguard interface configs go in /etc/wireguard
 #VOLUME /etc/wireguard
