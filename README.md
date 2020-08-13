@@ -12,7 +12,7 @@ From this information, all the configurations are generated as follows:
 
 - When run on a target machine, the `SBAS_NODE` environment variable must be set
   to the local node identifier.
-- `gen.py` creates some configuration files (for SSH, SIG rules, Docker
+- `scripts/gen.py` creates some configuration files (for SSH, SIG rules, Docker
   environment variables) and stores them in the `gen` directory.
 - `scripts/db.sh` provides a convenient interface for shell script to access the node
   information in `nodes.json`.
@@ -29,7 +29,7 @@ configuration that can be used to access the nodes.
 
 To install it on your system, run:
 ```
-python3 gen.py
+python3 scripts/gen.py
 cat gen/sshconfig >> ~/.ssh/config
 ```
 
