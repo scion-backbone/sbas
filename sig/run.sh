@@ -5,6 +5,7 @@ ISD=$(ls ${SC}/gen/ | grep ISD | awk -F 'ISD' '{ print $2 }')
 AS=$(ls ${SC}/gen/ISD${ISD}/ | grep AS | awk -F 'AS' '{ print $2 }')
 IA=${ISD}-${AS}
 sigIP=$($DB -l int-sig-ip)
+dummyIF='sig'
 
 # Delete existing configuration (if exists)
 ip link list ${dummyIF} >/dev/null 2>&1
@@ -16,7 +17,6 @@ if ! [ -z "$(ip rule list lookup 11)" ]; then
 fi
 
 # Set up IP rules
-dummyIF='sig'
 sudo ip link add ${dummyIF} type dummy
 sudo ip addr add ${sigIP}/32 brd + dev ${dummyIF} label ${dummyIF}:0
 for prefix in $($DB -r int-prefix); do
