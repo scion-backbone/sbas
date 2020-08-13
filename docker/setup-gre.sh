@@ -1,6 +1,11 @@
 #!/bin/bash
 DB=../db.sh
 
+if [ -z "$SBAS_NODE" ]; then
+    echo "Environment variable SBAS_NODE is not set. Make sure to pass the -E flag if you are using sudo."
+    exit
+else
+
 for remote in $($DB -r); do
     dev=sbas${remote}
     remote_sig=$($DB -r ${remote} int-sig-ip)
