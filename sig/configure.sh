@@ -26,7 +26,7 @@ for topo in ${ASDIR}/*/topology.json; do
 done
 
 # Set up IP rules
-dummyIF='sigdummy'
+dummyIF='sig'
 sudo ip link add ${dummyIF} type dummy
 sudo ip addr add ${sigIP}/32 brd + dev ${dummyIF} label ${dummyIF}:0
 for prefix in $($DB -r int-prefix); do
