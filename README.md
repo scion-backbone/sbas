@@ -1,38 +1,54 @@
 # SBAS Prototype
 
+This repository serves the configuration for SBAS nodes, dynamically generated
+from a single config file.
+
 ## Overview
 
-This repository serves the configuration for SBAS nodes.
-It is dynamically generated from the information in `nodes.json`.
+### Structure
 
-Run `python3 gen.py` to create the configuration files.
-To to generate node-specific files, set the variable `$SBAS_NODE`.
+Information about the nodes that make up the SBAS is stored in `nodes.json`.
+From this information, all the configurations are generated as follows:
 
-## SSH access
+- When run on a target machine, the `SBAS_NODE` environment variable must be set
+  to the local node identifier.
+- `gen.py` creates some configuration files (for SSH, SIG rules, Docker
+  environment variables) and stores them in the `gen` directory.
+- `scripts/db.sh` provides a convenient interface for shell script to access the node
+  information in `nodes.json`.
+- The sub-directories `sig` and `docker` contain additional configuration
+  scripts that set up the SIG and Docker-based components respectively.
 
-The generated file `sshconfig` contains configuration to access the nodes.
-To install, run:
+The `doc` directory contains additional documentation, such as the different
+interfaces and address ranges used within the SBAS.
+
+### SSH access to nodes
+
+On your local machine, the `gen.py` generates an `sshconfig` from the node
+configuration that can be used to access the nodes.
+
+To install it on your system, run:
 ```
-cat sshconfig >> ~/.ssh/config
+python3 gen.py
+cat gen/sshconfig >> ~/.ssh/config
 ```
 
-## Setting up on a SCIONLab node
+## Node Installation
 
-### SCION-IP Gateway (SIG)
+*Pre-requisite:* A running SCIONLab node with default configuration.
 
-On a SCIONLab node with a running SCION setup, first set the variable `$SBAS_NODE` to the local node name.
-Then, run the following scripts in order to set up the SIG:
+Initially, set the `SBAS_NODE` variable to the name of the local node (as given
+in the `nodes.json` file). Then, simply run `./install.sh` to perform the setup.
+The SBAS components will be started automatically.
 
-```
-cd sig
-./env.sh
-./install.sh
-./configure.sh
-```
+## Usage
 
-If changes are made to the SBAS configuration, it is sufficient to simply to re-run the `configure.sh` script.
+### Running a Node
 
-### Other Components
+Use the shell scripts in the root directory to start and stop the node.
+`reload.sh` must be run for configuration changes to take effect.
 
-The router (based on BIRD) and the VPN endpoint run in their respective Docker containers.
+### SBAS Customers
+
+*To do*
 

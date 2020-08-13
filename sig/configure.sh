@@ -1,5 +1,5 @@
 #!/bin/bash
-DB=../db.sh
+DB=../scripts/db.sh
 SC=/etc/scion
 LOG=/var/log/scion
 ISD=$(ls /etc/scion/gen/ | grep ISD | awk -F 'ISD' '{ print $2 }')
