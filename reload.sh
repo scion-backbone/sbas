@@ -1,5 +1,7 @@
 #!/bin/bash
 
+./stop.sh
+
 python3 scripts/gen.py
 
 cd sig
