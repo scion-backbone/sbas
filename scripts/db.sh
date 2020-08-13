@@ -16,7 +16,7 @@ fi
 
 python3 -c "\
 import json;\
-f = open('nodes.json', 'r');\
+f = open('../nodes.json', 'r');\
 db = json.load(f);\
 f.close();\
 $cmd\
