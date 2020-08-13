@@ -4,6 +4,7 @@ echo "============="
 
 cd docker
 sudo docker-compose up &
+cd ..
 
 echo "Setting up GRE tunnels"
-./scripts/setup-gre.sh
+bash ./scripts/setup-gre.sh
