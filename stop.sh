@@ -5,4 +5,4 @@ sudo docker-compose down
 cd ..
 
 echo "Tearing down GRE tunnels"
-./scripts/teardown-gre.sh
+sudo -E ./scripts/teardown-gre.sh

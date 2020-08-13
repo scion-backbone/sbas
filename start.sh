@@ -7,4 +7,4 @@ sudo docker-compose up &
 cd ..
 
 echo "Setting up GRE tunnels"
-./scripts/setup-gre.sh
+sudo -E ./scripts/setup-gre.sh
