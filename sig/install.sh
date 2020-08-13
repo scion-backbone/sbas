@@ -1,7 +1,8 @@
-export SC=/etc/scion
-export ISD=$(ls /etc/scion/gen/ | grep ISD | awk -F 'ISD' '{ print $2 }')
-export AS=$(ls /etc/scion/gen/ISD${ISD}/ | grep AS | awk -F 'AS' '{ print $2 }')
-export IA=${ISD}-${AS}
+#!/bin/bash
+SC=/etc/scion
+ISD=$(ls /etc/scion/gen/ | grep ISD | awk -F 'ISD' '{ print $2 }')
+AS=$(ls /etc/scion/gen/ISD${ISD}/ | grep AS | awk -F 'AS' '{ print $2 }')
+IA=${ISD}-${AS}
 
 cd ~
 git clone -b scionlab https://github.com/netsec-ethz/scion

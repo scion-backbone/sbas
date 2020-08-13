@@ -1,14 +1,22 @@
 {
   "oregon": {
-    "ip": "52.12.25.61",
-    "vaddr": "172.22.0.11",
-    "sig": "172.16.0.11",
-    "scion-ia": "16-ffaa:0:1008"
+    "public-ip": "52.12.25.61",
+    "scion-ia": "16-ffaa:0:1008",
+    "int-prefix": "172.22.1.0/24",
+    "int-sig-ip": "172.22.1.1",
+    "ext-prefix": "184.164.236.0/24",
+    "ext-vpn-ip": "184.164.236.1",
+    "peering-mux": "seattle01",
+    "vpn-key": "eq4RO+DplvQlu6FUHQvJ6JmqwUIfTL6HBIsPuLs3qCI="
   },
   "frankfurt": {
-    "ip": "52.58.224.202",
-    "vaddr": "172.22.0.12",
-    "sig": "172.16.0.12",
-    "scion-ia": "16-ffaa:0:1009"
+    "public-ip": "52.58.224.202",
+    "scion-ia": "16-ffaa:0:1009",
+    "int-prefix": "172.22.2.0/24",
+    "int-sig-ip": "172.22.2.1",
+    "ext-prefix": "184.164.237.0/24",
+    "ext-vpn-ip": "184.164.237.1",
+    "peering-mux": "amsterdam01",
+    "vpn-key": "eq4RO+DplvQlu6FUHQvJ6JmqwUIfTL6HBIsPuLs3qCI="
   }
 }
