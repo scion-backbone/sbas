@@ -1,8 +1,10 @@
 import json
 import os
 
-GEN_DIR = 'gen'
+ROOT_DIR = '..'
+GEN_DIR = f'{ROOT_DIR}/gen'
 ENV_NODE = 'SBAS_NODE'
+CFG_FILE = f'{ROOT_DIR}/nodes.json'
 
 def gen_sshconfig(nodes):
     with open(f"{GEN_DIR}/sshconfig", 'w') as f:
@@ -39,7 +41,7 @@ def gen_wg_clients(nodes):
         pass # TODO: Use default file and envsubst
 
 if __name__ == "__main__":
-    with open('nodes.json', 'r') as f:
+    with open(CFG_FILE, 'r') as f:
         nodes = json.loads(f.read())
         gen_sshconfig(nodes)
         gen_wg_clients(nodes)
