@@ -3,7 +3,7 @@ echo "Starting SBAS"
 echo "============="
 
 cd docker
-sudo docker-compose up &
+sudo docker-compose up -d
 cd ..
 
 echo "Setting up GRE tunnels"
