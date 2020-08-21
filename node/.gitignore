@@ -1,4 +1,3 @@
 gen/*
 !gen/.keep
-docker/set-vars.sh
 docker/peering/certs/*.key
