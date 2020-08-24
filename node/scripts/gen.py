@@ -1,8 +1,8 @@
 import json
 import os
 
-ROOT_DIR = '.'
-GEN_DIR = f'{ROOT_DIR}/gen'
+ROOT_DIR = '..'
+GEN_DIR = f'gen'
 ENV_NODE = 'SBAS_NODE'
 CFG_FILE = f'{ROOT_DIR}/nodes.json'
 

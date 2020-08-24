@@ -1,4 +1,6 @@
-# Overview
+# SBAS Node
+
+## Overview
 
 - When run on a target machine, the `SBAS_NODE` environment variable must be set
   to the local node identifier.
@@ -12,7 +14,7 @@
 The `doc` directory contains additional documentation, such as the different
 interfaces and address ranges used within the SBAS.
 
-# SSH access to nodes
+## SSH access to nodes
 
 On your local machine, the `gen.py` generates an `sshconfig` from the node
 configuration that can be used to access the nodes.
@@ -23,7 +25,7 @@ python3 scripts/gen.py
 cat gen/sshconfig >> ~/.ssh/config
 ```
 
-# Installation
+## Installation
 
 *Pre-requisite:* A running SCIONLab node with default configuration.
 
@@ -31,7 +33,7 @@ Initially, set the `SBAS_NODE` variable to the name of the local node (as given
 in the `nodes.json` file). Then, simply run `./install.sh` to perform the setup.
 The SBAS components will be started automatically.
 
-# Usage
+## Usage
 
 Use the shell scripts in the root directory to start and stop the node.
 `reload.sh` must be run for configuration changes to take effect.
