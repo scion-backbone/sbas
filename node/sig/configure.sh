@@ -12,7 +12,7 @@ sigID='sigSBAS'
 ASDIR=${SC}/gen/ISD${ISD}/AS${AS}
 SIGDIR=${ASDIR}/sig${IA}-1
 SIGCONF=${SIGDIR}/${sigID}.config
-mkdir -p ${SIGDIR}
+sudo mkdir -p ${SIGDIR}
 sudo cp sig.config $SIGCONF
 
 # Replace variables in config file
