@@ -9,6 +9,7 @@ cd sig
 cd ..
 
 cd docker
+source ../gen/docker.env
 sudo docker-compose build
 cd ..
 

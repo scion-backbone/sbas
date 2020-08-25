@@ -5,8 +5,9 @@ cd sig
 ./install.sh
 cd ..
 
-cd docker/wireguard
-sudo docker build -t wireguard:local
-cd ../..
+cd docker
+source ../gen/docker.env
+sudo docker-compose build
+cd ..
 
 ./reload.sh
