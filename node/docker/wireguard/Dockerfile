@@ -25,7 +25,7 @@ RUN chmod 755 /scripts/*
 # Wirguard interface configs go in /etc/wireguard
 #VOLUME /etc/wireguard
 RUN mkdir /etc/wireguard-templates
-COPY server/conf/wg0.conf /etc/wireguard-templates/
+COPY conf/wg0.conf /etc/wireguard-templates/
 
 ARG SBAS_VPN_NET
 ARG SBAS_VPN_SERVER_IP
