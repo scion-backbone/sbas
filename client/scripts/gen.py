@@ -6,18 +6,19 @@ GEN_DIR = f'gen'
 CFG_FILE = f'{ROOT_DIR}/nodes.json'
 DEFAULT_FILE = 'wg0-default.conf'
 
-def gen_wg_conf(name, node, client_ip):
+def gen_wg_conf(name, nodes, client_ip):
+    node = nodes[name]
+
     default = ""
     with open(DEFAULT_FILE, 'r') as f:
         default = f.read()
-
-    node = nodes[name]
-
     conf = default
-    for field in ['vpn-key', 'ext-prefix', 'public-ip']:
+    for field in ['vpn-key', 'public-ip']:
         conf = conf.replace('${' + field + '}', node[field])
 
     conf = conf.replace('${client-ip}', client_ip)
+    prefixes = ", ".join(nodes[n]['ext-prefix'] for n in nodes if n != name)
+    conf = conf.replace('${all-prefixes}', prefixes)
 
     with open(f"{GEN_DIR}/wg0-{name}.conf", 'w') as f:
         f.write(conf)
@@ -32,5 +33,5 @@ if __name__ == "__main__":
 
     with open(CFG_FILE, 'r') as f:
         nodes = json.loads(f.read())
-        gen_wg_conf(name, nodes[name], client_ip)
+        gen_wg_conf(name, nodes, client_ip)
 
