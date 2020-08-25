@@ -1,7 +1,7 @@
 #!/bin/bash
 
-ROOT=../..
 DIR=$(cd $(dirname $0); pwd -P)
+ROOT=${DIR}/../..
 
 if (($# < 1)); then
     echo "Please provide host name A or B"
@@ -22,11 +22,21 @@ elif [ $1 = "B" ]; then
 fi
 
 cd ${ROOT}/client
-./start.sh ${NODE} ${LOCAL_IP}
+./install.sh ${NODE} ${LOCAL_IP}
+./start.sh ${NODE}
+
+trap cleanup INT
+function cleanup() {
+    cd ${ROOT}/client
+    ./stop.sh ${NODE}
+}
 
 cd ${DIR}
 mkdir -p out
 if [ $1 = "A" ]; then
     ping $REMOTE_IP -c 10 -q > out/ping.txt
+else
+    # Wait forever
+    cat
 fi
 
