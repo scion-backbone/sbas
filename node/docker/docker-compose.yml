@@ -4,6 +4,8 @@ services:
   vpn:
     env_file: ../gen/docker.env
     build: wireguard/
+    volumes:
+      - ./wireguard/conf:/etc/wireguard
     ports:
       - 55555:55555/udp
     restart: unless-stopped
