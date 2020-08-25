@@ -3,26 +3,33 @@
 DIR=$(cd $(dirname $0); pwd -P)
 ROOT=${DIR}/../..
 
-if (($# < 1)); then
-    echo "Please provide host name A or B"
+if (($# < 2)); then
+    echo "Please provide host name A or B and a public IP address"
     exit
 fi
 
+PING_FLAGS="-q -c 2"
 NODE=""
-LOCAL_IP=""
-REMOTE_IP=""
+LOCAL=""
+REMOTE_SBAS=""
+REMOTE_PUBLIC="$2"
 if [ $1 = "A" ]; then
     NODE="oregon"
-    LOCAL_IP="184.164.236.2"
-    REMOTE_IP="184.164.237.2"
+    LOCAL="184.164.236.2"
+    REMOTE_SBAS="184.164.237.2"
 elif [ $1 = "B" ]; then
     NODE="frankfurt"
-    LOCAL_IP="184.164.237.2"
-    REMOTE_IP="184.164.236.2"
+    LOCAL="184.164.237.2"
+    REMOTE_SBAS="184.164.236.2"
+fi
+
+if [ $1 = "A" ]; then
+    echo "Recording Internet baseline..."
+    ping ${REMOTE_PUBLIC} ${PING_FLAGS} > out/ping-ip.txt
 fi
 
 cd ${ROOT}/client
-./install.sh ${NODE} ${LOCAL_IP}
+./install.sh ${NODE} ${LOCAL}
 ./start.sh ${NODE}
 
 trap cleanup INT
@@ -34,7 +41,9 @@ function cleanup() {
 cd ${DIR}
 mkdir -p out
 if [ $1 = "A" ]; then
-    ping $REMOTE_IP -c 10 -q > out/ping.txt
+    echo "Pinging through SBAS..."
+    ping ${REMOTE_SBAS} ${PING_FLAGS} > out/ping-sbas.txt
+    cleanup
 else
     # Wait forever
     cat
