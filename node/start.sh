@@ -2,6 +2,8 @@
 echo "Starting SBAS"
 echo "============="
 
+python3 scripts/gen.py
+
 cd docker
 sudo docker-compose up -d
 cd ..
