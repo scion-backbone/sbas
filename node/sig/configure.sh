@@ -12,6 +12,7 @@ sigID='sigSBAS'
 ASDIR=${SC}/gen/ISD${ISD}/AS${AS}
 SIGDIR=${ASDIR}/sig${IA}-1
 SIGCONF=${SIGDIR}/${sigID}.config
+mkdir -p ${SIGDIR}
 sudo cp sig.config $SIGCONF
 
 # Replace variables in config file
@@ -20,7 +21,6 @@ for var in 'SC' 'LOG' 'ISD' 'AS' 'IA' 'IAd' 'sigID' 'sigIP'; do
 done
 
 # Configure AS topology
-mkdir -p ${SIGDIR}
 sudo cp ../gen/sig.json ${SIGDIR}/${sigID}.json
 for topo in ${ASDIR}/*/topology.json; do
     sudo -E python3 gen_topo.py ${topo} ${IA}
