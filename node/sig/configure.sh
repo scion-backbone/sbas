@@ -20,6 +20,7 @@ for var in 'SC' 'LOG' 'ISD' 'AS' 'IA' 'IAd' 'sigID' 'sigIP'; do
 done
 
 # Configure AS topology
+mkdir -p ${SIGDIR}
 sudo cp ../gen/sig.json ${SIGDIR}/${sigID}.json
 for topo in ${ASDIR}/*/topology.json; do
     sudo -E python3 gen_topo.py ${topo} ${IA}
