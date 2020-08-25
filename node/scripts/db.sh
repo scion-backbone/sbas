@@ -1,5 +1,7 @@
 cd $(dirname $0)
 
+FILE="../../nodes.json"
+
 cmd=""
 
 if [ $1 = '-l' ]; then # local node
@@ -16,7 +18,7 @@ fi
 
 python3 -c "\
 import json;\
-f = open('../nodes.json', 'r');\
+f = open('$FILE', 'r');\
 db = json.load(f);\
 f.close();\
 $cmd\
