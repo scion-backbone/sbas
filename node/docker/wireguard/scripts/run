@@ -2,13 +2,14 @@
 
 ## The below is modified from https://github.com/activeeos/wireguard-docker
 
+envsubst < /etc/wireguard-templates/wg0.conf > /etc/wireguard/wg0.conf
+
 # Find a Wireguard interface
 interfaces=`find /etc/wireguard -type f`
 if [[ -z $interfaces ]]; then
     echo "$(date): Interface not found in /etc/wireguard" >&2
     exit 1
 fi
-
 
 for interface in $interfaces; do
     echo "$(date): Starting Wireguard $interface"
