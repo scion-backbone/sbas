@@ -18,7 +18,7 @@ def gen_wg_conf(name, nodes, client_ip):
 
     prefix_length = 24 # TODO: Un-hardcode this
     conf = conf.replace('${client-ip}', f"{client_ip}/{prefix_length}")
-    prefixes = ", ".join(nodes[n]['ext-prefix'] for n in nodes if n != name)
+    prefixes = ", ".join(nodes[n]['ext-prefix'] for n in nodes)
     conf = conf.replace('${all-prefixes}', prefixes)
 
     with open(f"{GEN_DIR}/wg0-{name}.conf", 'w') as f:
