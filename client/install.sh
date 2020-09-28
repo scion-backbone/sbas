@@ -1,5 +1,5 @@
 #!/bin/bash
-INSTALL_DIR=/usr/local/etc/wireguard/
+INSTALL_DIR=/etc/wireguard/
 
 if (($# < 2)); then
     echo "Usage: ./install.sh node ip"
