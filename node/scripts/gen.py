@@ -29,8 +29,8 @@ def gen_docker_env(local, remote):
 
         for k, v in {
             'VPN_NET': ext_prefix,
-            'VPN_NET_SERVER_IP': f"{local['ext-vpn-ip']}/{ext_prefix_subsize}",
-            'VPN_NET_SERVER_IP_NO_MASK': local['ext-vpn-ip'],
+            'VPN_SERVER_IP': f"{local['ext-vpn-ip']}/{ext_prefix_subsize}",
+            'VPN_SERVER_IP_NO_MASK': local['ext-vpn-ip'],
             'ROUTER_MUX': local['peering-mux'],
             'ROUTER_MUX_ANNOUNCE_PREFIX': ext_prefix,
         }.items():
