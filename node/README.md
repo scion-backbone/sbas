@@ -35,6 +35,7 @@ The SBAS components will be started automatically.
 
 ## Usage
 
-Use the shell scripts in the root directory to start and stop the node.
-`reload.sh` must be run for configuration changes to take effect.
+The `install.sh` script configures the system such that the SBAS node is started automatically with the system (`sbas.service` unit in `systemd`).
+
+Use the `reload.sh` script for configuration changes to take effect.
 

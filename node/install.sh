@@ -5,9 +5,8 @@ cd sig
 ./install.sh
 cd ..
 
-cd docker
-source ../gen/docker.env
-sudo docker-compose build
-cd ..
+./scripts/udpate.sh
 
-./reload.sh
+cp ./scripts/sbas.service /lib/systemd/system/
+systemctl enable sbas.service
+systemctl start sbas.service
