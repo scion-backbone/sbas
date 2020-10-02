@@ -10,6 +10,7 @@ WorkingDirectory=/home/scionlab/sbas-proto/node
 ExecStart=/home/scionlab/sbas-proto/node/scripts/start.sh
 ExecStop=/home/scionlab/sbas-proto/node/scripts/stop.sh
 RemainAfterExit=true
+Environment="SBAS_NODE=${SBAS_NODE}"
 
 [Install]
 WantedBy=scionlab.target

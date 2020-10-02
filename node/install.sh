@@ -7,6 +7,9 @@ cd ..
 
 ./scripts/update.sh
 
-sudo cp ./scripts/sbas.service /lib/systemd/system/
+sudo -E envsubst < scripts/sbas.service \
+    | sudo tee /lib/systemd/system/sbas.service >/dev/null
+sudo systemctl daemon-reload
 sudo systemctl enable sbas.service
 sudo systemctl start sbas.service
+
