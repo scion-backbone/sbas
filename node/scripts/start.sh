@@ -5,7 +5,7 @@ echo "============="
 python3 scripts/gen.py
 
 cd docker
-sudo docker-compose up -d
+docker-compose up -d
 cd ..
 
 cd sig
@@ -13,4 +13,4 @@ cd sig
 cd ..
 
 echo "Setting up GRE tunnels"
-sudo -E ./scripts/setup-gre.sh
+./scripts/setup-gre.sh
