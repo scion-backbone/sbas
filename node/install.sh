@@ -5,7 +5,7 @@ cd sig
 ./install.sh
 cd ..
 
-./scripts/udpate.sh
+./scripts/update.sh
 
 cp ./scripts/sbas.service /lib/systemd/system/
 systemctl enable sbas.service
