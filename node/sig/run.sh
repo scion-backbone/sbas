@@ -10,17 +10,17 @@ dummyIF='sig'
 # Delete existing configuration (if exists)
 ip link list ${dummyIF} >/dev/null 2>&1
 if [ $? = 0 ]; then
-    sudo ip link del ${dummyIF}
+    ip link del ${dummyIF}
 fi
 if ! [ -z "$(ip rule list lookup 11)" ]; then
-    sudo ip rule del lookup 11
+    ip rule del lookup 11
 fi
 
 # Set up IP rules
-sudo ip link add ${dummyIF} type dummy
-sudo ip addr add ${sigIP}/32 brd + dev ${dummyIF} label ${dummyIF}:0
+ip link add ${dummyIF} type dummy
+ip addr add ${sigIP}/32 brd + dev ${dummyIF} label ${dummyIF}:0
 for prefix in $($DB -r int-prefix); do
-    sudo ip rule add to ${prefix} lookup 11 prio 11
+    ip rule add to ${prefix} lookup 11 prio 11
 done
 
-sudo systemctl restart scion-sig@${IA}-1.service
+systemctl restart scion-sig@${IA}-1.service
