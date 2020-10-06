@@ -25,7 +25,14 @@ services:
 
   router:
     env_file: ../gen/docker.env
-    build: peering/
+    build:
+      context: ./peering/
+      args:
+      - SBAS_VPN_NET
+      - SBAS_VPN_SERVER_IP
+      - SBAS_VPN_SERVER_IP_NO_MASK
+      - SBAS_ROUTER_MUX
+      - SBAS_ROUTER_ANNOUNCE_PREFIX
     command: ./run.sh
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=0

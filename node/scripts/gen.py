@@ -32,7 +32,7 @@ def gen_docker_env(local, remote):
             'VPN_SERVER_IP': f"{local['ext-vpn-ip']}/{ext_prefix_subsize}",
             'VPN_SERVER_IP_NO_MASK': local['ext-vpn-ip'],
             'ROUTER_MUX': local['peering-mux'],
-            'ROUTER_MUX_ANNOUNCE_PREFIX': ext_prefix,
+            'ROUTER_ANNOUNCE_PREFIX': ext_prefix,
         }.items():
             f.write(f"SBAS_{k}={v}\n")
 
