@@ -4,7 +4,7 @@ mkdir -p docker/peering/gen
 cp gen/router-run.sh docker/peering/gen/run.sh
 
 cd sig
-./configure.sh
+sudo -E ./configure.sh
 cd ..
 
 cd docker
