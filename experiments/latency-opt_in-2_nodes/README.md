@@ -6,6 +6,9 @@
 Two opt-in nodes, each connected to a different SBAS point of presence, measure latency using ICMP echo to one another.
 
 ```
+          Link 5 (public Internet)
+        - - - - - - - - - - - - - -
+        |                         |
   +--------+      Link 1      +-----------+
   |  SBAS  |==================|   SBAS    |
   | Oregon |    (SCIONLab)    | Frankfurt |
@@ -26,8 +29,9 @@ Two opt-in nodes, each connected to a different SBAS point of presence, measure 
 - Link 2: 21ms
 - Link 3: 17ms
 - Link 4: 170ms
-- **Expected** (Link 1+2+3): 180ms
-- **Measured**: 210ms
+- Link 5: 139ms
+- **Expected** from A to B (= Link 1 + 2 + 3): 180ms
+- **Measured** from A to B (`ping-sbas`): 210ms
 
 There seems to be an SBAS overhead of **~30ms**.
 
