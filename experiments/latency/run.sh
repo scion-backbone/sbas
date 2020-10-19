@@ -2,9 +2,10 @@
 
 DIR=$(cd $(dirname $0); pwd -P)
 ROOT=${DIR}/../..
+mkdir -p out
 
 if (($# < 2)); then
-    echo "Please provide host name A or B and a public IP address"
+    echo "Please provide host name A or B and a public IP address of the other endpoint"
     exit
 fi
 
@@ -39,7 +40,6 @@ function cleanup() {
 }
 
 cd ${DIR}
-mkdir -p out
 if [ $1 = "A" ]; then
     echo "Pinging through SBAS..."
     ping ${REMOTE_SBAS} ${PING_FLAGS} > out/ping-sbas.txt

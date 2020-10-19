@@ -1,0 +1,5 @@
+PING 129.132.55.216 (129.132.55.216) 56(84) bytes of data.
+
+--- 129.132.55.216 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+rtt min/avg/max/mdev = 170.284/170.318/170.352/0.034 ms
