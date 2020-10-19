@@ -9,18 +9,21 @@ if (($# < 2)); then
     exit
 fi
 
-PING_FLAGS="-q -c 10"
+PING_FLAGS="-c 10" # add -q to suppress individual output
 NODE=""
 LOCAL=""
+LOCAL_VPN=""
 REMOTE_SBAS=""
 REMOTE_PUBLIC="$2"
 if [ $1 = "A" ]; then
     NODE="oregon"
     LOCAL="184.164.236.2"
+    LOCAL_VPN="184.164.236.1"
     REMOTE_SBAS="184.164.237.2"
 elif [ $1 = "B" ]; then
     NODE="frankfurt"
     LOCAL="184.164.237.2"
+    LOCAL_VPN="184.164.237.1"
     REMOTE_SBAS="184.164.236.2"
 fi
 
@@ -32,6 +35,9 @@ fi
 cd ${ROOT}/client
 ./install.sh ${NODE} ${LOCAL}
 ./start.sh ${NODE}
+
+echo "Recording latency to SBAS node through VPN tunnel..."
+ping ${PING_FLAGS} ${LOCAL_VPN} | tee out/ping-vpn.txt
 
 trap cleanup INT
 function cleanup() {
