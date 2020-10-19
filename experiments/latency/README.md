@@ -13,6 +13,6 @@ Two opt-in nodes, each connected to a different SBAS point of presence, measure 
       |                             |
  184.164.236.2                184.164.237.2
     Host A                       Host B
-  (Princeton)                     (ETH)
+ (AWS N.Cali)                     (ETH)
 ```
 
