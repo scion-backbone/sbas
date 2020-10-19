@@ -9,7 +9,7 @@ if (($# < 2)); then
     exit
 fi
 
-PING_FLAGS="-q -c 2"
+PING_FLAGS="-q -c 10"
 NODE=""
 LOCAL=""
 REMOTE_SBAS=""
@@ -26,7 +26,7 @@ fi
 
 if [ $1 = "A" ]; then
     echo "Recording Internet baseline..."
-    ping ${REMOTE_PUBLIC} ${PING_FLAGS} > out/ping-ip.txt
+    ping ${REMOTE_PUBLIC} ${PING_FLAGS} | tee out/ping-ip.txt
 fi
 
 cd ${ROOT}/client
@@ -42,7 +42,7 @@ function cleanup() {
 cd ${DIR}
 if [ $1 = "A" ]; then
     echo "Pinging through SBAS..."
-    ping ${REMOTE_SBAS} ${PING_FLAGS} > out/ping-sbas.txt
+    ping ${REMOTE_SBAS} ${PING_FLAGS} | tee out/ping-sbas.txt
     cleanup
 else
     # Wait forever
