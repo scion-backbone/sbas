@@ -18,5 +18,23 @@
     "ext-vpn-ip": "184.164.237.1",
     "peering-mux": "amsterdam01",
     "vpn-key": "eq4RO+DplvQlu6FUHQvJ6JmqwUIfTL6HBIsPuLs3qCI="
+  },
+  "singapore": {
+    "public-ip": "54.254.43.169",
+    "scion-ia": "16-ffaa:0:100a",
+    "int-prefix": "172.22.3.0/24",
+    "int-sig-ip": "172.22.3.1",
+    "ext-prefix": "",
+    "ext-vpn-ip": "",
+    "vpn-key": "eq4RO+DplvQlu6FUHQvJ6JmqwUIfTL6HBIsPuLs3qCI="
+  },
+  "tokyo": {
+    "public-ip": "52.69.124.96",
+    "scion-ia": "16-ffaa:0:100b",
+    "int-prefix": "172.22.4.0/24",
+    "int-sig-ip": "172.22.4.1",
+    "ext-prefix": "",
+    "ext-vpn-ip": "",
+    "vpn-key": "eq4RO+DplvQlu6FUHQvJ6JmqwUIfTL6HBIsPuLs3qCI="
   }
 }
