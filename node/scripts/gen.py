@@ -27,13 +27,18 @@ def gen_docker_env(local):
         ext_prefix = local['ext-prefix']
         ext_prefix_subsize = int(ext_prefix.split('/')[1])
 
+        def write(k, v):
+            f.write(f"SBAS_{k}={v}\n")
+
         for k, v in {
             'VPN_NET': ext_prefix,
             'VPN_SERVER_IP': f"{local['ext-vpn-ip']}/{ext_prefix_subsize}",
             'VPN_SERVER_IP_NO_MASK': local['ext-vpn-ip'],
-            'ROUTER_MUX': local['peering-mux'],
         }.items():
-            f.write(f"SBAS_{k}={v}\n")
+            write(k, v)
+
+        if 'peering-mux' in local:
+            write('ROUTER_MUX', local['peering-mux'])
 
 def gen_routes(local, remote):
     with open(f"{GEN_DIR}/router-run.sh", 'w') as f:
