@@ -32,7 +32,6 @@ def gen_docker_env(local):
             'VPN_SERVER_IP': f"{local['ext-vpn-ip']}/{ext_prefix_subsize}",
             'VPN_SERVER_IP_NO_MASK': local['ext-vpn-ip'],
             'ROUTER_MUX': local['peering-mux'],
-            'ROUTER_ANNOUNCE_PREFIX': ext_prefix,
         }.items():
             f.write(f"SBAS_{k}={v}\n")
 
@@ -45,7 +44,8 @@ def gen_routes(local, remote):
         for r in remote.values():
             f.write(f"ip route add {r['ext-prefix']} via 10.99.0.1 dev eth0 table 10\n")
         f.write("ip rule add from all lookup 10 priority 10\n")
-        f.write(f"./peering openvpn up {local['peering-mux']}\n")
+        if 'peering-mux' in local:
+            f.write(f"./peering openvpn up {local['peering-mux']}\n")
         # Docker must have a command to run in foreground, so just add a busy tail
         f.write("tail -F keep-alive\n")
 

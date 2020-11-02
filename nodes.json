@@ -4,7 +4,7 @@
     "scion-ia": "16-ffaa:0:1008",
     "int-prefix": "172.22.1.0/24",
     "int-sig-ip": "172.22.1.1",
-    "ext-prefix": "184.164.236.0/24",
+    "ext-prefix": "184.164.236.0/25",
     "ext-vpn-ip": "184.164.236.1",
     "peering-mux": "seattle01",
     "vpn-key": "eq4RO+DplvQlu6FUHQvJ6JmqwUIfTL6HBIsPuLs3qCI="
@@ -14,8 +14,8 @@
     "scion-ia": "16-ffaa:0:1009",
     "int-prefix": "172.22.2.0/24",
     "int-sig-ip": "172.22.2.1",
-    "ext-prefix": "184.164.237.0/24",
-    "ext-vpn-ip": "184.164.237.1",
+    "ext-prefix": "184.164.236.128/25",
+    "ext-vpn-ip": "184.164.237.129",
     "peering-mux": "amsterdam01",
     "vpn-key": "eq4RO+DplvQlu6FUHQvJ6JmqwUIfTL6HBIsPuLs3qCI="
   },
@@ -24,8 +24,8 @@
     "scion-ia": "16-ffaa:0:100a",
     "int-prefix": "172.22.3.0/24",
     "int-sig-ip": "172.22.3.1",
-    "ext-prefix": "",
-    "ext-vpn-ip": "",
+    "ext-prefix": "184.164.237.0/25",
+    "ext-vpn-ip": "184.164.237.1",
     "vpn-key": "eq4RO+DplvQlu6FUHQvJ6JmqwUIfTL6HBIsPuLs3qCI="
   },
   "tokyo": {
@@ -33,8 +33,8 @@
     "scion-ia": "16-ffaa:0:100b",
     "int-prefix": "172.22.4.0/24",
     "int-sig-ip": "172.22.4.1",
-    "ext-prefix": "",
-    "ext-vpn-ip": "",
+    "ext-prefix": "184.164.237.128/25",
+    "ext-vpn-ip": "184.164.237.129",
     "vpn-key": "eq4RO+DplvQlu6FUHQvJ6JmqwUIfTL6HBIsPuLs3qCI="
   }
 }
