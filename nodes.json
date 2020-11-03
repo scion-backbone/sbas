@@ -15,7 +15,7 @@
     "int-prefix": "172.22.2.0/24",
     "int-sig-ip": "172.22.2.1",
     "ext-prefix": "184.164.236.128/25",
-    "ext-vpn-ip": "184.164.237.129",
+    "ext-vpn-ip": "184.164.236.129",
     "peering-mux": "amsterdam01",
     "vpn-key": "eq4RO+DplvQlu6FUHQvJ6JmqwUIfTL6HBIsPuLs3qCI="
   },
