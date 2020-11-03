@@ -16,7 +16,7 @@ def gen_wg_conf(name, nodes, client_ip):
     for field in ['vpn-key', 'public-ip']:
         conf = conf.replace('${' + field + '}', node[field])
 
-    prefix_length = 24 # TODO: Un-hardcode this
+    prefix_length = nodes[n]['ext-prefix'].split('/')[1]
     conf = conf.replace('${client-ip}', f"{client_ip}/{prefix_length}")
     prefixes = ", ".join(nodes[n]['ext-prefix'] for n in nodes)
     conf = conf.replace('${all-prefixes}', prefixes)
