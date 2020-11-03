@@ -23,7 +23,7 @@ if [ $1 = "A" ]; then
 elif [ $1 = "B" ]; then
     NODE="frankfurt"
     LOCAL="184.164.236.130"
-    LOCAL_VPN="184.164.237.129"
+    LOCAL_VPN="184.164.236.129"
     REMOTE_SBAS="184.164.236.2"
 fi
 
