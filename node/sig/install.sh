@@ -9,10 +9,9 @@ git clone -b scionlab https://github.com/netsec-ethz/scion
 
 sudo mkdir -p ${SC}/gen/ISD${ISD}/AS${AS}/sig${IA}-1/
 
-export GOBIN=${GOPATH}/bin/sig 
-cd ~/scion/go/sig
+export GOBIN=${GOPATH}/bin/sig
+cd scion/go/sig
 go install
-go build -o ${GOBIN} ~/scion/go/sig/main.go
 
 # Enable routing
 sudo setcap cap_net_admin+eip ${GOBIN}
