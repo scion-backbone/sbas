@@ -13,11 +13,11 @@ Two opt-in nodes, each connected to a different SBAS point of presence, measure 
   |  SBAS  |==================|   SBAS    |
   | Oregon |    (SCIONLab)    | Frankfurt |
   +--------+                  +-----------+
- 184.164.236.1                184.164.237.1
+ 184.164.236.1               184.164.236.129
       |                             |
       | Link 2                      | Link 3
       |                             |
- 184.164.236.2                184.164.237.2
+ 184.164.236.2               184.164.236.130
     Host A   - - - - - - - - - - Host B
  (AWS N.Cali)      Link 4         (ETH)
               (public Internet)

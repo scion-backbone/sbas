@@ -19,11 +19,11 @@ if [ $1 = "A" ]; then
     NODE="oregon"
     LOCAL="184.164.236.2"
     LOCAL_VPN="184.164.236.1"
-    REMOTE_SBAS="184.164.237.2"
+    REMOTE_SBAS="184.164.236.130"
 elif [ $1 = "B" ]; then
     NODE="frankfurt"
-    LOCAL="184.164.237.2"
-    LOCAL_VPN="184.164.237.1"
+    LOCAL="184.164.236.130"
+    LOCAL_VPN="184.164.237.129"
     REMOTE_SBAS="184.164.236.2"
 fi
 
