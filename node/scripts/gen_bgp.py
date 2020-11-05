@@ -2,6 +2,7 @@ import json
 import os
 from gen_functions import *
 
+
 if __name__ == "__main__":
     with open(CFG_FILE, 'r') as f:
         nodes = json.loads(f.read())
@@ -16,6 +17,6 @@ if __name__ == "__main__":
 
                 gen_sig_rules(remote)
                 gen_docker_env(local)
-                gen_routes(local, remote)
+                gen_routes_bgp(local, remote)
             else:
                 print(f"Node '{local_id}' does not exist")

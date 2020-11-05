@@ -7,6 +7,10 @@
     "ext-prefix": "184.164.236.0/25",
     "ext-vpn-ip": "184.164.236.1",
     "peering-mux": "seattle01",
+    "peering-prefixes": [
+      ["184.164.236.0/24", "184.164.236.1/24"], 
+      ["184.164.237.0/24", "184.164.237.1/24"]
+    ],
     "vpn-key": "eq4RO+DplvQlu6FUHQvJ6JmqwUIfTL6HBIsPuLs3qCI="
   },
   "frankfurt": {
@@ -17,6 +21,10 @@
     "ext-prefix": "184.164.236.128/25",
     "ext-vpn-ip": "184.164.236.129",
     "peering-mux": "amsterdam01",
+    "peering-prefixes": [
+      ["184.164.236.0/24", "184.164.236.1/24"], 
+      ["184.164.237.0/24", "184.164.237.1/24"]
+    ],
     "vpn-key": "eq4RO+DplvQlu6FUHQvJ6JmqwUIfTL6HBIsPuLs3qCI="
   },
   "singapore": {
