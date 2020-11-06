@@ -1,7 +1,6 @@
 #!/bin/bash
 
 cd sig
-./env.sh
 ./install.sh
 cd ..
 

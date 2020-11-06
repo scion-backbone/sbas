@@ -1,0 +1,8 @@
+[sig]
+    id = "sig-sbas"
+    sig_config = "/etc/scion/sig.json"
+    tun = "sigSBAS"
+
+[log.file]
+    path = "/var/log/scion/sig.log"
+

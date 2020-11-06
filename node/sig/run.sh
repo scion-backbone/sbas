@@ -1,9 +1,5 @@
 #!/bin/bash
 DB=../scripts/db.sh
-SC=/etc/scion
-ISD=$(ls ${SC}/gen/ | grep ISD | awk -F 'ISD' '{ print $2 }')
-AS=$(ls ${SC}/gen/ISD${ISD}/ | grep AS | awk -F 'AS' '{ print $2 }')
-IA=${ISD}-${AS}
 sigIP=$($DB -l int-sig-ip)
 dummyIF='sig'
 
@@ -23,4 +19,4 @@ for prefix in $($DB -r int-prefix); do
     ip rule add to ${prefix} lookup 11 prio 11
 done
 
-systemctl restart scion-sig@${IA}-1.service
+systemctl restart scion-sig.service

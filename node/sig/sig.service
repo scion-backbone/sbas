@@ -9,7 +9,7 @@ PartOf=scionlab.target
 Type=simple
 User=scion
 Group=scion
-ExecStart=/usr/bin/scion-systemd-wrapper /usr/bin/sig /etc/scion/gen/ISD-isd-/AS-as-/sig%i/${sigID}.config %i
+ExecStart=/usr/bin/sig -config=/etc/scion/sig.toml
 RemainAfterExit=False
 KillMode=control-group
 Restart=on-failure
