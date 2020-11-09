@@ -13,3 +13,4 @@ cp ../gen/sig.json ${SC}/sig.json
 SERVICE=/lib/systemd/system/scion-sig.service
 cp sig.service ${SERVICE}
 systemctl enable scion-sig.service
+systemctl start scion-sig.service
