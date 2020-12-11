@@ -10,5 +10,5 @@ cp sig.toml ${SIGCONF}
 cp ../gen/sig.json ${SC}/sig.json
 
 # Enable service
-systemctl enable scion-sig.service
-systemctl start scion-sig.service
+systemctl enable scion-ip-gateway.service
+systemctl start scion-ip-gateway.service
