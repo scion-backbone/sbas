@@ -6,5 +6,5 @@
     level = "info"
 
 [tunnel]
-    name = "sigSBAS"
+    name = "sig"
 
