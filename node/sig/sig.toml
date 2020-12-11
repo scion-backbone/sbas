@@ -1,8 +1,10 @@
-[sig]
+[gateway]
     id = "sig-sbas"
-    sig_config = "/etc/scion/sig.json"
-    tun = "sigSBAS"
+    traffic_policy_file = "/etc/scion/sig.json"
 
-[log.file]
-    path = "/var/log/scion/sig.log"
+[log.console]
+    level = "info"
+
+[tunnel]
+    name = "sigSBAS"
 
