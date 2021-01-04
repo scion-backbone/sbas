@@ -20,6 +20,7 @@ ip link add ${sigIF} type dummy
 ip addr add ${sigIP}/32 brd + dev ${sigIF} label ${sigIF}:0
 for prefix in $($DB -r int-prefix); do
     ip rule add to ${prefix} lookup 11 prio 11
+    ip route add ${prefix} dev sig table 11
 done
 
 # Set conservative MTU value
