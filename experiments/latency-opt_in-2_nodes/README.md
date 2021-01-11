@@ -27,14 +27,14 @@ Two opt-in nodes, each connected to a different SBAS point of presence, measure 
 
 (from `data/2021-01-11`)
 
-- Link 1: 142ms
-- Link 2: 21ms
-- Link 3: 17ms
-- Link 4: 186ms
-- Link 5: 141ms
-- **Expected** from A to B (= Link 1 + 2 + 3): 180ms
-- **Measured** from A to B (`ping-sbas`): 180ms
+- Link 1: 142.93ms
+- Link 2: 21.74ms
+- Link 3: 16.52ms
+- Link 4: 185.53ms
+- Link 5: 140.56ms
+- **Expected** from A to B (= Link 1 + 2 + 3): 181.19ms
+- **Measured** from A to B (`ping-sbas`): 180.46ms
 
-There seems to be an SBAS overhead of less than a millisecond.
+SBAS seems to have no measurable overhead in this scenario.
 Notably, SBAS achieves **lower** latency than the IP Internet here!
 
