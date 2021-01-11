@@ -29,6 +29,18 @@ cat gen/sshconfig >> ~/.ssh/config
 
 *Pre-requisite:* A running SCIONLab node with default configuration.
 
+**Note:** Currently, it is necessary to add an entry for the SIG to the `topology.json` file manually (on infrastructure nodes):
+```
+  ...
+  "sigs": {
+    "sig-1": {
+      "ctrl_addr": "{INFRA_IP}:30256",
+      "data_addr": "{INFRA_IP}:30056"
+    }
+  },
+  ...
+```
+
 Initially, set the `SBAS_NODE` variable to the name of the local node (as given
 in the `nodes.json` file). Then, simply run `./install.sh` to perform the setup.
 The SBAS components will be started automatically.
