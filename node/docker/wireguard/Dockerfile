@@ -30,6 +30,7 @@ COPY conf/wg0.conf /etc/wireguard-templates/
 ARG SBAS_VPN_NET
 ARG SBAS_VPN_SERVER_IP
 ARG SBAS_VPN_SERVER_IP_NO_MASK
+ARG SBAS_VPN_ROUTER_IP_NO_MASK
 # This is now done at runtime instead
 # RUN bash -c "envsubst < /etc/wireguard-templates/wg0.conf > /etc/wireguard/wg0.conf"
 

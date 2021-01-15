@@ -9,6 +9,7 @@ services:
       - SBAS_VPN_NET
       - SBAS_VPN_SERVER_IP
       - SBAS_VPN_SERVER_IP_NO_MASK
+      - SBAS_VPN_ROUTER_IP_NO_MASK
     ports:
       - 55555:55555/udp
     restart: unless-stopped

@@ -34,6 +34,7 @@ def gen_docker_env(local):
             'VPN_NET': ext_prefix,
             'VPN_SERVER_IP': f"{local['ext-vpn-ip']}/{ext_prefix_subsize}",
             'VPN_SERVER_IP_NO_MASK': local['ext-vpn-ip'],
+            'SBAS_VPN_ROUTER_IP_NO_MASK': local['ext-router-ip'],
         }.items():
             write(k, v)
 
@@ -52,7 +53,9 @@ def gen_routes(local, remote):
         # This gen routes does not make BGP announcements, so no need to establish the tunnel.
         #if 'peering-mux' in local:
         #    f.write(f"./peering openvpn up {local['peering-mux']}\n")
-        # Docker must have a command to run in foreground, so just add a busy tail
+        # Add an IP on the VPN network so the router can be reached from customer ASes.
+        f.write(f"ip addr add {local['ext-router-ip']} dev lo")
+        # Docker must have a command to run in foreground, so just add a busy tail.
         f.write("tail -F keep-alive\n")
 
 def gen_routes_bgp(local, remote):
@@ -72,6 +75,8 @@ def gen_routes_bgp(local, remote):
                 f.write(f"./peering prefix announce -m {local['peering-mux']} {prefixAndNetwork[0]}\n")
                 # Remote the address the PEERING script assigns
                 f.write(f"ip addr del {prefixAndNetwork[1]} dev lo\n")
+        # Add an IP on the VPN network so the router can be reached from customer ASes.
+        f.write(f"ip addr add {local['ext-router-ip']} dev lo")
         # Docker must have a command to run in foreground, so just add a busy tail
         f.write("tail -F keep-alive\n")
 
