@@ -54,7 +54,7 @@ def gen_routes(local, remote):
         #if 'peering-mux' in local:
         #    f.write(f"./peering openvpn up {local['peering-mux']}\n")
         # Add an IP on the VPN network so the router can be reached from customer ASes.
-        f.write(f"ip addr add {local['ext-router-ip']} dev lo")
+        f.write(f"ip addr add {local['ext-router-ip']} dev lo\n")
         # Docker must have a command to run in foreground, so just add a busy tail.
         f.write("tail -F keep-alive\n")
 
@@ -76,7 +76,7 @@ def gen_routes_bgp(local, remote):
                 # Remote the address the PEERING script assigns
                 f.write(f"ip addr del {prefixAndNetwork[1]} dev lo\n")
         # Add an IP on the VPN network so the router can be reached from customer ASes.
-        f.write(f"ip addr add {local['ext-router-ip']} dev lo")
+        f.write(f"ip addr add {local['ext-router-ip']} dev lo\n")
         # Docker must have a command to run in foreground, so just add a busy tail
         f.write("tail -F keep-alive\n")
 
