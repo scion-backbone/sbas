@@ -3,7 +3,7 @@ DB=../scripts/db.sh
 sigIP=$($DB -l int-sig-ip)
 sigIF='sig'
 
-systemctl restart scion-sig.service
+systemctl restart scion-ip-gateway.service
 
 # Wait for IF to come up
 while ! ip addr show ${sigIF} >/dev/null 2>&1; do
