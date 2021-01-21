@@ -1,10 +1,18 @@
 {
     "zurich": {
         "public-ip": "129.132.55.216",
-        "provider-main": "frankfurt"
+        "ssh-user": "wannerjo",
+        "provider": {
+            "node": "frankfurt",
+            "addr": "184.164.236.130"
+        }
     },
     "california": {
         "public-ip": "54.219.196.249",
-        "provider-main": "oregon"
+        "ssh-user": "ubuntu",
+        "provider": {
+            "node": "oregon",
+            "addr": "184.164.236.2"
+        }
     }
 }

@@ -21,20 +21,11 @@ if __name__ == "__main__":
     exp = args.experiment
 
     # Prepare output directory
-    exp_root = os.path.join(DATA_PATH, exp)
-    if not os.path.exists(exp_root):
-        os.mkdir(exp_root)
+    dirname = datetime.datetime.now().strftime("%Y-%m-%d-%H_%M_%S")
+    data_path = os.path.join(DATA_PATH, exp, dirname)
+    exists = os.path.exists(data_path)
 
-    today = datetime.datetime.now().strftime("%Y-%m-%d-%H_%M_%S")
-    i = 0
-    data_path = ""
-    exists = True
-    while exists:
-        dirname = f"{today}_{i}"
-        data_path = os.path.join(exp_root, dirname)
-        exists = os.path.exists(data_path)
-
-    os.mkdir(data_path)
+    os.makedirs(data_path)
 
     # Run experiment
     run = experiments[exp]

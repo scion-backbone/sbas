@@ -1,7 +1,0 @@
-Host sbas-customer-zurich
-    HostName netsec-tvc0o0.inf.ethz.ch
-    User wannerjo
-
-Host sbas-customer-cali
-    HostName 54.219.196.249
-    User ubuntu
