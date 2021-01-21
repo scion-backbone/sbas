@@ -1,0 +1,10 @@
+{
+    "zurich": {
+        "public-ip": "129.132.55.216",
+        "provider-main": "frankfurt"
+    },
+    "california": {
+        "public-ip": "54.219.196.249",
+        "provider-main": "oregon"
+    }
+}
