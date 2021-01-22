@@ -34,12 +34,11 @@ def RunLatencyCustomers(args, data_path):
             raise Exception
         with open(os.path.join(data_path, filename + '.' + OUT_EXT), 'w') as f:
             f.write(res.stdout)
-            print("Writing fIEL", os.path.join(data_path, filename + '.' + OUT_EXT), 'w')
 
     try:
         # Baselines
         print("Recording Internet baseline...")
-        dump(A_conn, f"{PING} {B['public-ip']}", "ping-internet")
+        dump(A_conn, f"{PING} {B['public-ip']}", "ping_internet")
 
         # Connect customers to SBAS
         for X, conn in [(A, A_conn), (B, B_conn)]:
@@ -52,7 +51,7 @@ def RunLatencyCustomers(args, data_path):
             conn.run(" && ".join(cmds))
 
         print("Recording ping through SBAS...")
-        dump(A_conn, f"{PING} {B['provider']['addr']}", "ping-sbas")
+        dump(A_conn, f"{PING} {B['provider']['addr']}", "ping_sbas")
     except:
         # Clean up
         print("ERROR: removing output files")
@@ -62,6 +61,34 @@ def RunLatencyCustomers(args, data_path):
 
 def RunLatencyNodes(args, data_path):
     nodes = cfg.get_nodes()
-    src = nodes[args.src]
-    dst = nodes[args.dst]
+
+    ping_flags = "-c 5"
+    PING_SCION = "scion ping " + ping_flags
+    PING_IP = "ping " + ping_flags
+
+    def measure(A, B):
+        A_conn = Connection(nodes[A]['public-ip'], user=SBAS_SSH_USER)
+
+        def dump(cmd, suffix):
+            res = A_conn.run(cmd)
+            if not res.ok:
+                raise Exception
+            with open(os.path.join(data_path, f"{A}_{B}_{suffix}.{OUT_EXT}"), 'w') as f:
+                f.write(res.stdout)
+
+        dump(f"{PING_SCION} {nodes[B]['scion-ia']},0.0.0.0", "scion")
+        dump(f"{PING_IP} {nodes[B]['public-ip']}", "ip")
+
+    src_list = nodes
+    dst_list = nodes
+
+    if args.src:
+        src_list = [args.src]
+    if args.dst:
+        dst_list = [args.dst]
+
+    for A in src_list:
+        for B in dst_list:
+            if A != B:
+                measure(A, B)
 

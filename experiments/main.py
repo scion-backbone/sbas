@@ -3,12 +3,13 @@ import argparse
 import os
 import datetime
 
-from src.latency import RunLatencyCustomers
+from src.latency import RunLatencyCustomers, RunLatencyNodes
 
 DATA_PATH = "data"
 
 experiments = {
-    'latency-optin': RunLatencyCustomers
+    'latency-optin': RunLatencyCustomers,
+    'latency-nodes': RunLatencyNodes
 }
 
 if __name__ == "__main__":
