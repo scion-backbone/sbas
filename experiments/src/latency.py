@@ -25,7 +25,7 @@ def RunLatencyCustomers(args, data_path):
     print("done.")
 
     # Parameters
-    ping_flags = "-c 10"
+    ping_flags = "-c 3"
     PING = "ping " + ping_flags
 
     def dump(conn, cmd, filename):
@@ -35,20 +35,27 @@ def RunLatencyCustomers(args, data_path):
         with open(os.path.join(data_path, filename + '.' + OUT_EXT), 'w') as f:
             f.write(res.stdout)
 
+    def setup(X, conn):
+        ISP = X['provider']
+        cmds = [
+            f"cd sbas-proto/client",
+            f"sudo ./install.sh {ISP['node']} {ISP['addr']}",
+            f"./start.sh {ISP['node']}",
+        ]
+        res = conn.run(" && ".join(cmds))
+        if not res.ok:
+            raise Exception
+
     try:
         # Baselines
         print("Recording Internet baseline...")
         dump(A_conn, f"{PING} {B['public-ip']}", "ping_internet")
 
         # Connect customers to SBAS
+        print("Connecting to SBAS...", end=' ')
         for X, conn in [(A, A_conn), (B, B_conn)]:
-            ISP = X['provider']
-            cmds = [
-                f"cd sbas-proto/client",
-                f"sudo ./install.sh {ISP['node']} {ISP['addr']}",
-                f"./start.sh {ISP['node']}",
-            ]
-            conn.run(" && ".join(cmds))
+            setup(X, conn)
+        print("done.")
 
         print("Recording ping through SBAS...")
         dump(A_conn, f"{PING} {B['provider']['addr']}", "ping_sbas")
