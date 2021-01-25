@@ -34,7 +34,7 @@ def gen_docker_env(local):
             'VPN_NET': ext_prefix,
             'VPN_SERVER_IP': f"{local['ext-vpn-ip']}/{ext_prefix_subsize}",
             'VPN_SERVER_IP_NO_MASK': local['ext-vpn-ip'],
-            'SBAS_VPN_ROUTER_IP_NO_MASK': local['ext-router-ip'],
+            'VPN_ROUTER_IP_NO_MASK': local['ext-router-ip'],
         }.items():
             write(k, v)
 
