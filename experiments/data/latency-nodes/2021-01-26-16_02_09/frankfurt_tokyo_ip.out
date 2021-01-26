@@ -1,0 +1,10 @@
+PING 52.69.124.96 (52.69.124.96) 56(84) bytes of data.
+64 bytes from 52.69.124.96: icmp_seq=1 ttl=41 time=222 ms
+64 bytes from 52.69.124.96: icmp_seq=2 ttl=41 time=222 ms
+64 bytes from 52.69.124.96: icmp_seq=3 ttl=41 time=222 ms
+64 bytes from 52.69.124.96: icmp_seq=4 ttl=41 time=222 ms
+64 bytes from 52.69.124.96: icmp_seq=5 ttl=41 time=222 ms
+
+--- 52.69.124.96 ping statistics ---
+5 packets transmitted, 5 received, 0% packet loss, time 4003ms
+rtt min/avg/max/mdev = 222.030/222.099/222.261/0.430 ms
