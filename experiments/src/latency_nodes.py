@@ -1,6 +1,7 @@
 import os
 import shutil
 from fabric import Connection
+import csv
 
 from . import config as cfg
 
@@ -26,6 +27,9 @@ def run(args, data_path):
     for (A, B) in path_specs_def:
         path_specs[(B, A)] = path_specs_def[(A, B)]
 
+    def get_out_path(A, B, suffix):
+        return os.path.join(data_path, f"{A}_{B}_{suffix}.{OUT_EXT}")
+
     def measure(A, B):
         A_conn = Connection(nodes[A]['public-ip'], user=SBAS_SSH_USER)
 
@@ -33,7 +37,7 @@ def run(args, data_path):
             res = A_conn.run(cmd)
             if not res.ok:
                 raise Exception
-            with open(os.path.join(data_path, f"{A}_{B}_{suffix}.{OUT_EXT}"), 'w') as f:
+            with open(get_out_path(A, B, suffix), 'w') as f:
                 f.write(res.stdout)
 
         seq_str = ' '.join(path_specs[(A, B)])
@@ -49,11 +53,15 @@ def run(args, data_path):
     if args.dst:
         dst_list = [args.dst]
 
-    for A in src_list:
-        for B in dst_list:
-            if A != B:
-                measure(A, B)
+    with open(os.path.join(data_path, 'data.csv', newline=''), 'w') as out:
+        writer = csv.writer(out)
+        writer.writerow(['src', 'dst', 'scion_avg', 'scion_std', 'ip_avg', 'ip_std'])
 
-def process(args, data_path):
-    pass
+        for A in src_list:
+            for B in dst_list:
+                if A != B:
+                    measure(A, B)
+                    scion_avg, scion_std = parse_scmp_ping(get_out_path(A, B, "scion"))
+                    ip_avg, ip_std = parse_icmp_ping(get_out_path(A, B, "ip"))
+                    writer.writerow([A, B, scion_avg, scion_std, ip_avg, ip_std])
 
