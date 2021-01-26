@@ -73,6 +73,21 @@ def RunLatencyNodes(args, data_path):
     PING_SCION = "scion ping " + ping_flags
     PING_IP = "ping " + ping_flags
 
+    # Currently using a workaround for paths
+    # (the SCMP ping tool picks a path at random -> manually take the shortest one)
+    path_specs_def = {
+        ('oregon', 'frankfurt'): ['16']*4,
+        ('oregon', 'tokyo'): ['16']*4,
+        ('oregon', 'singapore'): ['16']*4,
+        ('frankfurt', 'singapore'): ['16']*4,
+        ('frankfurt', 'tokyo'): ['16']*5,
+        ('tokyo', 'singapore'): ['16']*4
+    }
+    # Assuming symmetrical path lengths
+    path_specs = dict(path_specs_def)
+    for (A, B) in path_specs_def:
+        path_specs[(B, A)] = path_specs_def[(A, B)]
+
     def measure(A, B):
         A_conn = Connection(nodes[A]['public-ip'], user=SBAS_SSH_USER)
 
@@ -83,7 +98,9 @@ def RunLatencyNodes(args, data_path):
             with open(os.path.join(data_path, f"{A}_{B}_{suffix}.{OUT_EXT}"), 'w') as f:
                 f.write(res.stdout)
 
-        dump(f"{PING_SCION} {nodes[B]['scion-ia']},0.0.0.0", "scion")
+        seq_str = ' '.join(path_specs[(A, B)])
+        seq_flag = f"--sequence '{seq_str}'"
+        dump(f"{PING_SCION} {nodes[B]['scion-ia']},0.0.0.0 {seq_flag}", "scion")
         dump(f"{PING_IP} {nodes[B]['public-ip']}", "ip")
 
     src_list = nodes
