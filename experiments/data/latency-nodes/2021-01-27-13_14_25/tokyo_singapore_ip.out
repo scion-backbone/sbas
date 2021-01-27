@@ -1,0 +1,10 @@
+PING 54.254.43.169 (54.254.43.169) 56(84) bytes of data.
+64 bytes from 54.254.43.169: icmp_seq=1 ttl=38 time=89.4 ms
+64 bytes from 54.254.43.169: icmp_seq=2 ttl=38 time=89.3 ms
+64 bytes from 54.254.43.169: icmp_seq=3 ttl=38 time=94.3 ms
+64 bytes from 54.254.43.169: icmp_seq=4 ttl=38 time=89.5 ms
+64 bytes from 54.254.43.169: icmp_seq=5 ttl=38 time=89.4 ms
+
+--- 54.254.43.169 ping statistics ---
+5 packets transmitted, 5 received, 0% packet loss, time 4002ms
+rtt min/avg/max/mdev = 89.342/90.366/94.305/1.969 ms
