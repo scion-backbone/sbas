@@ -4,6 +4,7 @@ from fabric import Connection
 import csv
 
 from . import config as cfg
+from .parser import *
 
 def run(args, data_path):
     nodes = cfg.get_nodes()
