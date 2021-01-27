@@ -1,5 +1,8 @@
 import json
 
+SBAS_SSH_USER = 'scionlab'
+OUT_EXT = 'out'
+
 NODES_PATH = "../nodes.json"
 CUSTOMERS_PATH = "../customers.json"
 

@@ -28,10 +28,10 @@ def run(args, data_path):
         path_specs[(B, A)] = path_specs_def[(A, B)]
 
     def get_out_path(A, B, suffix):
-        return os.path.join(data_path, f"{A}_{B}_{suffix}.{OUT_EXT}")
+        return os.path.join(data_path, f"{A}_{B}_{suffix}.{cfg.OUT_EXT}")
 
     def measure(A, B):
-        A_conn = Connection(nodes[A]['public-ip'], user=SBAS_SSH_USER)
+        A_conn = Connection(nodes[A]['public-ip'], user=cfg.SBAS_SSH_USER)
 
         def dump(cmd, suffix):
             res = A_conn.run(cmd)
@@ -53,7 +53,7 @@ def run(args, data_path):
     if args.dst:
         dst_list = [args.dst]
 
-    with open(os.path.join(data_path, 'data.csv', newline=''), 'w') as out:
+    with open(os.path.join(data_path, 'data.csv'), 'w', newline='') as out:
         writer = csv.writer(out)
         writer.writerow(['src', 'dst', 'scion_avg', 'scion_std', 'ip_avg', 'ip_std'])
 

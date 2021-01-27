@@ -3,9 +3,6 @@ from fabric import Connection
 
 from . import config as cfg
 
-SBAS_SSH_USER = 'scionlab'
-OUT_EXT = 'out'
-
 def run(args, data_path):
     customers = cfg.get_customers()
     A = customers[args.src]
@@ -19,8 +16,6 @@ def run(args, data_path):
     print("Connecting to remotes...", end=' ')
     A_conn = Connection(A['public-ip'], user=A['ssh-user'])
     B_conn = Connection(B['public-ip'], user=B['ssh-user'])
-    # ISP_A_conn = Connection(ISP_A['public-ip'], user=SBAS_SSH_USER)
-    # ISP_B_conn = Connection(ISP_B['public-ip'], user=SBAS_SSH_USER)
     print("done.")
 
     # Parameters
@@ -31,7 +26,8 @@ def run(args, data_path):
         res = conn.run(cmd)
         if not res.ok:
             raise Exception
-        with open(os.path.join(data_path, filename + '.' + OUT_EXT), 'w') as f:
+        with open(os.path.join(data_path, filename + '.' + cfg.OUT_EXT), 'w') as f:
+    # ISP_B_conn = Connection(ISP_B['public-ip'], user=SBAS_SSH_USER)
             f.write(res.stdout)
 
     def setup(X, conn):
