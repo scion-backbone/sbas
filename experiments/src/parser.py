@@ -1,4 +1,5 @@
 import re
+from statistics import mean, stdev
 
 def parse_icmp_ping(path):
     with open(path, 'r') as f:
@@ -11,7 +12,16 @@ def parse_icmp_ping(path):
 
 def parse_scmp_ping(path):
     with open(path, 'r') as f:
-        avg = 0
-        std = 0
+        r = re.compile('time=(\d+\.?\d*)ms')
+        xs = []
+        while True:
+            line = f.readline()
+            if line == '\n':
+                break
+            m = r.search(line)
+            if m:
+                xs.append(float(m.group(1)))
+        avg = mean(xs)
+        std = stdev(xs)
         return avg, std
 
