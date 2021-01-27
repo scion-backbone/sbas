@@ -14,10 +14,7 @@ def parse_scmp_ping(path):
     with open(path, 'r') as f:
         r = re.compile('time=(\d+\.?\d*)ms')
         xs = []
-        while True:
-            line = f.readline()
-            if line == '\n':
-                break
+        for line in f.readlines():
             m = r.search(line)
             if m:
                 xs.append(float(m.group(1)))
