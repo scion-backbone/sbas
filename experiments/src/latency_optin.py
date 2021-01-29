@@ -105,5 +105,7 @@ def run(args, data_path):
             total_avg += avg
             total_var += std**2
 
-        writer.writerow(['estimated', total_avg, math.sqrt(total_var)])
+        writer.writerow(['expected', total_avg, math.sqrt(total_var)])
+        overhead = data['sbas'][0] - total_avg
+        writer.writerow(['overhead', overhead, 'n/a'])
 
