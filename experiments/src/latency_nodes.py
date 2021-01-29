@@ -6,15 +6,7 @@ import csv
 from . import config as cfg
 from .parser import *
 
-def run(args, data_path):
-    nodes = cfg.get_nodes()
-
-    ping_flags = "-c 5"
-    PING_SCION = "scion ping " + ping_flags
-    PING_IP = "ping " + ping_flags
-
-    # Currently using a workaround for paths
-    # (the SCMP ping tool picks a path at random -> manually take the shortest one)
+def get_shortest_scion_paths():
     path_specs_def = {
         ('oregon', 'frankfurt'): ['16']*4,
         ('oregon', 'tokyo'): ['16']*4,
@@ -27,6 +19,19 @@ def run(args, data_path):
     path_specs = dict(path_specs_def)
     for (A, B) in path_specs_def:
         path_specs[(B, A)] = path_specs_def[(A, B)]
+
+    return path_specs
+
+def run(args, data_path):
+    nodes = cfg.get_nodes()
+
+    ping_flags = "-c 5"
+    PING_SCION = "scion ping " + ping_flags
+    PING_IP = "ping " + ping_flags
+
+    # Currently using a workaround for paths
+    # (the SCMP ping tool picks a path at random -> manually take the shortest one)
+    path_specs = get_shortest_scion_paths()
 
     def get_out_path(A, B, suffix):
         return os.path.join(data_path, f"{A}_{B}_{suffix}.{cfg.OUT_EXT}")
