@@ -1,0 +1,15 @@
+PING 54.219.196.249 (54.219.196.249) 56(84) bytes of data.
+64 bytes from 54.219.196.249: icmp_seq=1 ttl=41 time=173 ms
+64 bytes from 54.219.196.249: icmp_seq=2 ttl=41 time=173 ms
+64 bytes from 54.219.196.249: icmp_seq=3 ttl=41 time=173 ms
+64 bytes from 54.219.196.249: icmp_seq=4 ttl=41 time=173 ms
+64 bytes from 54.219.196.249: icmp_seq=5 ttl=41 time=173 ms
+64 bytes from 54.219.196.249: icmp_seq=6 ttl=41 time=173 ms
+64 bytes from 54.219.196.249: icmp_seq=7 ttl=41 time=173 ms
+64 bytes from 54.219.196.249: icmp_seq=8 ttl=41 time=173 ms
+64 bytes from 54.219.196.249: icmp_seq=9 ttl=41 time=173 ms
+64 bytes from 54.219.196.249: icmp_seq=10 ttl=41 time=172 ms
+
+--- 54.219.196.249 ping statistics ---
+10 packets transmitted, 10 received, 0% packet loss, time 9009ms
+rtt min/avg/max/mdev = 172.961/173.059/173.116/0.325 ms
