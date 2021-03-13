@@ -9,7 +9,7 @@ fi
 
 # If this SBAS node is a PEERING point, allow for default routes out of the local gateway.
 if [ $($DB -l outbound-gateway) == 'local' ]; then
-        ip route add 0.0.0.0/0 via 10.99.0.3 table 20
+        ip route add 0.0.0.0/0 via 10.99.0.2 table 20
 fi
 
 
@@ -36,5 +36,5 @@ if [ $($DB -l outbound-gateway) != 'local' ]; then
     ip rule add from $($DB -l ext-prefix) lookup 15 priority 15
 fi
 
-ip route add $($DB -l ext-prefix) via 10.99.0.3 table 10
+ip route add $($DB -l ext-prefix) via 10.99.0.2 table 10
 ip rule add from all lookup 10 priority 10
