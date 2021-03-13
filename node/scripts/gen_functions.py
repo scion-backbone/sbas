@@ -43,9 +43,9 @@ def gen_docker_env(local):
 
 def gen_routes(local, remote):
     with open(f"{GEN_DIR}/router-run.sh", 'w') as f:
-        f.write("#!/bin/bash\n")
-        # Route to local customer
-        f.write(f"ip route add {local['ext-prefix']} via 10.99.0.2 dev eth0 table 10\n")
+        # Route to local customer: route to wg0 interface
+        # f.write(f"ip route add {local['ext-prefix']} via 10.99.0.2 dev eth0 table 10\n") 
+        f.write(f"ip route add {local['ext-prefix']} dev wg0 table 10\n")
         # Routes to remote customers
         for r in remote.values():
             f.write(f"ip route add {r['ext-prefix']} via 10.99.0.1 dev eth0 table 10\n")
@@ -56,7 +56,7 @@ def gen_routes(local, remote):
         # Add an IP on the VPN network so the router can be reached from customer ASes.
         f.write(f"ip addr add {local['ext-router-ip']} dev lo\n")
         # Docker must have a command to run in foreground, so just add a busy tail.
-        f.write("tail -F keep-alive\n")
+        #f.write("tail -F keep-alive\n")
 
 def gen_routes_bgp(local, remote):
     with open(f"{GEN_DIR}/router-run.sh", 'w') as f:

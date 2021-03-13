@@ -1,13 +1,15 @@
 version: "3.5"
 
 services:
-  vpn:
+  vpn_router_merged:
     env_file: ../gen/docker.env
     build:
-      context: ./wireguard/
+      context: ./peering_wireguard_merged/
       args:
       - SBAS_VPN_NET
       - SBAS_VPN_SERVER_IP
+      - SBAS_ROUTER_MUX
+      - SBAS_ROUTER_ANNOUNCE_PREFIX      
       - SBAS_VPN_SERVER_IP_NO_MASK
       - SBAS_VPN_ROUTER_IP_NO_MASK
     ports:
@@ -20,33 +22,13 @@ services:
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
+    devices:
+      - "/dev/net/tun"
+      - "/dev/ppp"      
     networks:
       net_1:
         ipv4_address: 10.99.0.2
 
-  router:
-    env_file: ../gen/docker.env
-    build:
-      context: ./peering/
-      args:
-      - SBAS_VPN_NET
-      - SBAS_VPN_SERVER_IP
-      - SBAS_VPN_SERVER_IP_NO_MASK
-      - SBAS_ROUTER_MUX
-      - SBAS_ROUTER_ANNOUNCE_PREFIX
-    command: ./run.sh
-    sysctls:
-      - net.ipv6.conf.all.disable_ipv6=0
-      - net.ipv4.ip_forward=1
-      - net.ipv6.conf.all.forwarding=1
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - "/dev/net/tun"
-      - "/dev/ppp"
-    networks:
-      net_1:
-        ipv4_address: 10.99.0.3
 
 networks:
   net_1:
