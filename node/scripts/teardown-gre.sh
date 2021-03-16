@@ -8,7 +8,7 @@ if [ -z "$SBAS_NODE" ]; then
 fi
 
 ip rule del from all lookup 10 priority 10
-ip route del $($DB -l ext-prefix) via 10.99.0.3 table 10
+ip route del $($DB -l ext-prefix) via 10.99.0.2 table 10
 
 for remote in $($DB -r); do
     dev=sbas-${remote}
