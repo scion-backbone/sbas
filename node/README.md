@@ -40,7 +40,7 @@ cat gen/sshconfig >> ~/.ssh/config
   },
   ...
 ```
-With default settings, the SCIONLab coordinator will occasionally discard these changes when fetching updated configuration. To prevent this, remove the file at `/etc/scion/scionlab-config.json`.
+*The SCIONLab coordinator may occasionally attempt update this topology file, but will create a `.confnew` file instead of overwriting it.*
 
 Initially, set the `SBAS_NODE` variable to the name of the local node (as given
 in the `nodes.json` file). Then, simply run `./install.sh` to perform the setup.
