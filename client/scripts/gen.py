@@ -1,9 +1,9 @@
 import json
 import sys
 
-ROOT_DIR = '..'
+PREFIX = '/etc/sbas'
 GEN_DIR = f'gen'
-CFG_FILE = f'{ROOT_DIR}/nodes.json'
+CFG_FILE = f'{PREFIX}/nodes.json'
 DEFAULT_FILE = 'wg0-default.conf'
 
 def gen_wg_conf(name, nodes, client_ip):

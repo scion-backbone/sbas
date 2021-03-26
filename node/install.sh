@@ -1,5 +1,8 @@
 #!/bin/bash
 
+PREFIX="/etc/sbas"
+sudo mkdir -p PREFIX
+
 cd sig
 ./install.sh
 cd ..
@@ -11,4 +14,3 @@ sudo -E envsubst < scripts/sbas.service \
 sudo systemctl daemon-reload
 sudo systemctl enable sbas.service
 sudo systemctl start sbas.service
-
