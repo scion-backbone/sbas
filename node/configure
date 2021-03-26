@@ -14,3 +14,5 @@ check scion-ip-gateway
 check docker
 check docker-compose
 
+echo "Checking Python:"
+printf "version "; python3 --version
