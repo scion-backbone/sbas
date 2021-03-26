@@ -4,7 +4,6 @@ import os
 ROOT_DIR = '..'
 GEN_DIR = f'gen'
 ENV_NODE = 'SBAS_NODE'
-CFG_FILE = f'{ROOT_DIR}/nodes.json'
 
 def gen_sshconfig(nodes):
     with open(f"{GEN_DIR}/sshconfig", 'w') as f:
@@ -79,21 +78,3 @@ def gen_routes_bgp(local, remote):
         f.write(f"ip addr add {local['ext-router-ip']} dev lo\n")
         # Docker must have a command to run in foreground, so just add a busy tail
         f.write("tail -F keep-alive\n")
-
-#if __name__ == "__main__":
-#    with open(CFG_FILE, 'r') as f:
-#        nodes = json.loads(f.read())
-#        gen_sshconfig(nodes)
-
-#        if ENV_NODE in os.environ:
-#            local_id = os.environ[ENV_NODE]
-#            if local_id in nodes:
-#                local = nodes[local_id]
-#                remote = nodes.copy()
-#                remote.pop(local_id)
-
-#                gen_sig_rules(remote)
-#                gen_docker_env(local)
-#                gen_routes(local, remote)
-#            else:
-#                print(f"Node '{local_id}' does not exist")

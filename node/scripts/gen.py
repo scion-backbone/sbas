@@ -2,6 +2,8 @@ import json
 import os
 from gen_functions import *
 
+CFG_FILE = '/etc/sbas/nodes.json'
+
 if __name__ == "__main__":
     with open(CFG_FILE, 'r') as f:
         nodes = json.loads(f.read())

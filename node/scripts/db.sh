@@ -1,6 +1,7 @@
 cd $(dirname $0)
 
-FILE="../../nodes.json"
+PREFIX="/etc/sbas"
+CFG="$PREFIX/nodes.json"
 
 cmd=""
 
@@ -18,7 +19,7 @@ fi
 
 python3 -c "\
 import json;\
-f = open('$FILE', 'r');\
+f = open('$CFG', 'r');\
 db = json.load(f);\
 f.close();\
 $cmd\
