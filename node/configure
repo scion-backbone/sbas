@@ -24,4 +24,4 @@ read node
 echo $node > build/nodename
 
 echo "Downloading topology configuration..."
-wget https://raw.githubusercontent.com/scion-backbone/config/master/nodes.json -O build
+wget https://raw.githubusercontent.com/scion-backbone/config/master/nodes.json -O build/nodes.json
