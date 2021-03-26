@@ -7,7 +7,6 @@ CFG_FILE = '/etc/sbas/nodes.json'
 if __name__ == "__main__":
     with open(CFG_FILE, 'r') as f:
         nodes = json.loads(f.read())
-        gen_sshconfig(nodes)
 
         if ENV_NODE in os.environ:
             local_id = os.environ[ENV_NODE]

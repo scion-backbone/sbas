@@ -5,13 +5,6 @@ ROOT_DIR = '..'
 GEN_DIR = f'gen'
 ENV_NODE = 'SBAS_NODE'
 
-def gen_sshconfig(nodes):
-    with open(f"{GEN_DIR}/sshconfig", 'w') as f:
-        for name in nodes:
-            f.write(f"Host sbas-{name}\n")
-            f.write(f"    HostName {nodes[name]['public-ip']}\n")
-            f.write(f"    User scionlab\n\n")
-
 def gen_sig_rules(remote):
     with open(f"{GEN_DIR}/sig.json", 'w') as f:
         cfg = {'ConfigVersion': 9001}
