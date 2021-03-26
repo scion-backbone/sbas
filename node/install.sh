@@ -1,12 +1,9 @@
 #!/bin/bash
 
 PREFIX="/etc/sbas"
-sudo mkdir -p PREFIX
+sudo mkdir -p $PREFIX
 
-cd sig
-./install.sh
-cd ..
-
+bash -c 'cd sig; ./install.sh'
 ./scripts/update.sh
 
 sudo -E envsubst < scripts/sbas.service \
