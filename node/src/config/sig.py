@@ -1,5 +1,5 @@
 import json
-from . import parser
+from src.config import parser
 
 RULE_FILE = '/etc/scion/sig.json'
 

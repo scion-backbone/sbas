@@ -2,9 +2,9 @@
 import argparse
 import sys
 
-from . import config
-from .system import tunnels
-from .system import docker
+from src import config
+from src.system import tunnels
+from src.system import docker
 
 def configure():
     config.sig.update()
