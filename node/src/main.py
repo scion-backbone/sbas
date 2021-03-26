@@ -1,18 +1,22 @@
 #!/usr/bin/env python3
 import argparse
 import sys
+import os
 
-from src import config
+sys.path.append(os.path.abspath('..'))
+
+from src.config import sig
+from src.config import containers
 from src.system import tunnels
 from src.system import docker
 
 def configure():
-    config.sig.update()
-    config.containers.update()
+    sig.update()
+    containers.update()
     # TODO: Build Docker container
 
 def start():
-    docker_env = config.containers.get_env()
+    docker_env = containers.get_env()
     docker.up(docker_env)
     tunnels.setup()
 
