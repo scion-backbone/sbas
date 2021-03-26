@@ -5,7 +5,7 @@ SYSTEMD=/lib/systemd/system
 
 install: build/nodename
 	mkdir -p /etc/sbas /var/sbas
-	cp build/{nodes.json,nodename} /etc/sbas
+	cp build/nodes.json build/nodename /etc/sbas
 	rm -rf /lib/sbas; cp -r src /lib/sbas	
 	ln -fs /lib/sbas/main.py /usr/bin/sbas
 	cp etc/sig.toml ${SCION}
