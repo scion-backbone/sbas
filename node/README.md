@@ -16,13 +16,3 @@
   ...
 ```
 *The SCIONLab coordinator may occasionally attempt update this topology file, but will create a `.confnew` file instead of overwriting it.*
-
-Initially, set the `SBAS_NODE` variable to the name of the local node (as given
-in the `nodes.json` file). Then, simply run `./install.sh` to perform the setup.
-The SBAS components will be started automatically.
-
-## Usage
-
-The `install.sh` script configures the system such that the SBAS node is started automatically with the system (`sbas.service` unit in `systemd`).
-
-Use the `reload.sh` script for configuration changes to take effect.

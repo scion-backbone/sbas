@@ -1,0 +1,14 @@
+[Unit]
+Description=SBAS node
+After=scionlab.target
+Wants=scionlab.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/lib/sbas
+ExecStart=/usr/bin/sbas start
+ExecStop=/usr/bin/sbas stop
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target

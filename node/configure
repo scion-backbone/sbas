@@ -1,0 +1,16 @@
+#!/bin/bash
+echo "Checking dependencies:"
+
+function check {
+    printf "$1..."
+    if ! command -v $1 >/dev/null 2>&1; then
+        echo " not installed!"
+        exit
+    fi
+    printf " ok.\n"
+}
+
+check scion-ip-gateway
+check docker
+check docker-compose
+
