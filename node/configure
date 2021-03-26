@@ -2,12 +2,12 @@
 echo "Checking dependencies:"
 
 function check {
-    printf "$1..."
+    echo -n "$1..."
     if ! command -v $1 >/dev/null 2>&1; then
         echo " not installed!"
         exit
     fi
-    printf " ok.\n"
+    echo " ok."
 }
 
 check scion-ip-gateway
@@ -16,3 +16,12 @@ check docker-compose
 
 echo "Checking Python:"
 printf "version "; python3 --version
+
+mkdir -p build
+
+echo -n "Enter node identifier: "
+read node
+echo $node > build/nodename
+
+echo "Downloading topology configuration..."
+wget https://raw.githubusercontent.com/scion-backbone/config/master/nodes.json -O build

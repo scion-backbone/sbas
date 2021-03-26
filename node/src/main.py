@@ -1,14 +1,24 @@
 #!/usr/bin/env python3
 import argparse
+import sys
+
+from . import config
+from .system import tunnels
+from .system import docker
 
 def configure():
-    pass
+    config.sig.update()
+    config.containers.update()
+    # TODO: Build Docker container
 
 def start():
-    print("Starting SBAS")
+    docker_env = config.containers.get_env()
+    docker.up(docker_env)
+    tunnels.setup()
 
 def stop():
-    print("Stopping SBAS")
+    docker.down()
+    tunnels.teardown()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -16,7 +26,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.command == 'start':
+        # TODO: Detect if update is necessary (i.e., config is newer than last start)
         configure()
         start()
     elif args.command == 'stop':
         stop()
+    elif args.command == 'configure':
+        configure()
+    else:
+        print("Invalid command")
+        sys.exit(1)

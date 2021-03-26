@@ -7,7 +7,6 @@ echo "Downloading most recent configuration..."
 sudo wget $CFG_URL -O $PREFIX/nodes.json
 
 python3 scripts/gen.py
-sed -e '/SBAS_STATIC_ROUTES/{r gen/router-run.sh' -e 'd}' docker/peering_wireguard_merged/scripts/run.template > docker/peering_wireguard_merged/scripts/run
 
 {
     cd sig
