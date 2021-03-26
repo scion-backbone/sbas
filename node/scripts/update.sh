@@ -7,7 +7,14 @@ echo "Downloading most recent configuration..."
 sudo wget $CFG_URL -O $PREFIX/nodes.json
 
 python3 scripts/gen.py
-sed -e '/SBAS_STATIC_ROUTES/{r gen/router-run.sh' -e 'd}' docker/peering_wireguard_merged/scripts/run_conf > docker/peering_wireguard_merged/scripts/run
+sed -e '/SBAS_STATIC_ROUTES/{r gen/router-run.sh' -e 'd}' docker/peering_wireguard_merged/scripts/run.template > docker/peering_wireguard_merged/scripts/run
 
-bash -c 'cd sig; sudo -E ./configure.sh'
-bash -c 'source gen/docker.env; cd docker; sudo docker-compose build'
+{
+    cd sig
+    sudo -E ./configure.sh
+}
+{
+    source gen/docker.env
+    cd docker
+    sudo docker-compose build
+}

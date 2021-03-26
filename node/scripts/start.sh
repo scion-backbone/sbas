@@ -4,7 +4,10 @@ echo "============="
 
 python3 scripts/gen.py
 
-bash -c 'cd docker; docker-compose up -d'
+{
+    cd docker
+    docker-compose up -d
+}
 iptables -I FORWARD -s 0.0.0.0/0 -j ACCEPT
 
 echo "Setting up GRE tunnels"
