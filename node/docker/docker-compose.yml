@@ -29,7 +29,6 @@ services:
       net_1:
         ipv4_address: 10.99.0.2
 
-
 networks:
   net_1:
     ipam:

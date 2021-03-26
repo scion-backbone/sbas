@@ -34,7 +34,7 @@ ENV PATH="/scripts:${PATH}"
 ENV IPTABLES_MASQ=0
 
 # Copy scripts to containers
-COPY scripts/install-module /scripts
+COPY scripts/install /scripts
 COPY scripts/run /scripts
 COPY scripts/genkeys /scripts
 RUN chmod 755 /scripts/*
@@ -44,9 +44,5 @@ RUN chmod 755 /scripts/*
 RUN mkdir /etc/wireguard-templates
 COPY conf/wg0.conf /etc/wireguard-templates/
 
-# This is now done at runtime instead
-# RUN bash -c "envsubst < /etc/wireguard-templates/wg0.conf > /etc/wireguard/wg0.conf"
-
 # Normal behavior is just to run wireguard with existing configs
 CMD ["run"]
-#RUN ../client/run.sh
