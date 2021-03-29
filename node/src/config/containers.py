@@ -1,5 +1,6 @@
 import os
 import subprocess
+
 from . import parser
 from . import consts
 
@@ -21,10 +22,8 @@ def get_env():
     
     return env
 
-container_dir = os.path.join(consts.DOCKER_DIR, 'peering_wireguard_merged')
-gen_path = os.path.join(container_dir, 'scripts', 'router-run.sh')
-run_path = os.path.join(container_dir, 'scripts', 'run.sh')
-run_template_path = os.path.join(container_dir, 'scripts', 'run.template')
+container_dir = os.path.join(consts.DOCKER_DIR, 'peering_wireguard')
+gen_path = os.path.join(container_dir, 'scripts', 'setup-peering.sh')
 
 def _update_routes():
     local = parser.get_local_node()
@@ -51,11 +50,6 @@ def _update_routes():
 
         # Add an IP on the VPN network so the router can be reached from customer ASes.
         f.write(f"ip addr add {local['ext-router-ip']} dev lo\n")
-        # Docker must have a command to run in foreground, so just add a busy tail
-        f.write("tail -F keep-alive\n")
-    
-    # TODO: Create new run file
-    # sed -e '/SBAS_STATIC_ROUTES/{r gen/router-run.sh' -e 'd}' docker/peering_wireguard_merged/scripts/run.template > docker/peering_wireguard_merged/scripts/run
 
 def update():
     _update_routes()

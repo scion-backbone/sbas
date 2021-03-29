@@ -22,23 +22,3 @@ if [[ $IPTABLES_MASQ -eq 1 ]]; then
     echo "Adding iptables NAT rule"
     iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 fi
-
-# Handle shutdown behavior
-finish () {
-    echo "$(date): Shutting down Wireguard"
-    for interface in $interfaces; do
-        wg-quick down $interface
-    done
-    if [[ $IPTABLES_MASQ -eq 1 ]]; then
-        iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
-    fi
-
-    exit 0
-}
-
-SBAS_STATIC_ROUTES
-
-trap finish SIGTERM SIGINT SIGQUIT
-
-sleep infinity &
-wait $!
