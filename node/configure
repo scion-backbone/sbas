@@ -11,7 +11,8 @@ function check {
 }
 
 check scion-ip-gateway
-./etc/scionlab-config.py /etc/scion/topology.json
+cp /etc/scionlab/topology.json build
+./etc/scionlab-config.py build/topology.json
 check docker
 check docker-compose
 

@@ -5,7 +5,7 @@ SYSTEMD=/lib/systemd/system
 
 install: build/nodename
 	mkdir -p /etc/sbas /var/sbas
-	cp build/nodes.json build/nodename /etc/sbas
+	cp build/nodes.json build/nodename build/topology.json /etc/sbas
 	rm -rf /lib/sbas; mkdir /lib/sbas
 	cp -r src docker /lib/sbas
 	ln -fs /lib/sbas/src/main.py /usr/bin/sbas
