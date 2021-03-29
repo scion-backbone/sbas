@@ -33,6 +33,7 @@ def setup():
     gateway = local['outbound-gateway']
     # Allow other nodes to use this as outbound gateway
     if gateway == consts.GATEWAY_LOCAL:
+        run(["route", "add", "0.0.0.0/0", "via 10.99.0.2", "table 20"])
         rule_number = 20
         for name in remotes:
             run(["rule", "add", "iif", f"sbas-{name}", "lookup 20", "priority", str(rule_number)])
