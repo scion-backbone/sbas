@@ -10,12 +10,10 @@ from src.system import docker
 def configure():
     sig.update()
     containers.update()
-    docker_env = containers.get_env()
-    docker.build(docker_env)
+    docker.build()
 
 def start():
-    docker_env = containers.get_env()
-    docker.up(docker_env)
+    docker.up()
     tunnels.setup()
 
 def stop():

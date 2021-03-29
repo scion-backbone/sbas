@@ -2,7 +2,7 @@ version: "3.5"
 
 services:
   vpn_router:
-    # env_file: ../gen/docker.env
+    env_file: .env
     build:
       context: ./peering_wireguard/
       args:

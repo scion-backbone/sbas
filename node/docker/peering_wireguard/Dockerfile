@@ -46,5 +46,4 @@ RUN chmod 755 /scripts/*
 RUN mkdir /etc/wireguard-templates
 COPY conf/wg0.conf /etc/wireguard-templates/
 
-# Normal behavior is just to run wireguard with existing configs
 CMD ["run"]

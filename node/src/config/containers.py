@@ -4,31 +4,34 @@ import subprocess
 from . import parser
 from . import consts
 
-def get_env():
+DOCKER_ENV_FILE = '.env'
+
+def _update_env():
     local = parser.get_local_node()
     
     ext_prefix = local['ext-prefix']
     ext_prefix_subsize = int(ext_prefix.split('/')[1])
 
     env = {
-        'VPN_NET': ext_prefix,
-        'VPN_SERVER_IP': f"{local['ext-vpn-ip']}/{ext_prefix_subsize}",
-        'VPN_SERVER_IP_NO_MASK': local['ext-vpn-ip'],
-        'VPN_ROUTER_IP_NO_MASK': local['ext-router-ip'],
+        'SBAS_VPN_NET': ext_prefix,
+        'SBAS_VPN_SERVER_IP': f"{local['ext-vpn-ip']}/{ext_prefix_subsize}",
+        'SBAS_VPN_SERVER_IP_NO_MASK': local['ext-vpn-ip'],
+        'SBAS_VPN_ROUTER_IP_NO_MASK': local['ext-router-ip'],
     }
 
     if 'peering-mux' in local:
-        env['ROUTER_MUX'] = local['peering-mux']
+        env['SBAS_ROUTER_MUX'] = local['peering-mux']
     
-    return env
-
-container_dir = os.path.join(consts.DOCKER_DIR, 'peering_wireguard')
-gen_path = os.path.join(container_dir, 'scripts', 'setup-peering')
+    with open(os.path.join(consts.DOCKER_DIR, DOCKER_ENV_FILE), 'w') as f:
+        for k, v in env.items():
+            f.write(f'{k}={v}\n')
 
 def _update_routes():
     local = parser.get_local_node()
     remotes = parser.get_remote_nodes()
 
+    container_dir = os.path.join(consts.DOCKER_DIR, 'peering_wireguard')
+    gen_path = os.path.join(container_dir, 'scripts', 'setup-peering')
     with open(gen_path, 'w') as f:
         f.write("#!/bin/bash\n")
         # Route to local customer
@@ -52,4 +55,5 @@ def _update_routes():
         f.write(f"ip addr add {local['ext-router-ip']} dev lo\n")
 
 def update():
+    _update_env()
     _update_routes()
