@@ -13,12 +13,8 @@ def configure():
     docker.build()
 
 def start():
-    try:
-        docker.up()
-        routes.setup()
-    except Exception:
-        stop()
-        sys.exit(1)
+    docker.up()
+    routes.setup()
 
 def stop():
     docker.down()
