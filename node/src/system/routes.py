@@ -14,6 +14,9 @@ def setup():
     local = parser.get_local_node()
     remotes = parser.get_remote_nodes()
 
+    # Set up SIG addresses (required for tunnel endpoints)
+    run(["addr", "add", local['int-sig-ip'], "dev", "sig"])
+
     # Set up route to local customers
     run(["route", "add", local['ext-prefix'], "via", consts.VPN_GATEWAY_IP, "table", "10"])
     run(["rule", "add", "from", "all", "lookup", "10", "priority", "10"])
