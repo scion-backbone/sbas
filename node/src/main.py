@@ -16,7 +16,7 @@ def start():
     try:
         docker.up()
         routes.setup()
-    except:
+    except Exception:
         stop()
         sys.exit(1)
 

@@ -10,12 +10,13 @@ def setup():
             result.check_returncode()
         except subprocess.CalledProcessError:
             print(result.cmd)
+            raise Exception
 
     local = parser.get_local_node()
     remotes = parser.get_remote_nodes()
 
     # Set up route to local customers
-    run(["route", "add", local['ext-prefix'], "via", consts.vpn_gateway_ip, "table", "10"])
+    run(["route", "add", local['ext-prefix'], "via", consts.VPN_GATEWAY_IP, "table", "10"])
     run(["rule", "add", "from", "all", "lookup", "10", "priority", "10"])
 
     # Set up GRE tunnels
@@ -36,7 +37,7 @@ def setup():
     gateway = local['outbound-gateway']
     # Allow other nodes to use this as outbound gateway
     if gateway == consts.GATEWAY_LOCAL:
-        run(["route", "add", "0.0.0.0/0", "via", consts.internet_gateway_ip, "table", "20"])
+        run(["route", "add", "0.0.0.0/0", "via", consts.INTERNET_GATEWAY_IP, "table", "20"])
         rule_number = 20
         for name in remotes:
             run(["rule", "add", "iif", f"sbas-{name}", "lookup", "20", "priority", str(rule_number)])
