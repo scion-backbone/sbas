@@ -5,10 +5,11 @@ Wants=scionlab.target
 
 [Service]
 Type=oneshot
-WorkingDirectory=/lib/sbas
 ExecStart=/usr/bin/sbas start
 ExecStop=/usr/bin/sbas stop
+WorkingDirectory=/lib/sbas
 RemainAfterExit=true
+Environment="PYTHONPATH=/lib/sbas:"
 
 [Install]
 WantedBy=multi-user.target

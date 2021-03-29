@@ -1,5 +1,1 @@
-gen/*
-!gen/.keep
-docker/peering/gen
-docker/peering/certs/*.key
-__pycache__
+build

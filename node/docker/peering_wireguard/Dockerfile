@@ -35,6 +35,8 @@ ENV IPTABLES_MASQ=0
 
 # Copy scripts to containers
 COPY scripts/install /scripts
+COPY scripts/setup-wireguard /scripts
+COPY scripts/setup-peering /scripts
 COPY scripts/run /scripts
 COPY scripts/genkeys /scripts
 RUN chmod 755 /scripts/*
@@ -44,5 +46,4 @@ RUN chmod 755 /scripts/*
 RUN mkdir /etc/wireguard-templates
 COPY conf/wg0.conf /etc/wireguard-templates/
 
-# Normal behavior is just to run wireguard with existing configs
 CMD ["run"]

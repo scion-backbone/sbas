@@ -1,10 +1,10 @@
 version: "3.5"
 
 services:
-  vpn_router_merged:
-    env_file: ../gen/docker.env
+  vpn_router:
+    env_file: .env
     build:
-      context: ./peering_wireguard_merged/
+      context: ./peering_wireguard/
       args:
       - SBAS_VPN_NET
       - SBAS_VPN_SERVER_IP

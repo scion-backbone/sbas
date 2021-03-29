@@ -1,14 +1,27 @@
 #!/usr/bin/env python3
 import argparse
+import sys
+
+from src.config import sig
+from src.config import containers
+from src.system import routes
+from src.system import docker
 
 def configure():
-    pass
+    sig.update()
+    containers.update()
+    docker.build()
 
 def start():
-    print("Starting SBAS")
+    try:
+        docker.up()
+        routes.setup()
+    except:
+        stop()
 
 def stop():
-    print("Stopping SBAS")
+    docker.down()
+    routes.teardown()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -16,7 +29,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.command == 'start':
+        # TODO: Detect if update is necessary (i.e., config is newer than last start)
         configure()
         start()
     elif args.command == 'stop':
         stop()
+    elif args.command == 'configure':
+        configure()
+    else:
+        print("Invalid command")
+        sys.exit(1)

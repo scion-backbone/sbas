@@ -3,11 +3,17 @@
 SCION=/etc/scion
 SYSTEMD=/lib/systemd/system
 
-install:
+install: build/nodename
 	mkdir -p /etc/sbas /var/sbas
-	rm -rf /lib/sbas; cp -r src /lib/sbas	
-	ln -fs /lib/sbas/main.py /usr/bin/sbas
+	cp build/nodes.json build/nodename /etc/sbas
+	rm -rf /lib/sbas; mkdir /lib/sbas
+	cp -r src docker /lib/sbas
+	ln -fs /lib/sbas/src/main.py /usr/bin/sbas
 	cp etc/sig.toml ${SCION}
 	cp etc/sbas.service ${SYSTEMD}/sbas.service
 	systemctl daemon-reload
 	systemctl enable --now sbas
+
+build/nodename:
+	@ echo "Please run ./configure first."
+	@ exit 1
