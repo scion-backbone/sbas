@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 import argparse
 import sys
-import os
-
-sys.path.append(os.path.abspath('..'))
 
 from src.config import sig
 from src.config import containers
@@ -13,7 +10,8 @@ from src.system import docker
 def configure():
     sig.update()
     containers.update()
-    # TODO: Build Docker container
+    docker_env = containers.get_env()
+    docker.build(docker_env)
 
 def start():
     docker_env = containers.get_env()
