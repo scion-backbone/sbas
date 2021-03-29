@@ -16,7 +16,7 @@ def get_local_id():
     global local
     if not local:
         with open(os.path.join(consts.ETC_DIR, consts.NODENAME_FILE), 'r') as f:
-            bytes.decode(f.read()).strip()
+            local = f.read().strip()
     return local
 
 def get_local_node():

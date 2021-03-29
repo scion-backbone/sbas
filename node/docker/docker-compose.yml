@@ -2,7 +2,7 @@ version: "3.5"
 
 services:
   vpn_router_merged:
-    env_file: ../gen/docker.env
+    # env_file: ../gen/docker.env
     build:
       context: ./peering_wireguard_merged/
       args:
