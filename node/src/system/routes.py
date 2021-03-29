@@ -51,7 +51,6 @@ def teardown():
     remotes = parser.get_remote_nodes()
 
     for name in remotes:
-        run(["route", "del", "dev", f"sbas-{name}"])
-        run(["tunnel", "del", "dev", f"sbas-{name}"])
+        run(["tunnel", "del", f"sbas-{name}"])
 
     run(["route", "flush", "table", "15"])
