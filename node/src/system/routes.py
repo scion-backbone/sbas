@@ -5,8 +5,11 @@ from src.config import consts
 
 def setup():
     def run(cmd):
-        result = subprocess.run(["ip"] + cmd)
-        result.check_returncode()
+        try:
+            result = subprocess.run(["ip"] + cmd)
+            result.check_returncode()
+        except subprocess.CalledProcessError:
+            print(result.cmd)
 
     local = parser.get_local_node()
     remotes = parser.get_remote_nodes()
