@@ -7,8 +7,9 @@ Wants=scionlab.target
 Type=oneshot
 ExecStart=/usr/bin/sbas start
 ExecStop=/usr/bin/sbas stop
+WorkingDirectory=/lib/sbas
 RemainAfterExit=true
-Environment="PYTHONPATH=/lib/sbas/src:"
+Environment="PYTHONPATH=/lib/sbas:"
 
 [Install]
 WantedBy=multi-user.target
