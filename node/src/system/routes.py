@@ -9,7 +9,7 @@ def setup():
             result = subprocess.run(["ip"] + cmd)
             result.check_returncode()
         except subprocess.CalledProcessError:
-            print(result.cmd)
+            pass
 
     local = parser.get_local_node()
     remotes = parser.get_remote_nodes()
