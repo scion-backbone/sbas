@@ -8,7 +8,7 @@ path = sys.argv[1]
 with open(path, 'r+') as f:
     cfg = json.load(f)
     cfg['sigs'] = {
-        f"sig-1": {
+        f"sig-1": { # TODO: Determine these addresses dynamically
             "ctrl_addr": "172.31.6.223:30256",
             "data_addr": "172.31.6.223:30056" 
         }
