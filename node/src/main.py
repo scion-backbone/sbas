@@ -4,7 +4,7 @@ import sys
 
 from src.config import sig
 from src.config import containers
-from src.system import tunnels
+from src.system import routes
 from src.system import docker
 
 def configure():
@@ -13,12 +13,15 @@ def configure():
     docker.build()
 
 def start():
-    docker.up()
-    tunnels.setup()
+    try:
+        docker.up()
+        routes.setup()
+    except:
+        stop()
 
 def stop():
     docker.down()
-    tunnels.teardown()
+    routes.teardown()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

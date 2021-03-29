@@ -8,7 +8,7 @@ Type=oneshot
 ExecStart=/usr/bin/sbas start
 ExecStop=/usr/bin/sbas stop
 RemainAfterExit=true
-Environment="PYTHONPATH=/lib/sbas/src"
+Environment="PYTHONPATH=/lib/sbas/src:"
 
 [Install]
 WantedBy=multi-user.target
