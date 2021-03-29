@@ -11,8 +11,6 @@ function check {
 }
 
 check scion-ip-gateway
-cp /etc/scion/topology.json build
-./etc/scionlab-config.py build/topology.json
 check docker
 check docker-compose
 
@@ -20,6 +18,9 @@ echo "Checking Python:"
 printf "version "; python3 --version
 
 mkdir -p build
+
+cp /etc/scion/topology.json build
+./etc/scionlab-config.py build/topology.json
 
 echo -n "Enter node identifier: "
 read node
