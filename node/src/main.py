@@ -18,6 +18,7 @@ def start():
         routes.setup()
     except:
         stop()
+        sys.exit(1)
 
 def stop():
     docker.down()
