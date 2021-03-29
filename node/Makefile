@@ -7,13 +7,11 @@ install: build/nodename
 	mkdir -p /etc/sbas /var/sbas
 	cp build/nodes.json build/nodename /etc/sbas
 	rm -rf /lib/sbas; mkdir /lib/sbas
-	cp -r src /lib/sbas/src	
-	cp -r docker /lib/sbas/docker	
+	cp -r src docker /lib/sbas
 	ln -fs /lib/sbas/src/main.py /usr/bin/sbas
 	cp etc/sig.toml ${SCION}
 	cp etc/sbas.service ${SYSTEMD}/sbas.service
 	systemctl daemon-reload
-	sbas configure
 	systemctl enable --now sbas
 
 build/nodename:
