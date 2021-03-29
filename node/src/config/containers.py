@@ -23,7 +23,7 @@ def get_env():
     return env
 
 container_dir = os.path.join(consts.DOCKER_DIR, 'peering_wireguard')
-gen_path = os.path.join(container_dir, 'scripts', 'setup-peering.sh')
+gen_path = os.path.join(container_dir, 'scripts', 'setup-peering')
 
 def _update_routes():
     local = parser.get_local_node()
