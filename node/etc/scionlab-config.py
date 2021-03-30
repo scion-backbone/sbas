@@ -7,10 +7,12 @@ path = sys.argv[1]
 
 with open(path, 'r+') as f:
     cfg = json.load(f)
+    ctrl_addr = cfg['control_service']['cs-1']['addr']
+    ctrl_ip = ctrl_addr.split(':')[0]
     cfg['sigs'] = {
-        f"sig-1": { # TODO: Determine these addresses dynamically
-            "ctrl_addr": "172.31.6.223:30256",
-            "data_addr": "172.31.6.223:30056" 
+        f"sig-1": {
+            "ctrl_addr": f"{ctrl_ip}:30256",
+            "data_addr": f"{ctrl_ip}:30056" 
         }
     }
     f.seek(0)
