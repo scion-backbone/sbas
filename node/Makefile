@@ -12,7 +12,9 @@ install: build/nodename
 	cp etc/sig.toml ${SCION}
 	cp etc/sbas.service ${SYSTEMD}/sbas.service
 	systemctl daemon-reload
-	systemctl enable --now sbas
+	systemctl enable sbas
+	systemctl stop sbas
+	systemctl start sbas
 
 build/nodename:
 	@ echo "Please run ./configure first."

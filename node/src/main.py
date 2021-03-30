@@ -8,12 +8,15 @@ from src.system import routes
 from src.system import docker
 
 def configure():
+    # Re-generate the assets that depend on SBAS topology / configuration
     sig.update()
     containers.update()
     docker.build()
 
 def start():
+    # Start the Docker container
     docker.up()
+    # Configure system routes
     routes.setup()
 
 def stop():

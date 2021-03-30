@@ -2,6 +2,8 @@ import os
 import json
 from . import consts
 
+# Provides an interface to the SBAS configuration at {consts.ETC_DIR}.
+
 nodes = None
 local = None
 

@@ -7,8 +7,8 @@ path = sys.argv[1]
 
 with open(path, 'r+') as f:
     cfg = json.load(f)
-    ctrl_addr = cfg['control_service']['cs-1']['addr']
-    ctrl_ip = ctrl_addr.split(':')[0]
+    ctrl_addr = cfg['control_service']['cs-1']['addr'] # Determine control address
+    ctrl_ip = ctrl_addr.split(':')[0] # Strip port
     cfg['sigs'] = {
         f"sig-1": {
             "ctrl_addr": f"{ctrl_ip}:30256",

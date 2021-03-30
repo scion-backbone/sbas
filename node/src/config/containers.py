@@ -6,7 +6,12 @@ from . import consts
 
 DOCKER_ENV_FILE = '.env'
 
+# These functions generate assets used by the Docker containers in SBAS that
+# depend on the SBAS topology
+
 def _update_env():
+    # Creates the .env file that Docker containers use in the build and run
+    # process
     local = parser.get_local_node()
     
     ext_prefix = local['ext-prefix']
@@ -27,6 +32,7 @@ def _update_env():
             f.write(f'{k}={v}\n')
 
 def _update_routes():
+    # Creates the routes used by the BIRD module in the docker container
     local = parser.get_local_node()
     remotes = parser.get_remote_nodes()
 

@@ -1,6 +1,8 @@
 import json
 from src.config import parser
 
+# Generates the SIG configuration file that depends on the SBAS topology.
+
 RULE_FILE = '/etc/scion/sig.json'
 
 def _update_rules():

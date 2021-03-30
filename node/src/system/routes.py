@@ -3,12 +3,15 @@ import subprocess
 from src.config import parser
 from src.config import consts
 
+# TODO: Summarize routing tables
+
 def setup():
     def run(cmd):
         try:
             result = subprocess.run(["ip"] + cmd)
             result.check_returncode()
         except subprocess.CalledProcessError:
+            # TODO: Add error handling
             pass
 
     local = parser.get_local_node()
@@ -21,7 +24,7 @@ def setup():
     run(["route", "add", local['ext-prefix'], "via", consts.VPN_GATEWAY_IP, "table", "10"])
     run(["rule", "add", "from", "all", "lookup", "10", "priority", "10"])
 
-    # Set up GRE tunnels
+    # Set up GRE tunnels to remote SBAS nodes
     local_sig = local['int-sig-ip']
     for name, node in remotes.items():
         dev = f"sbas-{name}"
