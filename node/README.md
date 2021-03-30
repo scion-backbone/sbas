@@ -14,7 +14,7 @@ Instead, the `systemd` service `sbas` will be used.
 
 Run `sudo systemctl status sbas` to check the status of the service and `sudo journalctl -u sbas` to check its logs.
 
-## Development
+## Development
 
 To apply changes, it is sufficient to re-run `sudo make install`.
 The `systemd` service will be restarted automatically if it was previously running.
