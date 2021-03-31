@@ -22,9 +22,11 @@ mkdir -p build
 cp /etc/scion/topology.json build
 ./etc/scionlab-config.py build/topology.json
 
-echo -n "Enter node identifier: "
-read node
-echo $node > build/nodename
+if [ -z "$NODE" ]; then
+    echo -n "Enter node identifier: "
+    read NODE
+fi
+echo $NODE > build/nodename
 
 echo "Downloading topology configuration..."
 wget https://raw.githubusercontent.com/scion-backbone/config/master/nodes.json -O build/nodes.json
