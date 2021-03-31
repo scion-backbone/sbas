@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "Checking dependencies:"
 
-function check $1 {
+function check {
     echo -n "$1..."
     if ! command -v $2 >/dev/null 2>&1; then
         echo " not installed!"
@@ -23,5 +23,4 @@ if [ -z "$CLIENT" ]; then
 fi
 
 echo "Downloading topology configuration..."
-wget https://raw.githubusercontent.com/scion-backbone/config/master/nodes.json -O build/nodes.json
-wget https://raw.githubusercontent.com/scion-backbone/config/master/gen/client-$CLIENT.json -O build/customer.json
+wget https://raw.githubusercontent.com/scion-backbone/config/master/gen/client-$CLIENT.json -O build/client.json
