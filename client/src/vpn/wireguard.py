@@ -26,7 +26,7 @@ def _gen_config(provider):
         "PersistentKeepalive = 25"
     ]
 
-    path = os.path.join(WIREGUARD_CFG_DIR, f"wg-{name}.conf")
+    path = os.path.join(WIREGUARD_CFG_DIR, f"wg0-{name}.conf")
     with open(path, 'w') as f:
         for l in lines:
             f.write(l + '\n')
