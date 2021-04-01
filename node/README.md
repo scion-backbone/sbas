@@ -21,8 +21,10 @@ The `systemd` service will be restarted automatically if it was previously runni
 
 ## Components
 
-- Docker container
+- Docker container: inside a single container, we currently run the gateways to
+  customers and the Internet.
   - WireGuard
   - BIRD router
-- SCION-IP gateway
-- Routing logic
+- SCION-IP gateway: installed via the normal SCION packages, runs as a `systemd`
+  service (which is a dependency of the SBAS service)
+- Routing logic: runs directly on the SCIONLab machine OS
