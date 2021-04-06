@@ -17,7 +17,12 @@ def start():
     # Start the Docker container
     docker.up()
     # Configure system routes
-    routes.setup()
+    try:
+        routes.setup()
+    except routes.RoutingError:
+        print("Error during route setup")
+        stop()
+        sys.exit(1)
 
 def stop():
     docker.down()
