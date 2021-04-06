@@ -12,9 +12,10 @@ table_internet = 20
 priority_internet = 20 # lowest priority
 
 # NOTE: The SCION-IP gateway will also set up routes (default table)
-internal_prefix_len = 24
-
 # -> check the documentation for a complete picture!
+
+# Length of internal prefix space (e.g., "172.22.1.1/24")
+internal_prefix_len = 24
 
 class RoutingError(Exception):
     pass
@@ -23,7 +24,7 @@ def _run(iproute_cmd):
     try:
         result = subprocess.run(["ip"] + iproute_cmd)
         result.check_returncode()
-    except subprocess.CalledProcessError as e:
+    except subprocess.CalledProcessError:
         raise RoutingError
 
 def setup():
@@ -92,7 +93,7 @@ def setup():
         # Route all traffic from local customers to remote gateway
         _run([
             "route", "add",
-            "0.0.0.0/0", "dev", "sbas-{gateway}",
+            "0.0.0.0/0", "dev", f"sbas-{gateway}",
             "table", str(table_internet)
         ])
 
