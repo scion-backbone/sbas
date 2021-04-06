@@ -26,3 +26,21 @@ The `systemd` service will be restarted automatically if it was previously runni
   - BIRD router
 - SCION-IP gateway
 - Routing logic
+
+## Debugging
+
+Output from the main thread is captured by `systemd` and can be viewed using `journalctl`:
+```
+sudo journalctl -u sbas
+```
+
+The SCION-IP gateway runs as its own `systemd` service that also collects logs:
+```
+sudo journalctl -u scion-ip-gateway
+```
+
+It is often useful to access the Docker container for further debugging.
+To run a shell on it, run this command:
+```
+sudo docker exec -it docker_vpn_router_1 bash
+```
