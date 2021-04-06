@@ -4,6 +4,7 @@ import subprocess
 from src.config import parser
 
 WIREGUARD_CFG_DIR = '/etc/wireguard'
+WG_PORT = 55555
 
 cfg = parser.get_config()
 providers = cfg['providers']
@@ -22,11 +23,11 @@ def _gen_config(provider):
         "\n[Peer]",
         f"PublicKey = {provider['vpn-key']}",
         f"AllowedIPs = {', '.join(provider['out-prefixes'])}",
-        f"Endpoint = {provider['public-ip']}",
+        f"Endpoint = {provider['public-ip']}:{WG_PORT}",
         "PersistentKeepalive = 25"
     ]
 
-    path = os.path.join(WIREGUARD_CFG_DIR, f"wg-{name}.conf")
+    path = os.path.join(WIREGUARD_CFG_DIR, f"wg0-{name}.conf")
     with open(path, 'w') as f:
         for l in lines:
             f.write(l + '\n')
