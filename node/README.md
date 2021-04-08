@@ -28,3 +28,21 @@ The `systemd` service will be restarted automatically if it was previously runni
 - SCION-IP gateway: installed via the normal SCION packages, runs as a `systemd`
   service (which is a dependency of the SBAS service)
 - Routing logic: runs directly on the SCIONLab machine OS
+
+## Debugging
+
+Output from the main thread is captured by `systemd` and can be viewed using `journalctl`:
+```
+sudo journalctl -u sbas
+```
+
+The SCION-IP gateway runs as its own `systemd` service that also collects logs:
+```
+sudo journalctl -u scion-ip-gateway
+```
+
+It is often useful to access the Docker container for further debugging.
+To run a shell on it, run this command:
+```
+sudo docker exec -it docker_vpn_router_1 bash
+```
