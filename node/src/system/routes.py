@@ -25,7 +25,7 @@ def _run(iproute_cmd):
         result = subprocess.run(["ip"] + iproute_cmd)
         result.check_returncode()
     except subprocess.CalledProcessError:
-        print(f"Command threw error: {result.args}")
+        print(f"Command failed: {' '.join(result.args)}")
         raise RoutingError
 
 def setup():

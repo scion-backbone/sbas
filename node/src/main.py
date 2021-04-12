@@ -15,9 +15,11 @@ def configure():
 
 def start():
     # Start the Docker container
+    print("Starting Docker container...")
     docker.up()
     # Configure system routes
     try:
+        print("Setting up routes...")
         routes.setup()
     except routes.RoutingError:
         print("Error during route setup")
