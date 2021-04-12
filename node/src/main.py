@@ -22,13 +22,16 @@ def start():
         print("Setting up routes...")
         routes.setup()
     except routes.RoutingError:
-        print("Error during route setup")
+        print("Error during route setup. Cleaning up...")
         stop()
         sys.exit(1)
 
 def stop():
+    print("Stopping Docker container...")
     docker.down()
+    print("Removing routes...")
     routes.teardown()
+    print("done.")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
