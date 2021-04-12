@@ -20,13 +20,13 @@ internal_prefix_len = 24
 class RoutingError(Exception):
     pass
 
-def _run(iproute_cmd):
+def _run(iproute_cmd, safe=True):
     try:
         subprocess.run(
             ["ip"] + iproute_cmd,
             stdout=subprocess.PIPE, # capture stdout
             stderr=subprocess.PIPE, # capture stderr
-            check=True # raise exception on failure
+            check=safe # raise exception on failure
         )
     except subprocess.CalledProcessError as e:
         print(f"Command failed: {' '.join(e.cmd)} -> \"{str(e.output)}\"")
@@ -135,6 +135,6 @@ def teardown():
         # Delete rules that belong to this table
         try:
             while True: # need to call it multiple times, only one is deleted at a time
-                _run(["rule", "del", "lookup", str(table)])
+                _run(["rule", "del", "lookup", str(table)], safe=False)
         except:
             pass
