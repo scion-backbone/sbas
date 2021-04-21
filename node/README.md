@@ -17,6 +17,7 @@ Run `sudo systemctl status sbas` to check the status of the service and `sudo jo
 ## Development
 
 To apply changes, it is sufficient to re-run `sudo make install`.
+On topology changes (`config`), the new configuration also needs to be fetched, e.g., by running `./configure` first.
 The `systemd` service will be restarted automatically if it was previously running.
 
 ## Components
