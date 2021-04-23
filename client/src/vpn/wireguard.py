@@ -19,7 +19,6 @@ def _gen_config(provider):
         f"PrivateKey = {private_key}",
         f"Address = {provider['local']}/32",
         "ListenPort = 55556",
-        "DNS = 1.1.1.1, 8.8.8.8",
         "\n[Peer]",
         f"PublicKey = {provider['vpn-key']}",
         f"AllowedIPs = {', '.join(provider['out-prefixes'])}",
