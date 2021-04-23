@@ -38,10 +38,10 @@ def setup():
     local = parser.get_local_node()
     remotes = parser.get_remote_nodes()
 
-    # 1) Set up internal SIG address
+    # 1) Set up internal SBAS address
     #    - required for tunnel endpoints
     int_addr = f"{local['int-sig-ip']}/{internal_prefix_len}"
-    _run(["addr", "add", int_addr, "dev", "sig"])
+    _run(["addr", "add", int_addr, "dev", "lo"])
 
     # 2) Set up delivery to local customers across VPN tunnel
     #    - use secure prefix
@@ -119,7 +119,7 @@ def teardown():
     # Remove addresses
     int_addr = f"{local['int-sig-ip']}/{internal_prefix_len}"
     try:
-        _run(["addr", "del", int_addr, "dev", "sig"])
+        _run(["addr", "del", int_addr, "dev", "lo"])
     except:
         pass
 
