@@ -38,8 +38,8 @@ def configure():
 
 def up():
     for provider in providers:
-        subprocess.run(["wg-quick", "up", f"wg0-{provider['id']}"])
+        subprocess.run(["wg-quick", "up", f"wg0-{provider['id']}"], check=True)
 
 def down():
     for provider in providers:
-        subprocess.run(["wg-quick", "down", f"wg0-{provider['id']}"])
+        subprocess.run(["wg-quick", "down", f"wg0-{provider['id']}"], check=True)
