@@ -4,6 +4,7 @@ SCION=/etc/scion
 SYSTEMD=/lib/systemd/system
 
 install: build/client.json
+	systemctl stop sbas || true
 	mkdir -p /etc/sbas
 	cp build/client.json /etc/sbas
 	rm -rf /lib/sbas; mkdir /lib/sbas
@@ -12,7 +13,6 @@ install: build/client.json
 	cp etc/sbas.service ${SYSTEMD}/sbas.service
 	systemctl daemon-reload
 	systemctl enable sbas
-	systemctl stop sbas
 	systemctl start sbas
 
 build/client.json:

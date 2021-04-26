@@ -4,6 +4,7 @@ SCION=/etc/scion
 SYSTEMD=/lib/systemd/system
 
 install: build/nodename
+	systemctl stop sbas || true
 	mkdir -p /etc/sbas /var/sbas
 	cp build/nodes.json build/nodename build/topology.json /etc/sbas
 	rm -rf /lib/sbas; mkdir /lib/sbas
@@ -13,7 +14,6 @@ install: build/nodename
 	cp etc/sbas.service ${SYSTEMD}/sbas.service
 	systemctl daemon-reload
 	systemctl enable sbas
-	systemctl stop sbas
 	systemctl start sbas
 
 build/nodename:
