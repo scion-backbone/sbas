@@ -45,17 +45,17 @@ def setup():
 
     # 2) Set up delivery to local customers across VPN tunnel
     #    - use secure prefix
-    _run([
-        "route", "add", local['ext-prefix'],
-        "via", consts.VPN_GATEWAY_IP,
-        "table", str(table_secure)
-    ])
-    _run([
-        "rule", "add",
-        "from", "all",
-        "lookup", str(table_secure),
-        "priority", str(priority_secure)
-    ])
+    #_run([
+    #    "route", "add", local['ext-prefix'],
+    #    "via", consts.VPN_GATEWAY_IP,
+    #    "table", str(table_secure)
+    #])
+    #_run([
+    #    "rule", "add",
+    #    "from", "all",
+    #    "lookup", str(table_secure),
+    #    "priority", str(priority_secure)
+    #])
 
     # 3) Set up GRE tunnels to remote SBAS nodes
     #    - create a tunnel device "sbas-{node}" for each remote node
