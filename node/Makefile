@@ -7,6 +7,7 @@ install: build/nodename
 	systemctl stop sbas || true
 	mkdir -p /etc/sbas /var/sbas
 	cp build/nodes.json build/nodename build/topology.json /etc/sbas
+	cp build/topology.json /etc/scion
 	rm -rf /lib/sbas; mkdir /lib/sbas
 	cp -r src docker /lib/sbas
 	ln -fs /lib/sbas/src/main.py /usr/bin/sbas
