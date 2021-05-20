@@ -35,30 +35,49 @@ def get_available_scion_paths(scion_destination):
     return available_paths_list
 
 
+scion_dst = "16-ffaa:0:1009" #frankfurt scion address
+type_of destination = "scion" #it can be "scion", "opt_in", "out_out"
+
 
 #Step 1. Find type of destination
 # a. SCION node
 # b. Opt-In Customer
 # c. Legacy AS
 
-scion_dst = "16-ffaa:0:1009" #frankfurt scion address
+if type_of_destination == "scion":
+    #If SCION node:
+    #1. Get list of available paths to scion destination
+    paths = get_available_scion_paths(scion_dst)
+    #2. Relate paths to metric database
+    
+    #3. Sort paths and pick top 1
 
+elif type_of_destination == "opt_in":
+    #If Opt-In Customer
+    #1. Get PoPs connected to customer
+    #I will have to get the routes from the mrt file and see potential routes
+    #2. Run subprocess scion showpaths {PoP address} for each PoP
+    for egress_pop in potential_pops:
+        paths = get_available_scion_paths(egress_pop)
 
-#If SCION node:
-#1. Get list of available paths to scion destination
-paths = get_available_scion_paths(scion_dst)
-#2. Relate paths to metric database
-#3. Sort paths and pick top 1
+    #3. Save all paths in an array
+    #4. Relate SCION segments to metric database
+    #5. Relate customer tunnel to metric database (in case the opt-in customer is connected to more than one PoPs)
+    #6. Combine the metric data for both path sections (within-SCION + VPN tunnel)
+    #7. Sort paths and pick top 1
 
-#If Opt-In Customer
-#1. Get PoPs connected to customer
-#2. Run subprocess scion showpaths {PoP address} for each PoP
-#3. Save all paths in an array
-#4. Relate SCION segments to metric database
-#5. Relate customer tunnel to metric database
-#6. Add metrics of the different path sections together (within SCION + VPN tunnel)
-#7. Sort paths and pick top 1
+elif type_of_destination == "opt_out":
+    #If Legacy AS
+    #1. Get PoPs that have paths towards the destination from mrt file?
+    #2. Get list of scion paths to potential egress PoPs
+    for egress_pop in potential_pops:
+        paths = get_available_scion_paths(egress_pop)
+    #3. Relate SCION segments to metric database
+    #4. Get the AS-level path that is outside SCION (connecting potential egress PoPs to destination)
+    #5. Relate the external path segments to metric database
+    #6. Combine the metric data for both path sections (within-SCION + external BGP path)
+    #7. Sort paths and pick top 1
+    
 
-#If Legacy AS
-#1. 
-
+else:
+    print("Wrong type of destination was provided (" + type_of_destination + ").")
