@@ -50,12 +50,6 @@ def setup():
     #    "via", consts.VPN_GATEWAY_IP,
     #    "table", str(table_secure)
     #])
-    #_run([
-    #    "rule", "add",
-    #    "from", "all",
-    #    "lookup", str(table_secure),
-    #    "priority", str(priority_secure)
-    #])
 
     # 3) Set up GRE tunnels to remote SBAS nodes
     #    - create a tunnel device "sbas-{node}" for each remote node
@@ -104,6 +98,12 @@ def setup():
             "table", str(table_internet)
         ])
 
+    _run([
+        "rule", "add",
+        "from", "all",
+        "lookup", str(table_secure),
+        "priority", str(priority_secure)
+    ])
     # Default rule for all traffic from local customers to Internet gateway
     _run([
         "rule", "add",
