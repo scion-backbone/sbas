@@ -7,7 +7,7 @@ install: build/nodename
 	systemctl stop sbas || true
 	systemctl stop wg-quick@wg0 || true
 	mkdir -p /etc/sbas /var/sbas
-	cp build/nodes.json build/nodename build/topology.json /etc/sbas
+	cp build/nodes.json build/clients.json build/nodename build/topology.json /etc/sbas
 	cp build/topology.json /etc/scion
 	rm -rf /lib/sbas; mkdir /lib/sbas
 	cp -r src docker /lib/sbas

@@ -6,15 +6,15 @@ from src.config import sig
 from src.config import containers
 from src.config import wg
 from src.system import routes
-from src.system import docker
-#from src.config import bird
+#from src.system import docker
+from src.config import bird
 
 def configure():
     # Re-generate the assets that depend on SBAS topology / configuration
     sig.update()
-    containers.update()
+    #containers.update()
     wg.setup()
-    #bird.setup()
+    bird.setup()
 
 
 def start():

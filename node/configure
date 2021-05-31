@@ -12,6 +12,7 @@ function check {
 
 check scion-ip-gateway
 check wg-quick
+check bird
 
 echo -n "Checking Python:"
 MIN_PYTHON_MAJOR=3
@@ -37,3 +38,4 @@ echo $NODE > build/nodename
 
 echo "Downloading topology configuration..."
 wget https://raw.githubusercontent.com/scion-backbone/config/master/nodes.json -O build/nodes.json
+wget https://raw.githubusercontent.com/scion-backbone/config/master/clients.json -O build/clients.json
