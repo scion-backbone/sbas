@@ -25,8 +25,8 @@ def setup():
         remote_asn = consts.SBAS_ASN
         ibgp_session = f'''
         protocol bgp {remote_nodename}01 {{
-            local as {str(local_asn)};
-            neighbor {node["ext-vpn-ip"]} as {str(remote_asn)};
+            local as {local_asn};
+            neighbor {node["ext-vpn-ip"]} as {remote_asn};
             ipv4 {{
                 table bgpannounce;
                 import all;
@@ -44,26 +44,29 @@ def setup():
     for client in connected_clients:
         client_info = all_clients.get(client)
         if client_info: 
-            local_asn = const.SBAS_ASN
-            client_asn = client["as_number"]
+            local_asn = consts.SBAS_ASN
+            client_asn = client_info["as_number"]
+            client_providers = client_info["providers"]
 
-            ibgp_session = f'''
-            protocol bgp {client_nodename}01 {{
-                local as {str(local_asn)};
-                neighbor {provider["local"]} as {str(client_asn)};
-                ipv4 {{
-                    table bgpannounce;
-                    import all;
-                    export filter {{
-                        if (!safe_export()) then {{reject;}}
-                            accept;
-                    }};
-                }};
-            }}
+            for provider in client_providers:
+                if provider["id"] == parser.get_local_id():
+                    ebgp_session = f'''
+                    protocol bgp {client}01 {{
+                        local as {local_asn};
+                        neighbor {provider["local"]} as {client_asn};
+                        ipv4 {{
+                            table bgpannounce;
+                            import all;
+                            export filter {{
+                                if (!safe_export()) then {{reject;}}
+                                    accept;
+                            }};
+                        }};
+                    }}
 
-            '''
-            template_text = template_text + textwrap.dedent(ebgp_session)
-        
+                    '''
+                    template_text = template_text + textwrap.dedent(ebgp_session)
+            
     """
     for name, node in all_clients.items():
         client_providers = node["providers"]
@@ -94,7 +97,8 @@ def setup():
     """
 
     # Write bird configuration file
-    bird_config = open("/home/scionlab/sbas/node/src/config/bird.conf", "w")
+    bird_config = open("/etc/bird/bird.conf", "w")
+    #bird_config = open("/home/scionlab/sbas/node/src/config/bird.conf", "w")
     bird_config.write(template_text)
     bird_config.close()
     

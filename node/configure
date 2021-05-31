@@ -37,5 +37,7 @@ fi
 echo $NODE > build/nodename
 
 echo "Downloading topology configuration..."
-wget https://raw.githubusercontent.com/scion-backbone/config/master/nodes.json -O build/nodes.json
-wget https://raw.githubusercontent.com/scion-backbone/config/master/clients.json -O build/clients.json
+#wget https://raw.githubusercontent.com/scion-backbone/config/master/nodes.json -O build/nodes.json
+#wget https://raw.githubusercontent.com/scion-backbone/config/master/clients.json -O build/clients.json
+wget https://raw.githubusercontent.com/scion-backbone/config/kyveli_wip/nodes.json -O build/nodes.json
+wget https://raw.githubusercontent.com/scion-backbone/config/kyveli_wip/clients.json -O build/clients.json
