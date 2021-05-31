@@ -6,6 +6,7 @@ from . import consts
 
 nodes = None
 local = None
+clients = None
 
 def get_nodes():
     global nodes
@@ -29,3 +30,10 @@ def get_remote_nodes():
     remotes = nodes.copy()
     remotes.pop(get_local_id())
     return remotes
+
+def get_clients():
+    global clients
+    if not clients:
+        with open(os.path.join(consts.ETC_DIR, consts.CLIENTS_FILE), 'r') as c:
+            clients = json.load(c)
+    return clients

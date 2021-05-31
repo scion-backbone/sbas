@@ -43,21 +43,7 @@ def setup():
     int_addr = f"{local['int-sig-ip']}/{internal_prefix_len}"
     _run(["addr", "add", int_addr, "dev", "lo"])
 
-    # 2) Set up delivery to local customers across VPN tunnel
-    #    - use secure prefix
-    _run([
-        "route", "add", local['ext-prefix'],
-        "via", consts.VPN_GATEWAY_IP,
-        "table", str(table_secure)
-    ])
-    _run([
-        "rule", "add",
-        "from", "all",
-        "lookup", str(table_secure),
-        "priority", str(priority_secure)
-    ])
-
-    # 3) Set up GRE tunnels to remote SBAS nodes
+    # 2) Set up GRE tunnels to remote SBAS nodes
     #    - create a tunnel device "sbas-{node}" for each remote node
     #    - use internal SIG addresses as endpoints
     #    - route remote secure prefixes over the tunnel
@@ -78,7 +64,7 @@ def setup():
             "table", str(table_secure)
         ])
 
-    # 4) Set up gateway for outbound Internet traffic
+    # 3) Set up gateway for outbound Internet traffic
     #    - either deliver through local Internet gateway, or
     #    - route everything to a remote SBAS node that has an Internet gateway
     gateway = local['outbound-gateway']
@@ -104,6 +90,12 @@ def setup():
             "table", str(table_internet)
         ])
 
+    _run([
+        "rule", "add",
+        "from", "all",
+        "lookup", str(table_secure),
+        "priority", str(priority_secure)
+    ])
     # Default rule for all traffic from local customers to Internet gateway
     _run([
         "rule", "add",

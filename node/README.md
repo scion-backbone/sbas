@@ -6,6 +6,7 @@
 Check the `config` repository for ssh access configuration.
 
 1. `./configure` to check for dependencies and create configuration files
+   (on Debian-based systems, dependencies can be created automatically using `./deps`)
 2. `sudo make install` to install
 
 The installation script creates configuration at `/etc/sbas` and stores all static assets at `/lib/sbas`.

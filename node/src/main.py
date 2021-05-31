@@ -4,19 +4,20 @@ import sys
 
 from src.config import sig
 from src.config import containers
+from src.config import wg
 from src.system import routes
-from src.system import docker
+#from src.system import docker
+from src.config import bird
 
 def configure():
     # Re-generate the assets that depend on SBAS topology / configuration
     sig.update()
-    containers.update()
-    docker.build()
+    #containers.update()
+    wg.setup()
+    bird.setup()
+
 
 def start():
-    # Start the Docker container
-    print("Starting Docker container...")
-    docker.up()
     # Configure system routes
     try:
         print("Setting up routes...")
@@ -25,10 +26,8 @@ def start():
         print("Error during route setup. Cleaning up...")
         stop()
         sys.exit(1)
-
+    
 def stop():
-    print("Stopping Docker container...")
-    docker.down()
     print("Removing routes...")
     routes.teardown()
     print("done.")
