@@ -1,0 +1,62 @@
+{
+    "zurich": {
+        "public-ip": "129.132.55.216",
+        "ssh-user": "wannerjo",
+        "providers": [
+            {
+                "id": "frankfurt",
+                "local": "66.180.190.141",
+                "out-prefixes": ["66.180.190.0/23"]
+            }
+        ],
+        "as_number": "65427"
+    },
+    "california": {
+        "public-ip": "54.219.196.249",
+        "ssh-user": "ubuntu",
+        "providers": [
+            {
+                "id": "oregon",
+                "local": "66.180.190.11",
+                "out-prefixes": ["66.180.190.0/23"]
+            }
+        ],
+        "as_number": "65428"
+    },
+    "osaka": {
+        "public-ip": "13.208.244.144",
+        "ssh-user": "ubuntu",
+        "providers": [
+            {
+                "id": "tokyo",
+                "local": "66.180.191.141",
+                "out-prefixes": ["66.180.190.0/23"]
+            }
+        ],
+        "as_number": "65429"
+    },
+    "isi": {
+        "public-ip": "23.240.98.171",
+        "ssh-user": "henry",
+        "providers": [
+            {
+                "id": "oregon",
+                "local": "66.180.190.22",
+                "out-prefixes": ["66.180.190.0/23"]
+            }
+        ], 
+        "as_number": "65430"
+    },
+    "grnet": {
+        "public-ip": "23.240.98.171",
+        "ssh-user": "henry",
+        "providers": [
+            {
+                "id": "frankfurt",
+                "local": "66.180.190.152",
+                "out-prefixes": ["66.180.190.0/23"]
+            }
+        ],
+        "as_number": "65431"
+    }
+}

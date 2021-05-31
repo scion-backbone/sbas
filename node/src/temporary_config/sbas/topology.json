@@ -1,0 +1,40 @@
+{
+  "attributes": [],
+  "border_routers": {
+    "br-1": {
+      "ctrl_addr": "172.31.20.242:30201",
+      "interfaces": {
+        "1": {
+          "bandwidth": 1000,
+          "isd_as": "16-ffaa:0:1007",
+          "link_to": "PARENT",
+          "mtu": 1472,
+          "underlay": {
+            "bind": "172.31.20.242",
+            "public": "54.254.43.169:50000",
+            "remote": "122.248.221.20:50000"
+          }
+        }
+      },
+      "internal_addr": "172.31.20.242:30001"
+    }
+  },
+  "control_service": {
+    "cs-1": {
+      "addr": "172.31.20.242:30254"
+    }
+  },
+  "discovery_service": {
+    "ds-1": {
+      "addr": "172.31.20.242:30254"
+    }
+  },
+  "sigs": {
+    "sig-1": {
+      "ctrl_addr": "172.31.20.242:30256",
+      "data_addr": "172.31.20.242:30056"
+    }
+  },
+  "isd_as": "16-ffaa:0:100a",
+  "mtu": 1472
+}
