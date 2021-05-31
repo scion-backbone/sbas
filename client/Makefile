@@ -4,6 +4,7 @@ SCION=/etc/scion
 SYSTEMD=/lib/systemd/system
 
 install: build/client.json
+	systemctl stop bird || true
 	systemctl stop sbas || true
 	mkdir -p /etc/sbas
 	cp build/client.json /etc/sbas
@@ -14,6 +15,7 @@ install: build/client.json
 	systemctl daemon-reload
 	systemctl enable sbas
 	systemctl start sbas
+	systemctl start bird
 
 build/client.json:
 	@ echo "Please run ./configure first."

@@ -23,4 +23,6 @@ if [ -z "$CLIENT" ]; then
 fi
 
 echo "Downloading topology configuration..."
-wget https://raw.githubusercontent.com/scion-backbone/config/master/gen/client-$CLIENT.json -O build/client.json
+wget https://raw.githubusercontent.com/scion-backbone/config/kyveli_wip/gen/client-osaka.json -O build/client.json
+#wget https://raw.githubusercontent.com/scion-backbone/config/master/gen/client-$CLIENT.json -O build/client.json
+wget https://raw.githubusercontent.com/scion-backbone/config/kyveli_wip/nodes.json -O build/nodes.json
