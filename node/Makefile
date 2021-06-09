@@ -7,9 +7,9 @@ install: build/nodename
 	systemctl stop bird || true
 	systemctl stop sbas || true
 	systemctl stop wg-quick@wg0 || true
-	mkdir /tmp/bird_log_mrt || true
-	chmod 777 /tmp/bird_log_mrt
 	mkdir -p /etc/sbas /var/sbas
+	mkdir -p /var/sbas/bird_log_mrt
+	chmod 777 /var/sbas/bird_log_mrt
 	cp build/nodes.json build/clients.json build/nodename build/topology.json /etc/sbas
 	cp build/topology.json /etc/scion
 	rm -rf /lib/sbas; mkdir /lib/sbas

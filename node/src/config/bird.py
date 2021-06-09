@@ -21,8 +21,8 @@ def setup():
     # Define iBGP sessions with other PoPs
     for name, node in remote_pops.items(): 
         remote_nodename = name
-        local_asn = consts.SBAS_ASN 
-        remote_asn = consts.SBAS_ASN
+        local_asn = str(consts.SBAS_ASN)
+        remote_asn = str(consts.SBAS_ASN)
         ibgp_session = f'''
         protocol bgp {remote_nodename}01 {{
             local as {local_asn};
@@ -44,8 +44,8 @@ def setup():
     for client in connected_clients:
         client_info = all_clients.get(client)
         if client_info: 
-            local_asn = consts.SBAS_ASN
-            client_asn = client_info["as_number"]
+            local_asn = str(consts.SBAS_ASN)
+            client_asn = str(client_info["as_number"])
             client_providers = client_info["providers"]
 
             for provider in client_providers:
@@ -74,7 +74,7 @@ def setup():
         for provider in client_providers:
             if provider["id"] == parser.get_local_id():
                 client_nodename = name
-                local_asn = consts.SBAS_ASN
+                local_asn = str(consts.SBAS_ASN)
                 client_asn = node["as_number"] #65430 #must be read from updated client file
                 ibgp_session = f'''
                 protocol bgp {client_nodename}01 {{
