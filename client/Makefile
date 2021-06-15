@@ -7,7 +7,7 @@ install: build/client.json
 	systemctl stop bird || true
 	systemctl stop sbas || true
 	mkdir -p /etc/sbas
-	cp build/client.json /etc/sbas
+	cp build/client.json build/nodes.json /etc/sbas
 	rm -rf /lib/sbas; mkdir /lib/sbas
 	cp -r src /lib/sbas
 	ln -fs /lib/sbas/src/main.py /usr/bin/sbas

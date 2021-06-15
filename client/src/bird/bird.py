@@ -18,10 +18,9 @@ def setup():
     #Configure eBGP session with each provider    
     for provider in providers:
         remote_nodename = provider["id"]
-        print(all_pops[remote_nodename])
-        local_asn = local["as_number"]
-        neighbor_ip = all_pops[remote_nodename]["ext-vpn-ip"]
-        remote_asn = consts.SBAS_ASN
+        local_asn = local["as-number"]
+        neighbor_ip = all_pops[remote_nodename]["secure-router-ip"]
+        remote_asn = parser.get_sbas_asn()
         out_prefixes = str(provider["out-prefixes"]).replace("'", "")
 
         ebgp_session = f'''

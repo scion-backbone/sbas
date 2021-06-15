@@ -7,6 +7,7 @@ from src.config import consts
 
 cfg = {}
 nodes = None
+sbas_config = None
 
 def get_config():
     global cfg
@@ -18,7 +19,17 @@ def get_config():
 def get_nodes():
     global nodes
     if not nodes:
-        with open(os.path.join(consts.ETC_DIR, consts.NODES_FILE), 'r') as f:
-            nodes = json.load(f)
+        nodes = get_sbas_config()["nodes"]
     return nodes
+
+def get_sbas_config():
+    global sbas_config
+    if not sbas_config:
+        with open(os.path.join(consts.ETC_DIR, consts.NODES_FILE), 'r') as f:
+            sbas_config = json.load(f)
+    return sbas_config
+
+def get_sbas_asn():
+    sbas_asn = get_sbas_config()["as-number"] 
+    return sbas_asn       
 
