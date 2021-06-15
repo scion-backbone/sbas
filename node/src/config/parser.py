@@ -7,12 +7,19 @@ from . import consts
 nodes = None
 local = None
 clients = None
+config = None
 
+def get_config():
+    global config
+    if not config:
+        with open(os.path.join(consts.ETC_DIR, consts.NODES_FILE), 'r') as f:
+            config = json.load(f)
+        print(config)
+    return config
+       
 def get_nodes():
     global nodes
-    if not nodes:
-        with open(os.path.join(consts.ETC_DIR, consts.NODES_FILE), 'r') as f:
-            nodes = json.load(f)
+    nodes = get_config()["nodes"]
     return nodes
 
 def get_local_id():
@@ -37,3 +44,11 @@ def get_clients():
         with open(os.path.join(consts.ETC_DIR, consts.CLIENTS_FILE), 'r') as c:
             clients = json.load(c)
     return clients
+
+def get_sbas_asn():
+   as_number = get_config()["as-number"]
+   return as_number
+
+def get_sbas_prefix():
+    secure_prefix = get_config()["secure-prefix"]
+    return secure_prefix

@@ -13,9 +13,9 @@ def setup():
     wg_template.close()
     
     # Replace placeholders for VPN Server IP address and VPN subnet with local configuration information
-    template_text = template_text.replace('$SBAS_VPN_SERVER_IP_NO_MASK', local['ext-vpn-ip'])
-    template_text = template_text.replace('$SBAS_VPN_NET', local['ext-prefix'])
-    template_text = template_text.replace('$SBAS_VPN_SERVER_IP', local['ext-vpn-ip'] + '/' + str(external_prefix_length))
+    template_text = template_text.replace('$SBAS_VPN_SERVER_IP_NO_MASK', local['secure-vpn-ip'])
+    template_text = template_text.replace('$SBAS_VPN_NET', local['secure-subprefix'])
+    template_text = template_text.replace('$SBAS_VPN_SERVER_IP', local['secure-vpn-ip'] + '/' + str(external_prefix_length))
 
     # Write configuration file for wg0 at appropriate path
     wg0_config = open('/etc/wireguard/wg0.conf', 'w')

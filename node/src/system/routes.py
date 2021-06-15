@@ -40,34 +40,40 @@ def setup():
 
     # 1) Set up internal SBAS address
     #    - required for tunnel endpoints
-    int_addr = f"{local['int-sig-ip']}/{internal_prefix_len}"
+    int_addr = f"{local['internal-ip']}/{internal_prefix_len}"
     _run(["addr", "add", int_addr, "dev", "lo"])
 
-    # 2) Set up GRE tunnels to remote SBAS nodes
+
+    # 2) Add secure router ip address to loopback
+    #    - required for BGP session configuration
+    secure_router_ip = f"{local['secure-router-ip']}/32"
+    _run(["addr", "add", secure_router_ip, "dev", "lo"])   
+
+    # 3) Set up GRE tunnels to remote SBAS nodes
     #    - create a tunnel device "sbas-{node}" for each remote node
     #    - use internal SIG addresses as endpoints
     #    - route remote secure prefixes over the tunnel
-    local_sig = local['int-sig-ip']
+    local_sig = local['internal-ip']
     for name, node in remotes.items():
         tunnel_dev = f"sbas-{name}"
 
         _run([
             "tunnel", "add", tunnel_dev, "mode", "gre",
-            "remote", node['int-sig-ip'],
+            "remote", node['internal-ip'],
             "local", local_sig,
             "ttl", "255"
         ])
         _run(["link", "set", tunnel_dev, "up"])
         _run([
             "route", "add",
-            node['ext-prefix'], "dev", tunnel_dev,
+            node['secure-subprefix'], "dev", tunnel_dev,
             "table", str(table_secure)
         ])
 
-    # 3) Set up gateway for outbound Internet traffic
+    # 4) Set up gateway for outbound Internet traffic
     #    - either deliver through local Internet gateway, or
     #    - route everything to a remote SBAS node that has an Internet gateway
-    gateway = local['outbound-gateway']
+    gateway = local['global-gateway']
     if gateway == consts.GATEWAY_LOCAL:
         # Default route with lowest priority
         _run([
@@ -90,28 +96,38 @@ def setup():
             "table", str(table_internet)
         ])
 
+    # 5) Default rule lookup for all traffic
     _run([
         "rule", "add",
         "from", "all",
         "lookup", str(table_secure),
         "priority", str(priority_secure)
     ])
-    # Default rule for all traffic from local customers to Internet gateway
+
+    # 6) Default rule for all traffic from local customers to Internet gateway
     _run([
         "rule", "add",
-        "from", local['ext-prefix'],
+        "from", local['secure-subprefix'],
         "lookup", str(table_internet),
         "priority", str(priority_internet)
     ])
+
 
 def teardown():
     local = parser.get_local_node()
     remotes = parser.get_remote_nodes()
 
     # Remove addresses
-    int_addr = f"{local['int-sig-ip']}/{internal_prefix_len}"
+    int_addr = f"{local['internal-ip']}/{internal_prefix_len}"
     try:
         _run(["addr", "del", int_addr, "dev", "lo"])
+    except:
+        pass
+
+    # Remove secure ip address from loopback
+    secure_router_ip = f"{local['secure-router-ip']}/32"
+    try:
+        _run(["addr", "del", secure_router_ip, "dev", "lo"])
     except:
         pass
 

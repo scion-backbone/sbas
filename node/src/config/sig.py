@@ -11,7 +11,7 @@ def _update_rules():
     with open(RULE_FILE, 'w') as f:
         cfg = {'ConfigVersion': 9001}
         cfg['ASes'] = {
-            remote['scion-ia']: {'Nets': [f"{remote['int-prefix']}"]}
+            remote['scion-ia']: {'Nets': [f"{remote['internal-prefix']}"]}
             for remote in remotes.values()
         }
         f.write(json.dumps(cfg, indent=2, sort_keys=True))
