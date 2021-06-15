@@ -14,7 +14,6 @@ def get_config():
     if not config:
         with open(os.path.join(consts.ETC_DIR, consts.NODES_FILE), 'r') as f:
             config = json.load(f)
-        print(config)
     return config
        
 def get_nodes():
