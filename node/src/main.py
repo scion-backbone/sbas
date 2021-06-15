@@ -3,7 +3,6 @@ import argparse
 import sys
 
 from src.config import sig
-from src.config import containers
 from src.config import wg
 from src.system import routes
 from src.config import bird
