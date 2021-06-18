@@ -8,9 +8,9 @@ def setup():
     local = parser.get_local_node()
     
     # Read the template for the wireguard configuration file
-    wg_template = open('src/config/wg0-template.conf', 'r')
-    content = wg_template.read()
-    wg_template.close()
+    content = ""
+    with open('src/config/wg0-template.conf', 'r') as f:
+        content = f.read()
     
     # Replace placeholders for VPN Server IP address and VPN subnet with local configuration information
     for from, to in {
@@ -21,6 +21,5 @@ def setup():
         content = content.replace(f"${from}", str(to))
 
     # Write configuration file for wg0 at appropriate path
-    wg0_config = open('/etc/wireguard/wg0.conf', 'w')
-    wg0_config.write(content)
-    wg0_config.close()
+    with open('/etc/wireguard/wg0.conf', 'w') as f:
+        f.write(content)
