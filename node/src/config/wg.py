@@ -1,7 +1,7 @@
 from src.config import parser
 
 # Length of external prefix space (e.g., "66.180.191.128/25")
-external_prefix_length = 25
+EXTERNAL_PREFIX_LENGTH = 25
 
 def setup():
     # Get local node IP address and prefix space configuration from nodes.json
@@ -16,7 +16,7 @@ def setup():
     for from, to in {
         'SBAS_VPN_SERVER_IP_NO_MASK': local['secure-vpn-ip'],
         'SBAS_VPN_NET': local['secure-subprefix'],
-        'SBAS_VPN_SERVER_IP': local['secure-vpn-ip'] + '/' + str(external_prefix_length),
+        'SBAS_VPN_SERVER_IP': local['secure-vpn-ip'] + '/' + str(EXTERNAL_PREFIX_LENGTH),
     }.items():
         content = content.replace(f"${from}", str(to))
 
