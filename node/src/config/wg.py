@@ -1,5 +1,5 @@
 from src.config import parser
-
+import subprocess
 # Length of external prefix space (e.g., "66.180.191.128/25")
 EXTERNAL_PREFIX_LENGTH = 25
 
@@ -23,3 +23,11 @@ def setup():
     # Write configuration file for wg0 at appropriate path
     with open('/etc/wireguard/wg0.conf', 'w') as f:
         f.write(content)
+
+
+def start():
+    subprocess.run(["wg-quick", "up", "wg0"],check=True)
+
+
+def stop():
+    subprocess.run(["wg-quick", "down", "wg0"],check=True)

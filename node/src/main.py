@@ -19,6 +19,8 @@ def start():
     try:
         print("Setting up routes...")
         routes.setup()
+        wg.start()
+        bird.start()
     except routes.RoutingError:
         print("Error during route setup. Cleaning up...")
         stop()
@@ -27,6 +29,8 @@ def start():
 def stop():
     print("Removing routes...")
     routes.teardown()
+    wg.stop()
+    bird.stop()
     print("done.")
 
 if __name__ == '__main__':

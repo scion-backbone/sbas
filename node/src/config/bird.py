@@ -1,6 +1,7 @@
 from src.config import parser
 from src.config import consts
 import textwrap
+import subprocess
 
 KERNEL_TABLE_NUMBER = 151
 
@@ -77,3 +78,10 @@ def setup():
     # Write bird configuration file
     with open("/etc/bird/bird.conf", "w") as f:
         f.write(content)
+
+
+def start():
+    subprocess.run(["sudo", "systemctl", "start", "bird"], check=True)
+
+def stop():
+    subprocess.run(["sudo", "systemctl", "stop", "bird"],check=True)

@@ -4,9 +4,7 @@ SCION=/etc/scion
 SYSTEMD=/lib/systemd/system
 
 install: build/nodename
-	systemctl stop bird || true
 	systemctl stop sbas || true
-	systemctl stop wg-quick@wg0 || true
 	mkdir -p /etc/sbas /var/sbas
 	mkdir -p /var/sbas/bird_log_mrt
 	chmod 777 /var/sbas/bird_log_mrt
@@ -19,8 +17,6 @@ install: build/nodename
 	cp etc/sbas.service ${SYSTEMD}/sbas.service
 	systemctl daemon-reload
 	systemctl start sbas
-	systemctl start wg-quick@wg0
-	systemctl start bird
 
 build/nodename:
 	@ echo "Please run ./configure first."
