@@ -13,12 +13,12 @@ def setup():
         content = f.read()
     
     # Replace placeholders for VPN Server IP address and VPN subnet with local configuration information
-    for from, to in {
+    for k, v in {
         'SBAS_VPN_SERVER_IP_NO_MASK': local['secure-vpn-ip'],
         'SBAS_VPN_NET': local['secure-subprefix'],
         'SBAS_VPN_SERVER_IP': local['secure-vpn-ip'] + '/' + str(EXTERNAL_PREFIX_LENGTH),
     }.items():
-        content = content.replace(f"${from}", str(to))
+        content = content.replace(f"${k}", str(v))
 
     # Write configuration file for wg0 at appropriate path
     with open('/etc/wireguard/wg0.conf', 'w') as f:

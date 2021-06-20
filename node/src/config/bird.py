@@ -17,12 +17,12 @@ def setup():
         content = f.read()
     
     # Substitute variables in template
-    for from, to in {
+    for k, v in {
         'KERNEL_TABLE_NUMBER': KERNEL_TABLE_NUMBER,
         'SECURE_ROUTER_IP': local['secure-router-ip'],
         'SECURE_SUBPREFIX': local['secure-subprefix'],
     }.items():
-        content = content.replace(f"${from}", str(to))
+        content = content.replace(f"${k}", str(v))
 
     # Define iBGP sessions with other PoPs
     for name, node in remote_pops.items(): 
