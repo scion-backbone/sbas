@@ -81,7 +81,13 @@ def setup():
 
 
 def start():
-    subprocess.run(["sudo", "systemctl", "start", "bird"], check=True)
+    subprocess.run(["sudo", "systemctl", "start", "bird"],
+            stdout=subprocess.PIPE, # capture stdout
+            stderr=subprocess.PIPE # capture stderr
+    )
 
 def stop():
-    subprocess.run(["sudo", "systemctl", "stop", "bird"],check=True)
+    subprocess.run(["sudo", "systemctl", "stop", "bird"],
+            stdout=subprocess.PIPE, # capture stdout
+            stderr=subprocess.PIPE # capture stderr
+    )

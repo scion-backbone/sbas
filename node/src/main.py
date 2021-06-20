@@ -6,13 +6,31 @@ from src.config import sig
 from src.config import wg
 from src.system import routes
 from src.config import bird
+import time, threading
 
+WAIT_TIME_SECONDS = 2
 def configure():
     # Re-generate the assets that depend on SBAS topology / configuration
     sig.update()
     wg.setup()
     bird.setup()
 
+def foo():
+    print('this is my time' + str(time.ctime()))
+    my_timer = threading.Timer(10, foo)
+    my_timer.start()
+    
+    i = 0
+    while i <10:
+        i+=1
+        time.sleep(1)
+        print('sth')
+    
+    testfile = open('/home/scionlab/sbas/node/src/test.log', "a")
+    testfile.write('this is my time' + str(time.ctime()))
+    testfile.flush()
+    testfile.close()
+    return
 
 def start():
     # Configure system routes
@@ -21,6 +39,7 @@ def start():
         routes.setup()
         wg.start()
         bird.start()
+        foo()
     except routes.RoutingError:
         print("Error during route setup. Cleaning up...")
         stop()

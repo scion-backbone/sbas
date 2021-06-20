@@ -26,8 +26,14 @@ def setup():
 
 
 def start():
-    subprocess.run(["wg-quick", "up", "wg0"],check=True)
+    subprocess.run(["wg-quick", "up", "wg0"],
+            stdout=subprocess.PIPE, # capture stdout
+            stderr=subprocess.PIPE # capture stderr
+    )
 
 
 def stop():
-    subprocess.run(["wg-quick", "down", "wg0"],check=True)
+    subprocess.run(["wg-quick", "down", "wg0"],
+            stdout=subprocess.PIPE, # capture stdout
+            stderr=subprocess.PIPE # capture stderr
+    )
