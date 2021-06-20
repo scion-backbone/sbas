@@ -1,23 +1,25 @@
 from src.config import parser
 
 # Length of external prefix space (e.g., "66.180.191.128/25")
-external_prefix_length = 25
+EXTERNAL_PREFIX_LENGTH = 25
 
 def setup():
     # Get local node IP address and prefix space configuration from nodes.json
     local = parser.get_local_node()
     
     # Read the template for the wireguard configuration file
-    wg_template = open('src/config/wg0-template.conf', 'r')
-    template_text = wg_template.read()
-    wg_template.close()
+    content = ""
+    with open('src/config/wg0-template.conf', 'r') as f:
+        content = f.read()
     
     # Replace placeholders for VPN Server IP address and VPN subnet with local configuration information
-    template_text = template_text.replace('$SBAS_VPN_SERVER_IP_NO_MASK', local['secure-vpn-ip'])
-    template_text = template_text.replace('$SBAS_VPN_NET', local['secure-subprefix'])
-    template_text = template_text.replace('$SBAS_VPN_SERVER_IP', local['secure-vpn-ip'] + '/' + str(external_prefix_length))
+    for from, to in {
+        'SBAS_VPN_SERVER_IP_NO_MASK': local['secure-vpn-ip'],
+        'SBAS_VPN_NET': local['secure-subprefix'],
+        'SBAS_VPN_SERVER_IP': local['secure-vpn-ip'] + '/' + str(EXTERNAL_PREFIX_LENGTH),
+    }.items():
+        content = content.replace(f"${from}", str(to))
 
     # Write configuration file for wg0 at appropriate path
-    wg0_config = open('/etc/wireguard/wg0.conf', 'w')
-    wg0_config.write(template_text)
-    wg0_config.close()
+    with open('/etc/wireguard/wg0.conf', 'w') as f:
+        f.write(content)
