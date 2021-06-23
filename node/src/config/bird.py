@@ -25,11 +25,26 @@ def setup():
     }.items():
         content = content.replace(f"${k}", str(v))
 
-    # Define iBGP sessions with other PoPs
+    #Initialize the configuration of the static protocol
+    static_protocol = textwrap.dedent('''
+        protocol static {
+            ipv4 {
+                table bgpannounce;
+            };
+        '''
+    )
+
     for name, node in remote_pops.items(): 
         remote_nodename = name
         local_asn = sbas_asn
         remote_asn = sbas_asn
+        remote_subprefix = node['secure-subprefix']
+        
+        #Add static routes in the static protocol for each subprefix of the other PoPs
+        static_route = f'''    route {remote_subprefix} via {local_router_ip};\n'''
+        static_protocol += static_route
+        
+        # Define iBGP sessions with other PoPs
         ibgp_session = textwrap.dedent(f'''
         protocol bgp {remote_nodename}01 {{
             local {local_router_ip} as {local_asn};
@@ -45,6 +60,9 @@ def setup():
         }}
         ''')
         content += ibgp_session
+    
+    # End configuration of static protocol
+    static_protocol += '}' 
 
     # Define eBGP sessions with connected customers
     connected_clients = local['connected-clients']
@@ -74,7 +92,9 @@ def setup():
 
                     ''')
                     content += ebgp_session
-            
+
+    content += static_protocol # Append configuration for static protocol
+
     # Write bird configuration file
     with open("/etc/bird/bird.conf", "w") as f:
         f.write(content)
