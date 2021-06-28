@@ -3,19 +3,13 @@
 import sys, argparse, copy
 from datetime import *
 from mrtparse import *
-
+from collections import namedtuple
 peer = None
+prefix_entry = namedtuple("prefix_entry", 'origin peer_as peer_ip next_hop path')
 
 def parse_args():
     p = argparse.ArgumentParser(
         description='This script converts to bgpdump format.')
-    p.add_argument(
-        '-O', dest='output', default=sys.stdout, nargs='?', metavar='file',
-        type=argparse.FileType('w'),
-        help='output to a specified file')
-    p.add_argument(
-        '-s', dest='output', action='store_const', const=sys.stdout,
-        help='output to STDOUT(default output)')
     p.add_argument(
         '-t', dest='ts_format', default='dump', choices=['dump', 'change'],
         help='timestamps for RIB dumps reflect the time of the dump \
@@ -28,7 +22,6 @@ def parse_args():
 class BgpDump:
 
     def __init__(self, args):
-        self.output = args.output
         self.ts_format = args.ts_format
         self.type = ''
         self.num = 0
@@ -53,14 +46,13 @@ class BgpDump:
         self.new_state = 0
         self.available_paths = {}
 
-    def print_line(self, prefix, next_hop):
-        if self.ts_format == 'dump':
-            d = self.ts
+    def add_available_path(self, prefix, next_hop):
+        new_entry = prefix_entry(self.origin, self.peer_as, self.peer_ip, next_hop, self.merge_as_path())
+        if self.available_paths.get(prefix):
+            if new_entry not in self.available_paths[prefix]:
+                self.available_paths[prefix].append(new_entry)
         else:
-            d = self.org_time
-
-        d = datetime.utcfromtimestamp(d).strftime('%m/%d/%y %H:%M:%S')
-
+            self.available_paths[prefix] = [new_entry]
         """
         if self.flag == 'B' or self.flag == 'A':
             self.output.write(
@@ -86,27 +78,26 @@ class BgpDump:
                 )
             )
         """
-        if self.available_paths.get(prefix):
-            if ('added path ' + self.merge_as_path()) not in self.available_paths[prefix]:
-                self.available_paths[prefix].append(self.merge_as_path())
-                pass
-        else:
-            self.available_paths[prefix] = ['added path ' + self.merge_as_path()]
-            #self.available_paths[prefix] = {"origin": self.origin, "peer_as": self.peer_as, "peer_ip": self.peer_ip, "as_path": self.merge_as_path()}
-            #print(self.available_paths[prefix])
-            #print(self.origin,self.peer_as, self.peer_ip, self.merge_as_path())
 
-    def print_routes(self):
+    def withdraw_path(self, prefix):
+        if self.available_paths.get(prefix):
+            routes_to_be_removed = set()
+            for entry in self.available_paths.get(prefix):
+                if (self.origin == entry.origin) and (self.peer_as == entry.peer_as) and (self.peer_ip == entry.peer_ip):
+                    routes_to_be_removed.add(entry)
+            self.available_paths[prefix] = list(set(self.available_paths.get(prefix)).difference(routes_to_be_removed))	
+			
+    def update_routes(self):
         for withdrawn in self.withdrawn:
             if self.type == 'BGP4MP':
                 self.flag = 'W'
-            self.print_line(withdrawn, '')
+            self.withdraw_path(withdrawn)
         for nlri in self.nlri:
             if self.type == 'BGP4MP':
                 self.flag = 'A'
             for next_hop in self.next_hop:
-                self.print_line(nlri, next_hop)
-
+                self.add_available_path(nlri, next_hop)
+    """
     def td(self, m, count):
         self.type = 'TABLE_DUMP'
         self.flag = 'B'
@@ -118,13 +109,13 @@ class BgpDump:
         self.nlri.append('%s/%d' % (m['prefix'], m['prefix_length']))
         for attr in m['path_attributes']:
             self.bgp_attr(attr)
-        self.print_routes()
-
+        self.update_routes()
+    """
     def td_v2(self, m):
         global peer
         self.type = 'TABLE_DUMP2'
         self.flag = 'B'
-        self.ts = m['timestamp'][0]
+        #self.ts = m['timestamp'][0]
         if m['subtype'][0] == TD_V2_ST['PEER_INDEX_TABLE']:
             peer = copy.copy(m['peer_entries'])
         elif (m['subtype'][0] == TD_V2_ST['RIB_IPV4_UNICAST']
@@ -149,8 +140,8 @@ class BgpDump:
                 self.as4_aggr = ''
                 for attr in entry['path_attributes']:
                     self.bgp_attr(attr)
-                self.print_routes()
-
+                self.update_routes()
+    """
     def bgp4mp(self, m, count):
         self.type = 'BGP4MP'
         self.ts = m['timestamp'][0]
@@ -163,7 +154,7 @@ class BgpDump:
             self.flag = 'STATE'
             self.old_state = m['old_state'][0]
             self.new_state = m['new_state'][0]
-            self.print_line([], '')
+            #self.print_line([], '')
         elif (m['subtype'][0] == BGP4MP_ST['BGP4MP_MESSAGE']
             or m['subtype'][0] == BGP4MP_ST['BGP4MP_MESSAGE_AS4']
             or m['subtype'][0] == BGP4MP_ST['BGP4MP_MESSAGE_LOCAL']
@@ -184,8 +175,8 @@ class BgpDump:
                         nlri['prefix'], nlri['prefix_length']
                     )
                 )
-            self.print_routes()
-
+            self.update_routes()
+    """
     def bgp_attr(self, attr):
         if attr['type'][0] == BGP_ATTR_T['ORIGIN']:
             self.origin = ORIGIN_T[attr['value']]
@@ -204,16 +195,18 @@ class BgpDump:
                     self.as_path.append('[%s]' % ','.join(seg['value']))
                 else:
                     self.as_path += seg['value']
-        elif attr['type'][0] == BGP_ATTR_T['MULTI_EXIT_DISC']:
-            self.med = attr['value']
-        elif attr['type'][0] == BGP_ATTR_T['LOCAL_PREF']:
-            self.local_pref = attr['value']
-        elif attr['type'][0] == BGP_ATTR_T['ATOMIC_AGGREGATE']:
-            self.atomic_aggr = 'AG'
-        elif attr['type'][0] == BGP_ATTR_T['AGGREGATOR']:
-            self.aggr = '%s %s' % (attr['value']['as'], attr['value']['id'])
-        elif attr['type'][0] == BGP_ATTR_T['COMMUNITY']:
-            self.comm = ' '.join(attr['value'])
+            """      
+            elif attr['type'][0] == BGP_ATTR_T['MULTI_EXIT_DISC']:
+                self.med = attr['value']
+            elif attr['type'][0] == BGP_ATTR_T['LOCAL_PREF']:
+                self.local_pref = attr['value']
+            elif attr['type'][0] == BGP_ATTR_T['ATOMIC_AGGREGATE']:
+                self.atomic_aggr = 'AG'
+            elif attr['type'][0] == BGP_ATTR_T['AGGREGATOR']:
+                self.aggr = '%s %s' % (attr['value']['as'], attr['value']['id'])
+            elif attr['type'][0] == BGP_ATTR_T['COMMUNITY']:
+                self.comm = ' '.join(attr['value'])
+            """
         elif attr['type'][0] == BGP_ATTR_T['MP_REACH_NLRI']:
             self.next_hop = attr['value']['next_hop']
             if self.type != 'BGP4MP':
@@ -223,7 +216,7 @@ class BgpDump:
                     '%s/%d' % (
                         nlri['prefix'], nlri['prefix_length']
                     )
-                )
+                )	
         elif attr['type'][0] == BGP_ATTR_T['MP_UNREACH_NLRI']:
             if self.type != 'BGP4MP':
                 return
@@ -273,23 +266,33 @@ def main():
         if m.err:
             continue
         b = BgpDump(args)
+        """
         if m.data['type'][0] == MRT_T['TABLE_DUMP']:
+            print('type table dump')
+            exit()
             b.td(m.data, count)
-        elif m.data['type'][0] == MRT_T['TABLE_DUMP_V2']:
+        """
+        if m.data['type'][0] == MRT_T['TABLE_DUMP_V2']:
             b.td_v2(m.data)
-        elif m.data['type'][0] == MRT_T['BGP4MP']:
-            b.bgp4mp(m.data, count)
+            """
+            elif m.data['type'][0] == MRT_T['BGP4MP']:
+                print('type bgp4mp')
+                exit()
+                b.bgp4mp(m.data, count)
+            """
         else:
             print('Entry in wrong format.')
             continue
-
+        
         for key in b.available_paths:
+
             if key not in route_list:
                 route_list[key] = b.available_paths[key]
             else:
                 route_list[key] = list(set(route_list[key]) | set(b.available_paths[key]))
         count += 1
+        
     print(route_list)
-
+    return route_list
 if __name__ == '__main__':
     main()
