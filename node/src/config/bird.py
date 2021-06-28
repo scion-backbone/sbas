@@ -40,7 +40,10 @@ def setup():
         remote_asn = sbas_asn
         remote_subprefix = node['secure-subprefix']
         
-        #Add static routes in the static protocol for each subprefix of the other PoPs
+        # Add static routes in the static protocol for each subprefix of the other PoPs
+        # In multihop BGP sessions, BIRD cannot resolve the next hop and shows the learnt prefixes as unreachable.
+        # To resolve this issue, we need to explicitly specify routes to the next hops. Adding static routes for the 
+        # subprefixes of the PoPs resolves this issue.
         static_route = f'''    route {remote_subprefix} via {local_router_ip};\n'''
         static_protocol += static_route
         
@@ -81,7 +84,10 @@ def setup():
                         neighbor {provider['local']} as {client_asn};
                         ipv4 {{
                             table bgpannounce;
-                            import all;
+                            import filter {{
+                                if (!safe_import_from_clients({client_asn})) then {{reject;}}
+                                accept;
+                           }};
                             export filter {{
                                 if (!safe_export()) then {{reject;}}
                                     accept;
