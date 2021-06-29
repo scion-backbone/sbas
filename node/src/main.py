@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import sys
+import signal
 
 from src.config import sig
 from src.config import wg
@@ -52,17 +53,20 @@ def stop():
     bird.stop()
     print("done.")
 
+def graceful_stop(sig, frame):
+    stop()
+    sys.exit(0)
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('command')
     args = parser.parse_args()
+    signal.signal(signal.SIGTERM, graceful_stop)
 
     if args.command == 'start':
         # TODO: Detect if update is necessary (i.e., config is newer than last start)
         configure()
         start()
-    elif args.command == 'stop':
-        stop()
     elif args.command == 'configure':
         configure()
     else:

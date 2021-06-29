@@ -6,7 +6,7 @@ Wants=scionlab.target
 [Service]
 Type=simple
 ExecStart=/usr/bin/sbas start
-ExecStop=/usr/bin/sbas stop
+KillSignal=SIGTERM
 WorkingDirectory=/lib/sbas
 Environment="PYTHONPATH=/lib/sbas:"
 
