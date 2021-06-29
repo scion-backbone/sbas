@@ -1,5 +1,7 @@
 from src.config import parser
 from src.config import consts
+from ipaddress import IPv4Network
+import os, os.path
 import textwrap
 import subprocess
 
@@ -11,7 +13,25 @@ def setup():
     all_clients = parser.get_clients()
     local_router_ip = local['secure-router-ip']
     sbas_asn = parser.get_sbas_asn()
+    sbas_prefix = parser.get_sbas_prefix()
     
+    # Prepare custom announcements for SBAS prefix
+    try:
+        # Create directory to store configuration for custom announcements
+        os.makedirs(os.path.join(consts.ETC_BIRD, consts.BIRD_ROUTE_ANNOUNCEMENTS_DIR), exist_ok=True)
+    except e:
+        print('Error while creating route-announcements directory' + e)
+        exit(1)
+
+    sbas_network = IPv4Network(sbas_prefix)
+    secure_subprefix_filter_list = ', '.join([str(subnet) for subnet in sbas_network.subnets()])
+    
+    # Advertise the two subnetworks of the secure SBAS prefix and create the necessary files 
+    for subnet in sbas_network.subnets():
+        route_announcement_content = f"route {subnet} unreachable;"
+        with open(os.path.join(consts.ETC_BIRD, consts.BIRD_ROUTE_ANNOUNCEMENTS_DIR, str(subnet).replace('/', "-")), "w") as f:
+            f.write(route_announcement_content)  
+
     # Import bird template configuration file
     content = ""
     with open("src/config/bird-template.conf", "r") as f:
@@ -21,7 +41,7 @@ def setup():
     for k, v in {
         'KERNEL_TABLE_NUMBER': KERNEL_TABLE_NUMBER,
         'SECURE_ROUTER_IP': local['secure-router-ip'],
-        'SECURE_SUBPREFIX': local['secure-subprefix'],
+        'SECURE_SUBPREFIX_LIST': secure_subprefix_filter_list,
     }.items():
         content = content.replace(f"${k}", str(v))
 
@@ -31,6 +51,7 @@ def setup():
             ipv4 {
                 table bgpannounce;
             };
+            include "route-announcements/*";
         '''
     )
 
@@ -44,7 +65,7 @@ def setup():
         # In multihop BGP sessions, BIRD cannot resolve the next hop and shows the learnt prefixes as unreachable.
         # To resolve this issue, we need to explicitly specify routes to the next hops. Adding static routes for the 
         # subprefixes of the PoPs resolves this issue.
-        static_route = f'''    route {remote_subprefix} via {local_router_ip};\n'''
+        static_route = f'    route {remote_subprefix} via {local_router_ip};\n'
         static_protocol += static_route
         
         # Define iBGP sessions with other PoPs
@@ -102,9 +123,8 @@ def setup():
     content += static_protocol # Append configuration for static protocol
 
     # Write bird configuration file
-    with open("/etc/bird/bird.conf", "w") as f:
+    with open(os.path.join(consts.ETC_BIRD, consts.BIRD_CONF), "w") as f:
         f.write(content)
-
 
 def start():
     subprocess.run(["sudo", "systemctl", "start", "bird"],
