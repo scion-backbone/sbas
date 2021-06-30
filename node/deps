@@ -4,3 +4,20 @@ sudo apt update
 sudo apt install -y \
     scion-sig \
     wireguard
+
+# Install BIRD 2.0.8 manually
+# When v2.0.8 becomes available in apt-get, replace lines below with:
+# sudo apt install bird2=2.0.8
+git clone [https://gitlab.nic.cz/labs/bird.git](https://gitlab.nic.cz/labs/bird.git)
+cd bird
+git checkout v2.0.8
+sudo apt install -y autoconf
+autoreconf
+sudo apt-get install -y flex
+sudo apt-get install -y bison
+sudo apt-get install -y libreadline-dev
+./configure --prefix=/usr --sysconfdir=/etc/bird --runstatedir=/run/bird
+make
+sudo make install
+
+cd ..
