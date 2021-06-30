@@ -6,6 +6,7 @@ import textwrap
 import subprocess
 
 KERNEL_TABLE_NUMBER = 151
+BIRD_TABLE_NAME = 'bgpannounce'
 
 def setup():
     local = parser.get_local_node()
@@ -24,7 +25,7 @@ def setup():
         exit(1)
 
     sbas_network = IPv4Network(sbas_prefix)
-    secure_subprefix_filter_list = ', '.join([str(subnet) for subnet in sbas_network.subnets()])
+    secure_prefix_filter_list = ', '.join([str(subnet) for subnet in sbas_network.subnets()])
     
     # Advertise the two subnetworks of the secure SBAS prefix and create the necessary files 
     for subnet in sbas_network.subnets():
@@ -40,24 +41,25 @@ def setup():
     # Substitute variables in template
     for k, v in {
         'KERNEL_TABLE_NUMBER': KERNEL_TABLE_NUMBER,
+        'BIRD_TABLE_NAME': BIRD_TABLE_NAME,
         'SECURE_ROUTER_IP': local['secure-router-ip'],
-        'SECURE_SUBPREFIX_LIST': secure_subprefix_filter_list,
+        'SECURE_SUBPREFIX': local['secure-subprefix'],
+        'SECURE_PREFIX_LIST': secure_prefix_filter_list,
+        'SBAS_ASN': sbas_asn 
     }.items():
         content = content.replace(f"${k}", str(v))
 
     #Initialize the configuration of the static protocol
-    static_protocol = textwrap.dedent('''
-        protocol static {
-            ipv4 {
-                table bgpannounce;
-            };
+    static_protocol = textwrap.dedent(f'''
+        protocol static {{
+            ipv4 {{
+                table {BIRD_TABLE_NAME};
+            }};
             include "route-announcements/*";
-        '''
-    )
+        ''')
 
     for name, node in remote_pops.items(): 
         remote_nodename = name
-        local_asn = sbas_asn
         remote_asn = sbas_asn
         remote_subprefix = node['secure-subprefix']
         
@@ -70,18 +72,10 @@ def setup():
         
         # Define iBGP sessions with other PoPs
         ibgp_session = textwrap.dedent(f'''
-        protocol bgp {remote_nodename}01 {{
-            local {local_router_ip} as {local_asn};
-            neighbor {node['secure-router-ip']} as {remote_asn};
-            ipv4 {{
-                table bgpannounce;
-                import all;
-                export filter {{
-                    if (!safe_export()) then {{reject;}}
-                    accept;
-                }};
-            }};
+        protocol bgp {remote_nodename}01 from iBGP_pop {{
+            neighbor {node['secure-router-ip']} as {remote_asn}; 
         }}
+
         ''')
         content += ibgp_session
     
@@ -93,29 +87,21 @@ def setup():
     for client in connected_clients:
         client_info = all_clients.get(client)
         if client_info: 
-            local_asn = sbas_asn
             client_asn =  client_info['as-number']
             client_providers = client_info['providers']
 
             for provider in client_providers:
                 if provider['id'] == parser.get_local_id():
                     ebgp_session = textwrap.dedent(f'''
-                    protocol bgp {client}01 {{
-                        local {local_router_ip} as {local_asn};
+                    protocol bgp {client}01 from eBGP_client {{
                         neighbor {provider['local']} as {client_asn};
                         ipv4 {{
-                            table bgpannounce;
                             import filter {{
                                 if (!safe_import_from_clients({client_asn})) then {{reject;}}
                                 accept;
-                           }};
-                            export filter {{
-                                if (!safe_export()) then {{reject;}}
-                                    accept;
                             }};
                         }};
-                        multihop;
-                    }}
+                    }} 
 
                     ''')
                     content += ebgp_session
