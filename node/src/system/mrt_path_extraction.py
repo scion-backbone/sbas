@@ -4,6 +4,7 @@ import sys, argparse, copy
 from datetime import *
 from mrtparse import *
 from collections import namedtuple
+
 peer = None
 prefix_entry = namedtuple("prefix_entry", 'origin peer_as peer_ip next_hop path')
 
@@ -15,7 +16,7 @@ def parse_args():
         help='timestamps for RIB dumps reflect the time of the dump \
             or the last route modification(default: dump)')
     p.add_argument(
-        'path_to_file',
+        'path_to_file', nargs='?', default =None,
         help='specify path to MRT format file')
     return p.parse_args()
 
@@ -257,9 +258,11 @@ class BgpDump:
         else:
             return self.aggr
 
-def main():
+def main(path=None):
     args = parse_args()
-    d = Reader(args.path_to_file)
+    if not path:
+        path = args.path_to_file
+    d = Reader(path)
     count = 0
     route_list = {}
     for m in d:
@@ -292,7 +295,8 @@ def main():
                 route_list[key] = list(set(route_list[key]) | set(b.available_paths[key]))
         count += 1
         
-    print(route_list)
     return route_list
+
 if __name__ == '__main__':
-    main()
+   results = main()
+   print(results)

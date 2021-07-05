@@ -1,8 +1,50 @@
 import subprocess
 import json
 import ipaddress 
-import parser
-from src.system import mrt_path_extraction
+import os
+
+#TODO: change paths for importing packages before incorporating in sbas code
+import sys
+sys.path.append('/home/scionlab/sbas/node/src/')
+from config import parser 
+from config import consts
+from system import mrt_path_extraction
+
+#from src.config import parser
+#from src.config import consts
+#from src.system import mrt_path_extraction 
+
+table_optimized = 15
+priority_optimized = 15
+
+class RoutingError(Exception):
+    pass
+
+def _run(iproute_cmd, silent=False):
+    try:
+        subprocess.run(
+            ['sudo'] + ["ip"] + iproute_cmd, #TODO check if sudo is necessary
+            stdout=subprocess.PIPE, # capture stdout
+            stderr=subprocess.PIPE, # capture stderr
+            check=True # raise exception on failure
+        )
+    except subprocess.CalledProcessError as e:
+        if silent:
+            pass
+        print(f"Command failed: {' '.join(e.cmd)} -> \"{str(e.output)}\"")
+        raise RoutingError
+
+
+def get_latest_bird_mrt_dump():
+    try:
+        mrtdump_path = consts.BIRD_MRTDUMP_DIR 
+        bird_mrtdump_files = os.listdir(mrtdump_path)
+        if bird_mrtdump_files:
+            paths = [os.path.join(mrtdump_path, basename) for basename in bird_mrtdump_files]
+            return max(paths, key=os.path.getctime)
+    except:
+        print('Provided directory is not existing')
+        exit(1)
 
 def get_available_scion_paths(scion_destination):
     """Function that finds the available SCION paths from the running node to a SCION destination.
@@ -37,54 +79,112 @@ def get_available_scion_paths(scion_destination):
 
     return available_paths_list
 
+def map_pop_ip_to_scion_address():
+    ip_to_scion_address_dict = {}
+    pop_nodes = parser.get_nodes()
+    for name, node in pop_nodes.items():
+        ip_to_scion_address_dict[node['secure-router-ip']] = {'scion_address': node['scion-ia'], 'nodename': name}
+        #ip_to_scion_address_dict[node['secure-vpn-ip']] = {'scion_address': node['scion-ia'], 'nodename': name}
+    return ip_to_scion_address_dict 
+    
+def get_as_metric(asn):
+    #TODO: add fetching of metric data for an AS
+    return 1
 
+def get_metric_to_pop(pop_ip_address):
+    #TODO: add fetching of metric data for a path via SBAS to a PoP
+    return 1
 
-def path_optimization_per_prefix(dst_addr):
-    #Step 1. Find type of destination
-    # a. SCION node
-    # b. Customer
-    # c. External
+def get_global_as_path_metric(as_path):
+    global_path_metric = 0
+    as_path_list = as_path.split(' ')
 
-    if type_of_destination == "secure":
-        #If Secure (SCION) node:
-        #1. Get list of available paths to scion destination
-        paths = get_available_scion_paths(scion_dst)
-        #2. Relate paths to metric database 
-        #3. Sort paths and pick top 1
+    for asn in as_path_list:
+       global_path_metric += get_as_metric(asn)
 
-    elif type_of_destination == "customer":
-        #If Customer
-        #1. Get PoPs connected to customer
-        #I will have to get the routes from the mrt file and see potential routes
-        #2. Run subprocess scion showpaths {PoP address} for each PoP
-        for egress_pop in potential_pops:
-            paths = get_available_scion_paths(egress_pop)
+    return global_path_metric
 
-        #3. Save all paths in an array
-        #4. Relate SCION segments to metric database
-        #5. Relate customer tunnel to metric database (in case the opt-in customer is connected to more than one PoPs)
-        #6. Combine the metric data for both path sections (within-SCION + VPN tunnel)
-        #7. Sort paths and pick top 1
-
-    elif type_of_destination == "external":
-        #If External AS
-        #1. Get PoPs that have paths towards the destination from mrt file?
-        #2. Get list of scion paths to potential egress PoPs
-        for egress_pop in potential_pops:
-            paths = get_available_scion_paths(egress_pop)
-        #3. Relate SCION segments to metric database
-        #4. Get the AS-level path that is outside SCION (connecting potential egress PoPs to destination)
-        #5. Relate the external path segments to metric database
-        #6. Combine the metric data for both path sections (within-SCION + external BGP path)
-        #7. Sort paths and pick top 1
-        
-    else:
-        print("Wrong type of destination was provided (" + type_of_destination + ").")
 
 def path_optimization():
-    path_dict = mrt_path_extraction.main()
+    '''
+    # 1) Flush routing table with optimized path selection
+    _run(["route", "flush", "table", str(table_optimized)])
+    # Delete rules that belong to this table
+    try:
+        while True: # need to call it multiple times, only one is deleted at a time
+            _run(["rule", "del", "lookup", str(table_optimized)], silent=True)
+    except:
+        pass
+    '''
+    ip_to_scion_address = map_pop_ip_to_scion_address()
+    newest_mrtdump_path = get_latest_bird_mrt_dump()
+    path_dict = mrt_path_extraction.main(newest_mrtdump_path)
+
     for dst_prefix in path_dict:
         available_paths = path_dict[dst_prefix]
-        path_optimization_per_prefix(dst_prefix)    
+        print(dst_prefix)
+
+        best_sbas_option = {'path_entry': None, 'metric_total': None}
+        best_global_option = {'path_entry': None, 'metric_total': None}
+
+        for path_entry in available_paths:
+            next_hop = path_entry.next_hop
+            print(path_entry)
+            path_metric_total = 0
+            path = path_entry.path
+            print(path)
+            if next_hop in ip_to_scion_address:
+                #must go through sbas before exiting and we need to find the best egress PoP
+                
+                #scion_paths = get_available_scion_paths(ip_to_scion_address[next_hop]['scion_address'])
+                if path == '':
+                    # Destination is within SBAS (most likely a PoP)
+                    path_metric_total = get_metric_to_pop(next_hop)
+                else:
+                    # Extract external AS path and get the total metric value
+                    path_metric_total = get_metric_to_pop(next_hop) + get_global_as_path_metric(path)
+                    
+                # Check if the new path for this prefix has a better metric value than the previous "via SBAS" ones and update accordingly
+                if (best_sbas_option['path_entry'] is None) or (path_metric_total < best_sbas_option['metric_total']):
+                    best_sbas_option['metric_total'] = path_metric_total
+                    gateway = f"sbas-{ip_to_scion_address[next_hop]['nodename']}"        
+                    best_sbas_option['path_entry'] = path_entry
+                    best_sbas_option['gateway'] = gateway 
+            else:
+                # Path goes via the VPN client or BGP client and not SBAS
+                
+                path_metric_total = get_global_as_path_metric(path)
+
+                # Check if the new path for this prefix has a better metric value than the previous "non-SBAS" ones and update accordingly
+                if (best_global_option['path_entry'] is None) or (path_metric_total < best_global_option['metric_total']):
+                    best_global_option['metric_total'] = path_metric_total
+                    best_global_option['path_entry'] = path_entry
+                    #TODO: must find gateway      
+                    #best_global_option['gateway'] = '' 
+                
+        # Add routing rule for prefix in custom table
+        if best_sbas_option['path_entry'] :
+            print('here')
+            '''
+            _run([
+                "route", "add", 
+                dst_prefix, "dev", best_sbas_option['gateway'],                
+                "table", str(table_optimized)
+            ])  
+            '''
+        elif best_global_option['path_entry']:
+            print('im here')
+            '''
+            _run([
+                "route", "add", 
+                dst_prefix, "via", best_global_option['gateway'],    #TODO            
+                "table", str(table_optimized)
+            ])  
+            '''            
+        else:
+            print('No good path found for ' + dst_prefix)
+     
+
+
 
 path_optimization()
