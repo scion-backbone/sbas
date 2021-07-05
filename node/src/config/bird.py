@@ -42,6 +42,7 @@ def setup():
     for k, v in {
         'KERNEL_TABLE_NUMBER': KERNEL_TABLE_NUMBER,
         'BIRD_TABLE_NAME': BIRD_TABLE_NAME,
+        'BIRD_MRTDUMP_DIR': consts.BIRD_MRTDUMP_DIR,
         'SECURE_ROUTER_IP': local['secure-router-ip'],
         'SECURE_SUBPREFIX': local['secure-subprefix'],
         'SECURE_PREFIX_LIST': secure_prefix_filter_list,

@@ -6,3 +6,4 @@ GATEWAY_LOCAL = 'local' # String indicating that a local IP gateway should be u
 ETC_BIRD = '/etc/bird'
 BIRD_CONF = 'bird.conf'
 BIRD_ROUTE_ANNOUNCEMENTS_DIR = 'route-announcements'
+BIRD_MRTDUMP_DIR = '/var/sbas/bird_log_mrt'
