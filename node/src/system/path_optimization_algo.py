@@ -35,6 +35,25 @@ def _run(iproute_cmd, silent=False):
         raise RoutingError
 
 
+def bird_mrtdump_cleanup():
+    try:
+        mrtdump_path = consts.BIRD_MRTDUMP_DIR 
+        bird_mrtdump_files = os.listdir(mrtdump_path)
+        if bird_mrtdump_files:
+            paths = [os.path.join(mrtdump_path, basename) for basename in bird_mrtdump_files]
+            paths.sort(key = os.path.getctime, reverse=True)
+            if len(paths) > 3:
+                for path in paths[3:]:
+                    try:
+	                    os.remove(path)
+                    except OSError as error:
+	                    print("Error removing file " + path)
+            
+    except:
+        print('Provided directory is not existing')
+        exit(1) 
+
+
 def get_latest_bird_mrt_dump():
     try:
         mrtdump_path = consts.BIRD_MRTDUMP_DIR 
@@ -106,43 +125,43 @@ def get_global_as_path_metric(as_path):
 
 
 def path_optimization():
-    '''
+    
     # 1) Flush routing table with optimized path selection
-    _run(["route", "flush", "table", str(table_optimized)])
-    # Delete rules that belong to this table
     try:
+        _run(["route", "flush", "table", str(table_optimized)])
         while True: # need to call it multiple times, only one is deleted at a time
             _run(["rule", "del", "lookup", str(table_optimized)], silent=True)
     except:
         pass
-    '''
+    
     ip_to_scion_address = map_pop_ip_to_scion_address()
+    secure_router_ip = parser.get_local_node()['secure-router-ip']
+    
+    # 2) Read the latest BIRD mrtdump file and extract the available paths for each prefix
     newest_mrtdump_path = get_latest_bird_mrt_dump()
     path_dict = mrt_path_extraction.main(newest_mrtdump_path)
 
-    for dst_prefix in path_dict:
+    # 3) Iterate over each prefix:
+    for dst_prefix in path_dict.keys():
         available_paths = path_dict[dst_prefix]
         print(dst_prefix)
 
         best_sbas_option = {'path_entry': None, 'metric_total': None}
         best_global_option = {'path_entry': None, 'metric_total': None}
-
+        # 4) For each prefix, iterate over available paths
         for path_entry in available_paths:
             next_hop = path_entry.next_hop
             print(path_entry)
             path_metric_total = 0
             path = path_entry.path
-            print(path)
             if next_hop in ip_to_scion_address:
                 #must go through sbas before exiting and we need to find the best egress PoP
-                
+                path_metric_total = get_metric_to_pop(next_hop)
+                 
                 #scion_paths = get_available_scion_paths(ip_to_scion_address[next_hop]['scion_address'])
-                if path == '':
-                    # Destination is within SBAS (most likely a PoP)
-                    path_metric_total = get_metric_to_pop(next_hop)
-                else:
+                if path != '':
                     # Extract external AS path and get the total metric value
-                    path_metric_total = get_metric_to_pop(next_hop) + get_global_as_path_metric(path)
+                    path_metric_total += get_global_as_path_metric(path)
                     
                 # Check if the new path for this prefix has a better metric value than the previous "via SBAS" ones and update accordingly
                 if (best_sbas_option['path_entry'] is None) or (path_metric_total < best_sbas_option['metric_total']):
@@ -152,39 +171,51 @@ def path_optimization():
                     best_sbas_option['gateway'] = gateway 
             else:
                 # Path goes via the VPN client or BGP client and not SBAS
-                
                 path_metric_total = get_global_as_path_metric(path)
 
                 # Check if the new path for this prefix has a better metric value than the previous "non-SBAS" ones and update accordingly
                 if (best_global_option['path_entry'] is None) or (path_metric_total < best_global_option['metric_total']):
                     best_global_option['metric_total'] = path_metric_total
                     best_global_option['path_entry'] = path_entry
+                    best_global_option['gateway'] = path_entry.next_hop
                     #TODO: must find gateway      
-                    #best_global_option['gateway'] = '' 
                 
         # Add routing rule for prefix in custom table
         if best_sbas_option['path_entry'] :
             print('here')
-            '''
+            
             _run([
                 "route", "add", 
                 dst_prefix, "dev", best_sbas_option['gateway'],                
                 "table", str(table_optimized)
             ])  
-            '''
+            
         elif best_global_option['path_entry']:
             print('im here')
-            '''
+            
             _run([
                 "route", "add", 
                 dst_prefix, "via", best_global_option['gateway'],    #TODO            
                 "table", str(table_optimized)
             ])  
-            '''            
+                       
         else:
             print('No good path found for ' + dst_prefix)
-     
+    
+    _run([
+        "rule", "add",
+        "from", "all",
+        "lookup", str(table_optimized),
+        "priority", str(priority_optimized)
+    ])
 
+    bird_mrtdump_cleanup()
 
+def make_periodic_call():
+    my_timer = threading.Timer(10, make_periodic_call)
+    my_timer.start()
+    path_optimization()
+    return
 
-path_optimization()
+if __name__ == '__main__':
+    path_optimization()
