@@ -99,6 +99,8 @@ def setup():
                         ipv4 {{
                             import filter {{
                                 if (!safe_import_from_clients({client_asn})) then {{reject;}}
+                                bgp_community = -empty-;
+                                bgp_community.add(({client_asn},50));
                                 accept;
                             }};
                         }};

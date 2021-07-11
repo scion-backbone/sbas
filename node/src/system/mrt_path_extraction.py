@@ -6,7 +6,7 @@ from mrtparse import *
 from collections import namedtuple
 
 peer = None
-prefix_entry = namedtuple("prefix_entry", 'origin peer_as peer_ip next_hop path')
+prefix_entry = namedtuple("prefix_entry", 'origin peer_as peer_ip next_hop path community_value')
 
 def parse_args():
     p = argparse.ArgumentParser(
@@ -48,7 +48,7 @@ class BgpDump:
         self.available_paths = {}
 
     def add_available_path(self, prefix, next_hop):
-        new_entry = prefix_entry(self.origin, self.peer_as, self.peer_ip, next_hop, self.merge_as_path())
+        new_entry = prefix_entry(self.origin, self.peer_as, self.peer_ip, next_hop, self.merge_as_path(), self.comm)
         if self.available_paths.get(prefix):
             if new_entry not in self.available_paths[prefix]:
                 self.available_paths[prefix].append(new_entry)
@@ -205,9 +205,9 @@ class BgpDump:
                 self.atomic_aggr = 'AG'
             elif attr['type'][0] == BGP_ATTR_T['AGGREGATOR']:
                 self.aggr = '%s %s' % (attr['value']['as'], attr['value']['id'])
-            elif attr['type'][0] == BGP_ATTR_T['COMMUNITY']:
-                self.comm = ' '.join(attr['value'])
             """
+        elif attr['type'][0] == BGP_ATTR_T['COMMUNITY']:
+            self.comm = ' '.join(attr['value'])
         elif attr['type'][0] == BGP_ATTR_T['MP_REACH_NLRI']:
             self.next_hop = attr['value']['next_hop']
             if self.type != 'BGP4MP':
