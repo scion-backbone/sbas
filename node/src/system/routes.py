@@ -5,6 +5,9 @@ from src.config import consts
 
 # Routing tables
 # - Secure customer prefixes
+table_control = 5
+priority_control = 5
+
 table_secure = 10
 priority_secure = 10 # highest priority
 # - Internet routing table
@@ -70,6 +73,12 @@ def setup():
             "table", str(table_secure)
         ])
 
+        _run([
+            "route", "add",
+            node['secure-subprefix'], "dev", tunnel_dev,
+            "table", str(table_control)
+        ])
+
     # 4) Set up gateway for outbound Internet traffic
     #    - either deliver through local Internet gateway, or
     #    - route everything to a remote SBAS node that has an Internet gateway
@@ -88,6 +97,8 @@ def setup():
                 "lookup", str(table_internet),
                 "priority", str(priority_internet)
             ])
+
+
     else:
         # Route all traffic from local customers to remote gateway
         _run([
@@ -111,7 +122,13 @@ def setup():
         "lookup", str(table_internet),
         "priority", str(priority_internet)
     ])
-
+    router_ip = local['secure-router-ip'] + '/32' 
+    _run([
+        "rule", "add",
+        "from", router_ip,
+        "lookup", str(table_control),
+        "priority", str(priority_control)
+    ])
 
 def teardown():
     local = parser.get_local_node()
@@ -139,11 +156,12 @@ def teardown():
             pass
 
     # Flush routing tables
-    for table in [table_secure, table_internet]:
-        _run(["route", "flush", "table", str(table)])
+    for table in [table_secure, table_internet, table_control]:
+        
 
         # Delete rules that belong to this table
         try:
+            _run(["route", "flush", "table", str(table)])
             while True: # need to call it multiple times, only one is deleted at a time
                 _run(["rule", "del", "lookup", str(table)], silent=True)
         except:
