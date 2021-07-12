@@ -14,8 +14,10 @@ from system import mrt_path_extraction
 #from src.config import consts
 #from src.system import mrt_path_extraction 
 
-table_optimized = 15
-priority_optimized = 15
+table_optimized = 7
+priority_optimized = 7
+INTERNAL_COMMUNITY = 50
+PEER_COMMUNITY = 100
 
 class RoutingError(Exception):
     pass
@@ -136,7 +138,8 @@ def path_optimization():
     
     ip_to_scion_address = map_pop_ip_to_scion_address()
     secure_router_ip = parser.get_local_node()['secure-router-ip']
-    
+    sbas_asn = parser.get_sbas_asn()
+
     # 2) Read the latest BIRD mrtdump file and extract the available paths for each prefix
     newest_mrtdump_path = get_latest_bird_mrt_dump()
     path_dict = mrt_path_extraction.main(newest_mrtdump_path)
@@ -146,7 +149,7 @@ def path_optimization():
         available_paths = path_dict[dst_prefix]
         print(dst_prefix)
 
-        best_sbas_option = {'path_entry': None, 'metric_total': None}
+        best_secure_option = {'path_entry': None, 'metric_total': None}
         best_global_option = {'path_entry': None, 'metric_total': None}
         # 4) For each prefix, iterate over available paths
         for path_entry in available_paths:
@@ -154,7 +157,14 @@ def path_optimization():
             print(path_entry)
             path_metric_total = 0
             path = path_entry.path
-            if next_hop in ip_to_scion_address:
+            if path_entry.community_value in [f'''{sbas_asn}:{INTERNAL_COMMUNITY}''', f'''{sbas_asn}:{PEER_COMMUNITY}''']:
+                path_metric_total = get_global_as_path_metric(path)
+                if (best_secure_option['path_entry'] is None) or (path_metric_total < best_secure_option['metric_total']):
+                    best_secure_option['metric_total'] = path_metric_total
+                    best_secure_option['path_entry'] = path_entry
+                    best_secure_option['gateway'] = path_entry.next_hop
+                    best_secure_option['type'] = 'client_tunnel'
+            elif next_hop in ip_to_scion_address:
                 #must go through sbas before exiting and we need to find the best egress PoP
                 path_metric_total = get_metric_to_pop(next_hop)
                  
@@ -164,11 +174,12 @@ def path_optimization():
                     path_metric_total += get_global_as_path_metric(path)
                     
                 # Check if the new path for this prefix has a better metric value than the previous "via SBAS" ones and update accordingly
-                if (best_sbas_option['path_entry'] is None) or (path_metric_total < best_sbas_option['metric_total']):
-                    best_sbas_option['metric_total'] = path_metric_total
+                if (best_secure_option['path_entry'] is None) or (path_metric_total < best_secure_option['metric_total']):
+                    best_secure_option['metric_total'] = path_metric_total
                     gateway = f"sbas-{ip_to_scion_address[next_hop]['nodename']}"        
-                    best_sbas_option['path_entry'] = path_entry
-                    best_sbas_option['gateway'] = gateway 
+                    best_secure_option['path_entry'] = path_entry
+                    best_secure_option['gateway'] = gateway
+                    best_secure_option['type'] = 'sbas_route' 
             else:
                 # Path goes via the VPN client or BGP client and not SBAS
                 path_metric_total = get_global_as_path_metric(path)
@@ -181,14 +192,22 @@ def path_optimization():
                     #TODO: must find gateway      
                 
         # Add routing rule for prefix in custom table
-        if best_sbas_option['path_entry'] :
+        if best_secure_option['path_entry'] :
             print('here')
-            
-            _run([
-                "route", "add", 
-                dst_prefix, "dev", best_sbas_option['gateway'],                
-                "table", str(table_optimized)
-            ])  
+            if best_secure_option['type'] == 'sbas_route':
+                _run([
+                    "route", "add", 
+                    dst_prefix, "dev", best_secure_option['gateway'],                
+                    "table", str(table_optimized)
+                ])
+            elif best_secure_option['type'] == 'client_tunnel':
+                _run([
+                    "route", "add", 
+                    dst_prefix, "via", best_secure_option['gateway'],    #TODO            
+                    "table", str(table_optimized)
+                ]) 
+            else:
+                print('Unknown type of secure route given')
             
         elif best_global_option['path_entry']:
             print('im here')

@@ -7,6 +7,8 @@ import subprocess
 
 KERNEL_TABLE_NUMBER = 151
 BIRD_TABLE_NAME = 'bgpannounce'
+INTERNAL_COMMUNITY = 50
+PEER_COMMUNITY = 100
 
 def setup():
     local = parser.get_local_node()
@@ -42,6 +44,8 @@ def setup():
     for k, v in {
         'KERNEL_TABLE_NUMBER': KERNEL_TABLE_NUMBER,
         'BIRD_TABLE_NAME': BIRD_TABLE_NAME,
+        'INTERNAL_COMMUNITY': INTERNAL_COMMUNITY,
+        'PEER_COMMUNITY': PEER_COMMUNITY,
         'BIRD_MRTDUMP_DIR': consts.BIRD_MRTDUMP_DIR,
         'SECURE_ROUTER_IP': local['secure-router-ip'],
         'SECURE_SUBPREFIX': local['secure-subprefix'],
@@ -100,7 +104,7 @@ def setup():
                             import filter {{
                                 if (!safe_import_from_clients({client_asn})) then {{reject;}}
                                 bgp_community = -empty-;
-                                bgp_community.add(({client_asn},50));
+                                bgp_community.add(({sbas_asn},{INTERNAL_COMMUNITY}));
                                 accept;
                             }};
                         }};
