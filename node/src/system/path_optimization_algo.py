@@ -2,6 +2,8 @@ import subprocess
 import json
 import ipaddress 
 import os
+import re
+import requests
 
 #TODO: change paths for importing packages before incorporating in sbas code
 import sys
@@ -67,38 +69,67 @@ def get_latest_bird_mrt_dump():
         print('Provided directory is not existing')
         exit(1)
 
-def get_available_scion_paths(scion_destination):
-    """Function that finds the available SCION paths from the running node to a SCION destination.
 
-       Input args:
-       scion_destination: string that contains the SCION address of the destination node (e.g "16-ffaa:0:1009")
+    '''
+    def get_available_scion_paths(scion_destination):
+        """Function that finds the available SCION paths from the running node to a SCION destination.
 
-       Output: List of available paths to destination SCION node. Each path is a dictionary with the keys: 
-       "fingerprint" (string), 
-       "hops" (list), 
-       "next_hops" (string),
-       "expiry" (string), 
-       "mtu": integer, 
-       "latency" (list), 
-       "status" (string), 
-       "local_ip" (string)
-    """
-    
-    try:
-        #1. Run subprocess scion showpaths {SCION Destination address}
-        available_paths_bytes = subprocess.check_output("scion showpaths " + scion_destination + " -j", stderr=subprocess.STDOUT, shell=True)
+        Input args:
+        scion_destination: string that contains the SCION address of the destination node (e.g "16-ffaa:0:1009")
+
+        Output: List of available paths to destination SCION node. Each path is a dictionary with the keys: 
+        "fingerprint" (string), 
+        "hops" (list), 
+        "next_hops" (string),
+        "expiry" (string), 
+        "mtu": integer, 
+        "latency" (list), 
+        "status" (string), 
+        "local_ip" (string)
+        """
         
-        #2. Save all paths in an array
-        available_paths_string = available_paths_bytes.decode("utf8")
-        available_paths_json = json.loads(available_paths_string)
-        available_paths_list = available_paths_json["paths"]
-    
-    except subprocess.CalledProcessError as e:
-        #If there are no scion paths available, return empty list
-        print(f"Command failed: {' '.join(e.cmd)} -> \"{str(e.output)}\"")
-        available_paths_list = []
+        try:
+            #1. Run subprocess scion showpaths {SCION Destination address}
+            available_paths_bytes = subprocess.check_output("scion showpaths " + scion_destination + " -j", stderr=subprocess.STDOUT, shell=True)
+            
+            #2. Save all paths in an array
+            available_paths_string = available_paths_bytes.decode("utf8")
+            available_paths_json = json.loads(available_paths_string)
+            available_paths_list = available_paths_json["paths"]
+        
+        except subprocess.CalledProcessError as e:
+            #If there are no scion paths available, return empty list
+            print(f"Command failed: {' '.join(e.cmd)} -> \"{str(e.output)}\"")
+            available_paths_list = []
 
-    return available_paths_list
+        return available_paths_list
+    '''
+
+def get_current_scionpath_to_egress(dst_as):
+    get_status = requests.get('http://127.0.0.1:30456/status')
+    status_text = get_status.text
+    print(status_text)
+    pattern = f'''ISD-AS {dst_as}
+  SESSION \d*, POLICY_ID \d*, REMOTE: \d*\.\d*\.\d*\.\d*:\d*, HEALTHY true
+    PATHS:
+      STATE                                        PATH
+      -->                                          Hops: \[(.*)\] MTU: \d* NextHop: (.*):'''
+
+    search_session = re.search(pattern, status_text)
+
+    if match_Obj:
+        #print(search_session.groups())
+        #print(search_session.group(1))    
+        #print(search_session.group(2))
+        paths =search_session.group(1) 
+        path_hops = re.split(' \d*\>\d* ', paths)
+        #print(path_hops)
+        return path_hops
+
+    else:
+        print('No matching session found for SCION destination AS')
+        return None
+
 
 def map_pop_ip_to_scion_address():
     ip_to_scion_address_dict = {}
@@ -147,7 +178,7 @@ def path_optimization():
     # 3) Iterate over each prefix:
     for dst_prefix in path_dict.keys():
         available_paths = path_dict[dst_prefix]
-        print(dst_prefix)
+        print(dst_prefix + '**********************************************')
 
         best_secure_option = {'path_entry': None, 'metric_total': None}
         best_global_option = {'path_entry': None, 'metric_total': None}
@@ -167,8 +198,10 @@ def path_optimization():
             elif next_hop in ip_to_scion_address:
                 #must go through sbas before exiting and we need to find the best egress PoP
                 path_metric_total = get_metric_to_pop(next_hop)
-                 
+                scion_address = ip_to_scion_address[next_hop]['scion_address']
+                scion_path_hops = get_current_scionpath_to_egress(scion_address)
                 #scion_paths = get_available_scion_paths(ip_to_scion_address[next_hop]['scion_address'])
+                
                 if path != '':
                     # Extract external AS path and get the total metric value
                     path_metric_total += get_global_as_path_metric(path)
