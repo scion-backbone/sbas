@@ -51,12 +51,10 @@ def bird_mrtdump_cleanup():
                     try:
 	                    os.remove(path)
                     except OSError as error:
-	                    print("Error removing file " + path)
-            
+	                    print("Error removing file " + path)    
     except:
         print('Provided directory is not existing')
         exit(1) 
-
 
 def get_latest_bird_mrt_dump():
     try:
@@ -69,68 +67,6 @@ def get_latest_bird_mrt_dump():
         print('Provided directory is not existing')
         exit(1)
 
-
-    '''
-    def get_available_scion_paths(scion_destination):
-        """Function that finds the available SCION paths from the running node to a SCION destination.
-
-        Input args:
-        scion_destination: string that contains the SCION address of the destination node (e.g "16-ffaa:0:1009")
-
-        Output: List of available paths to destination SCION node. Each path is a dictionary with the keys: 
-        "fingerprint" (string), 
-        "hops" (list), 
-        "next_hops" (string),
-        "expiry" (string), 
-        "mtu": integer, 
-        "latency" (list), 
-        "status" (string), 
-        "local_ip" (string)
-        """
-        
-        try:
-            #1. Run subprocess scion showpaths {SCION Destination address}
-            available_paths_bytes = subprocess.check_output("scion showpaths " + scion_destination + " -j", stderr=subprocess.STDOUT, shell=True)
-            
-            #2. Save all paths in an array
-            available_paths_string = available_paths_bytes.decode("utf8")
-            available_paths_json = json.loads(available_paths_string)
-            available_paths_list = available_paths_json["paths"]
-        
-        except subprocess.CalledProcessError as e:
-            #If there are no scion paths available, return empty list
-            print(f"Command failed: {' '.join(e.cmd)} -> \"{str(e.output)}\"")
-            available_paths_list = []
-
-        return available_paths_list
-    '''
-
-def get_current_scionpath_to_egress(dst_as):
-    get_status = requests.get('http://127.0.0.1:30456/status')
-    status_text = get_status.text
-    print(status_text)
-    pattern = f'''ISD-AS {dst_as}
-  SESSION \d*, POLICY_ID \d*, REMOTE: \d*\.\d*\.\d*\.\d*:\d*, HEALTHY true
-    PATHS:
-      STATE                                        PATH
-      -->                                          Hops: \[(.*)\] MTU: \d* NextHop: (.*):'''
-
-    search_session = re.search(pattern, status_text)
-
-    if match_Obj:
-        #print(search_session.groups())
-        #print(search_session.group(1))    
-        #print(search_session.group(2))
-        paths =search_session.group(1) 
-        path_hops = re.split(' \d*\>\d* ', paths)
-        #print(path_hops)
-        return path_hops
-
-    else:
-        print('No matching session found for SCION destination AS')
-        return None
-
-
 def map_pop_ip_to_scion_address():
     ip_to_scion_address_dict = {}
     pop_nodes = parser.get_nodes()
@@ -139,23 +75,54 @@ def map_pop_ip_to_scion_address():
         #ip_to_scion_address_dict[node['secure-vpn-ip']] = {'scion_address': node['scion-ia'], 'nodename': name}
     return ip_to_scion_address_dict 
     
+def get_current_scionpath_to_egress(dst_as):
+    get_status = requests.get('http://127.0.0.1:30456/status')
+    status_text = get_status.text
+    pattern = f'''ISD-AS {dst_as}
+  SESSION \d*, POLICY_ID \d*, REMOTE: \d*\.\d*\.\d*\.\d*:\d*, HEALTHY true
+    PATHS:
+      STATE                                        PATH
+      -->                                          Hops: \[(.*)\] MTU: \d* NextHop: (.*):'''
+    search_session = re.search(pattern, status_text)
+
+    if search_session:
+        paths =search_session.group(1) 
+        path_hops = re.split(' \d*\>\d* ', paths)
+        #print(path_hops)
+        return path_hops
+    else:
+        print('No matching session found for SCION destination AS')
+        return None
+
 def get_as_metric(asn):
     #TODO: add fetching of metric data for an AS
     return 1
 
-def get_metric_to_pop(pop_ip_address):
+def get_metric_to_pop(path_hops_list):
     #TODO: add fetching of metric data for a path via SBAS to a PoP
-    return 1
+    metric = 0
+    for hop in path_hops_list:
+        metric +=1
+    return metric
 
-def get_global_as_path_metric(as_path):
+def get_global_as_path_metric(path_hops_list):
     global_path_metric = 0
-    as_path_list = as_path.split(' ')
 
-    for asn in as_path_list:
+    for asn in path_hops_list:
        global_path_metric += get_as_metric(asn)
 
     return global_path_metric
 
+def update_best_path(best_path, checked_path, path_metric, gateway, num_hops, path_type= None):
+
+    if (best_path['path_entry'] is None) or (path_metric < best_path['metric_total']) or (path_metric_total == best_path['metric_total'] and num_hops < best_path['number_of_hops']):
+        best_path['path_entry'] = checked_path
+        best_path['gateway'] = gateway
+        best_path['number_of_hops'] = num_hops
+        if path_type:
+            best_path['type'] = path_type
+
+    return best_path 
 
 def path_optimization():
     
@@ -188,45 +155,47 @@ def path_optimization():
             print(path_entry)
             path_metric_total = 0
             path = path_entry.path
+            global_path_hops = path.split(" ")
+
             if path_entry.community_value in [f'''{sbas_asn}:{INTERNAL_COMMUNITY}''', f'''{sbas_asn}:{PEER_COMMUNITY}''']:
-                path_metric_total = get_global_as_path_metric(path)
-                if (best_secure_option['path_entry'] is None) or (path_metric_total < best_secure_option['metric_total']):
-                    best_secure_option['metric_total'] = path_metric_total
-                    best_secure_option['path_entry'] = path_entry
-                    best_secure_option['gateway'] = path_entry.next_hop
-                    best_secure_option['type'] = 'client_tunnel'
+                # If path to destination is direct client VPN tunnel
+                path_metric_total = get_global_as_path_metric(global_path_hops)
+                number_of_hops = len(global_path_hops)
+                print(number_of_hops)
+                best_secure_option = update_best_path(best_secure_option, path_entry, path_metric_total, path_entry.next_hop, number_of_hops, 'client_tunnel')       
+
             elif next_hop in ip_to_scion_address:
-                #must go through sbas before exiting and we need to find the best egress PoP
-                path_metric_total = get_metric_to_pop(next_hop)
+                #If path to destination goes through SBAS
                 scion_address = ip_to_scion_address[next_hop]['scion_address']
                 scion_path_hops = get_current_scionpath_to_egress(scion_address)
-                #scion_paths = get_available_scion_paths(ip_to_scion_address[next_hop]['scion_address'])
-                
+                number_of_hops = len(scion_path_hops) 
+
+                if not scion_path_hops:
+                    print("No known paths to egress PoP")
+                    continue
+
+                path_metric_total = get_metric_to_pop(scion_path_hops)
+ 
                 if path != '':
-                    # Extract external AS path and get the total metric value
-                    path_metric_total += get_global_as_path_metric(path)
+                    # Extract external section of AS path and get the total metric value
+                    path_metric_total += get_global_as_path_metric(global_path_hops)
+                    number_of_hops += len(global_path_hops)
+                print(number_of_hops)
                     
                 # Check if the new path for this prefix has a better metric value than the previous "via SBAS" ones and update accordingly
-                if (best_secure_option['path_entry'] is None) or (path_metric_total < best_secure_option['metric_total']):
-                    best_secure_option['metric_total'] = path_metric_total
-                    gateway = f"sbas-{ip_to_scion_address[next_hop]['nodename']}"        
-                    best_secure_option['path_entry'] = path_entry
-                    best_secure_option['gateway'] = gateway
-                    best_secure_option['type'] = 'sbas_route' 
-            else:
-                # Path goes via the VPN client or BGP client and not SBAS
-                path_metric_total = get_global_as_path_metric(path)
+                gateway = f"sbas-{ip_to_scion_address[next_hop]['nodename']}"        
+                best_secure_option = update_best_path(best_secure_option, path_entry, path_metric_total, gateway, number_of_hops, 'sbas_route')
 
-                # Check if the new path for this prefix has a better metric value than the previous "non-SBAS" ones and update accordingly
-                if (best_global_option['path_entry'] is None) or (path_metric_total < best_global_option['metric_total']):
-                    best_global_option['metric_total'] = path_metric_total
-                    best_global_option['path_entry'] = path_entry
-                    best_global_option['gateway'] = path_entry.next_hop
-                    #TODO: must find gateway      
+            else:
+                # Path goes via global path and not SBAS
+                path_metric_total = get_global_as_path_metric(global_path_hops)
+                number_of_hops = len(global_path_hops) 
                 
+                # Check if the new path for this prefix has a better metric value than the previous "non-SBAS" ones and update accordingly
+                best_global_option = update_best_path(best_global_option, path_entry, path_metric_total, path_entry.next_hop, number_of_hops)
+
         # Add routing rule for prefix in custom table
         if best_secure_option['path_entry'] :
-            print('here')
             if best_secure_option['type'] == 'sbas_route':
                 _run([
                     "route", "add", 
@@ -240,11 +209,8 @@ def path_optimization():
                     "table", str(table_optimized)
                 ]) 
             else:
-                print('Unknown type of secure route given')
-            
-        elif best_global_option['path_entry']:
-            print('im here')
-            
+                print('Unknown type of secure route given')           
+        elif best_global_option['path_entry']:            
             _run([
                 "route", "add", 
                 dst_prefix, "via", best_global_option['gateway'],    #TODO            
