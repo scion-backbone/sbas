@@ -146,9 +146,11 @@ def path_optimization():
     for dst_prefix in path_dict.keys():
         available_paths = path_dict[dst_prefix]
         print(dst_prefix + '**********************************************')
-
+        
+        best_customer_option = {'path_entry': None, 'metric_total': None}
         best_secure_option = {'path_entry': None, 'metric_total': None}
         best_global_option = {'path_entry': None, 'metric_total': None}
+        
         # 4) For each prefix, iterate over available paths
         for path_entry in available_paths:
             next_hop = path_entry.next_hop
@@ -157,13 +159,37 @@ def path_optimization():
             path = path_entry.path
             global_path_hops = path.split(" ")
 
-            if path_entry.community_value in [f'''{sbas_asn}:{INTERNAL_COMMUNITY}''', f'''{sbas_asn}:{PEER_COMMUNITY}''']:
+            if path_entry.community_value == f'''{sbas_asn}:{INTERNAL_COMMUNITY}''':
                 # If path to destination is direct client VPN tunnel
                 path_metric_total = get_global_as_path_metric(global_path_hops)
                 number_of_hops = len(global_path_hops)
                 print(number_of_hops)
-                best_secure_option = update_best_path(best_secure_option, path_entry, path_metric_total, path_entry.next_hop, number_of_hops, 'client_tunnel')       
+                best_customer_option = update_best_path(best_customer_option, path_entry, path_metric_total, path_entry.next_hop, number_of_hops, 'client_tunnel')       
+            
+            elif (path_entry.community_value == f'''{sbas_asn}:{PEER_COMMUNITY}''') and ():  
+                scion_address = ip_to_scion_address[next_hop]['scion_address']
+                scion_path_hops = get_current_scionpath_to_egress(scion_address)
+                number_of_hops = len(scion_path_hops) 
 
+                if not scion_path_hops:
+                    print("No known paths to egress PoP")
+                    continue
+
+                path_metric_total = get_metric_to_pop(scion_path_hops)
+ 
+                if path != '':
+                    # Extract external section of AS path and get the total metric value
+                    path_metric_total += get_global_as_path_metric(global_path_hops)
+                    number_of_hops += len(global_path_hops)
+                print(number_of_hops)
+                    
+                # Check if the new path for this prefix has a better metric value than the previous "via SBAS" ones and update accordingly
+                gateway = f"sbas-{ip_to_scion_address[next_hop]['nodename']}"        
+                path_metric_total = get_global_as_path_metric(global_path_hops)
+                number_of_hops = len(global_path_hops)
+                print(number_of_hops)
+                best_customer_option = update_best_path(best_customer_option, path_entry, path_metric_total, gateway, number_of_hops, 'sbas_route')       
+            
             elif next_hop in ip_to_scion_address:
                 #If path to destination goes through SBAS
                 scion_address = ip_to_scion_address[next_hop]['scion_address']
@@ -195,21 +221,27 @@ def path_optimization():
                 best_global_option = update_best_path(best_global_option, path_entry, path_metric_total, path_entry.next_hop, number_of_hops)
 
         # Add routing rule for prefix in custom table
-        if best_secure_option['path_entry'] :
-            if best_secure_option['type'] == 'sbas_route':
+        if best_customer_option['path_entry']:
+            if best_customer_option['type'] == 'sbas_route':
+                _run([
+                    "route", "add", 
+                    dst_prefix, "dev", best_customer_option['gateway'],                
+                    "table", str(table_optimized)
+                ])
+            elif best_customer_option['type'] == 'client_tunnel':
+                _run([
+                    "route", "add", 
+                    dst_prefix, "via", best_customer_option['gateway'],    #TODO            
+                    "table", str(table_optimized)
+                ]) 
+            else:
+                print('Unknown type of secure route given')  
+        elif best_secure_option['path_entry'] :
                 _run([
                     "route", "add", 
                     dst_prefix, "dev", best_secure_option['gateway'],                
                     "table", str(table_optimized)
                 ])
-            elif best_secure_option['type'] == 'client_tunnel':
-                _run([
-                    "route", "add", 
-                    dst_prefix, "via", best_secure_option['gateway'],    #TODO            
-                    "table", str(table_optimized)
-                ]) 
-            else:
-                print('Unknown type of secure route given')           
         elif best_global_option['path_entry']:            
             _run([
                 "route", "add", 
@@ -221,11 +253,12 @@ def path_optimization():
             print('No good path found for ' + dst_prefix)
     
     _run([
-        "rule", "add",
-        "from", "all",
-        "lookup", str(table_optimized),
-        "priority", str(priority_optimized)
+    "rule", "add",
+    "from", "all",
+    "lookup", str(table_optimized),
+    "priority", str(priority_optimized)
     ])
+    
 
     bird_mrtdump_cleanup()
 
