@@ -7,3 +7,6 @@
 
 [tunnel]
     name = "sig"
+
+[metrics]
+    prometheus = "127.0.0.1:30456"
