@@ -88,7 +88,7 @@ def get_current_scionpath_to_egress(dst_as):
     if search_session:
         paths =search_session.group(1) 
         path_hops = re.split(' \d*\>\d* ', paths)
-        #print(path_hops)
+        #print(path_hops)            
         return path_hops
     else:
         print('No matching session found for SCION destination AS')
@@ -98,11 +98,19 @@ def get_as_metric(asn):
     #TODO: add fetching of metric data for an AS
     return 1
 
-def get_metric_to_pop(path_hops_list):
+def get_sbas_metric(path_hops_list):
     #TODO: add fetching of metric data for a path via SBAS to a PoP
+    with open('../green_routing/scionAS_to_energy_mapping.json',  'r') as f:
+        scionAS_to_energy = json.load(f)
+
     metric = 0
     for hop in path_hops_list:
-        metric +=1
+        hop = hop.replace('16-','')
+        if hop in scionAS_to_energy:
+            metric += scionAS_to_energy[hop]
+        else:
+            print('hop not found '+ hop)
+    print(metric)
     return metric
 
 def get_global_as_path_metric(path_hops_list):
@@ -175,7 +183,7 @@ def path_optimization():
                     print("No known paths to egress PoP")
                     continue
 
-                path_metric_total = get_metric_to_pop(scion_path_hops)
+                path_metric_total = get_sbas_metric(scion_path_hops)
  
                 if path != '':
                     # Extract external section of AS path and get the total metric value
@@ -195,12 +203,12 @@ def path_optimization():
                 scion_address = ip_to_scion_address[next_hop]['scion_address']
                 scion_path_hops = get_current_scionpath_to_egress(scion_address)
                 number_of_hops = len(scion_path_hops) 
-
+                print(scion_path_hops)
                 if not scion_path_hops:
                     print("No known paths to egress PoP")
                     continue
 
-                path_metric_total = get_metric_to_pop(scion_path_hops)
+                path_metric_total = get_sbas_metric(scion_path_hops)
  
                 if path != '':
                     # Extract external section of AS path and get the total metric value
