@@ -8,8 +8,10 @@ from src.config import wg
 from src.system import routes
 from src.config import bird
 import time, threading
+from src.system import path_optimization_algo
+from src.config import consts
 
-WAIT_TIME_SECONDS = 2
+WAIT_TIME_SECONDS = 3600
 def configure():
     # Re-generate the assets that depend on SBAS topology / configuration
     sig.update()
@@ -33,6 +35,13 @@ def foo():
     testfile.close()
     return
 
+def periodic_mrt_cleanup():
+    my_timer = threading.Timer(WAIT_TIME_SECONDS, periodic_mrt_cleanup) 
+    my_timer.start()
+    print('sth')
+    path_optimization_algo.bird_mrtdump_cleanup()
+    return
+
 def start():
     # Configure system routes
     try:
@@ -40,7 +49,8 @@ def start():
         routes.setup()
         wg.start()
         bird.start()
-        foo()
+        #foo()
+        periodic_mrt_cleanup()
     except routes.RoutingError:
         print("Error during route setup. Cleaning up...")
         stop()

@@ -1,8 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys, argparse, copy
 from datetime import *
+sys.path.append('/home/scionlab/.local/lib/python3.8/site-packages')
 from mrtparse import *
+#import mrtparse
 from collections import namedtuple
 
 peer = None

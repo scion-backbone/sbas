@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import subprocess
 import json
 import ipaddress 
@@ -6,15 +7,15 @@ import re
 import requests
 
 #TODO: change paths for importing packages before incorporating in sbas code
-import sys
-sys.path.append('/home/scionlab/sbas/node/src/')
-from config import parser 
-from config import consts
-from system import mrt_path_extraction
+#import sys
+#sys.path.append('/home/scionlab/sbas/node/src/')
+#from config import parser 
+#from config import consts
+#from system import mrt_path_extraction
 
-#from src.config import parser
-#from src.config import consts
-#from src.system import mrt_path_extraction 
+from src.config import parser
+from src.config import consts
+from src.system import mrt_path_extraction 
 
 OPTIMIZED_TABLE = 7
 OPTIMIZED_PRIORITY = 7
