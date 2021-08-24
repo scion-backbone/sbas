@@ -6,9 +6,17 @@ sudo apt install -y \
     wireguard
 
 # Install BIRD 2.0.8 manually
-# When v2.0.8 becomes available in apt-get, replace lines below with:
+# It is necessary to have at least version 2.0.8. Older versions do not support the necessary features for SBAS.
+# At the time of writing (September 2021), v2.0.8 is not available in apt-get and needs to be compiled from the source code.
+# For some reason, all features are supported only when I install v2.0.7 through apt-get and then install v2.0.8 from the repo.
+# When v2.0.8 becomes available in apt-get, please replace lines below with:
 # sudo apt install bird2=2.0.8
-git clone [https://gitlab.nic.cz/labs/bird.git](https://gitlab.nic.cz/labs/bird.git)
+# Beginning of BIRDv2.0.8 installation
+wget http://archive.ubuntu.com/ubuntu/pool/main/i/init-system-helpers/init-system-helpers_1.57_all.deb
+sudo dpkg -i init-system-helpers_1.57_all.deb
+sudo apt install bird2
+
+git clone https://gitlab.nic.cz/labs/bird.git
 cd bird
 git checkout v2.0.8
 sudo apt install -y autoconf
@@ -21,3 +29,4 @@ make
 sudo make install
 
 cd ..
+# End of BIRDv2.0.8 installation
