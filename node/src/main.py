@@ -8,8 +8,11 @@ from src.config import wg
 from src.system import routes
 from src.config import bird
 import time, threading
-from src.system import path_optimization_algo
+from src.system import optimized_path_selection
 from src.config import consts
+from pyroute2 import IPRoute
+
+
 
 WAIT_TIME_SECONDS = 3600
 def configure():
@@ -22,13 +25,13 @@ def foo():
     print('this is my time' + str(time.ctime()))
     my_timer = threading.Timer(10, foo)
     my_timer.start()
-    
+
     i = 0
     while i <10:
         i+=1
         time.sleep(1)
         print('sth')
-    
+
     testfile = open('/home/scionlab/sbas/node/src/test.log', "a")
     testfile.write('this is my time' + str(time.ctime()))
     testfile.flush()
@@ -36,10 +39,10 @@ def foo():
     return
 
 def periodic_mrt_cleanup():
-    my_timer = threading.Timer(WAIT_TIME_SECONDS, periodic_mrt_cleanup) 
+    my_timer = threading.Timer(WAIT_TIME_SECONDS, periodic_mrt_cleanup)
     my_timer.start()
     print('sth')
-    path_optimization_algo.bird_mrtdump_cleanup()
+    optimized_path_selection.bird_mrtdump_cleanup()
     return
 
 def start():
@@ -49,19 +52,19 @@ def start():
         routes.setup()
         wg.start()
         bird.start()
-        #foo()
+        ip = IPRoute()
+        ip.route("add", dst="10.0.0.0", mask = 23, gateway = '66.180.191.130', table=8)
         periodic_mrt_cleanup()
     except routes.RoutingError:
         print("Error during route setup. Cleaning up...")
         stop()
         sys.exit(1)
-    
+
 def stop():
     print("Removing routes...")
     routes.teardown()
     wg.stop()
     bird.stop()
-    print("done.")
 
 def graceful_stop(sig, frame):
     stop()
