@@ -15,7 +15,7 @@ def get_config():
         with open(os.path.join(consts.ETC_DIR, consts.NODES_FILE), 'r') as f:
             config = json.load(f)
     return config
-       
+
 def get_nodes():
     global nodes
     nodes = get_config()["nodes"]

@@ -162,7 +162,6 @@ def teardown():
 
     # Flush routing tables
     for table in [table_secure, table_internet, table_control]:
-        
 
         # Delete rules that belong to this table
         try:

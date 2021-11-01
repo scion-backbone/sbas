@@ -17,7 +17,7 @@ def setup():
     local_router_ip = local['secure-router-ip']
     sbas_asn = parser.get_sbas_asn()
     sbas_prefix = parser.get_sbas_prefix()
-    
+
     # Prepare custom announcements for SBAS prefix
     try:
         # Create directory to store configuration for custom announcements
@@ -28,18 +28,18 @@ def setup():
 
     sbas_network = IPv4Network(sbas_prefix)
     secure_prefix_filter_list = ', '.join([str(subnet) for subnet in sbas_network.subnets()])
-    
-    # Advertise the two subnetworks of the secure SBAS prefix and create the necessary files 
+
+    # Advertise the two subnetworks of the secure SBAS prefix and create the necessary files
     for subnet in sbas_network.subnets():
         route_announcement_content = f"route {subnet} unreachable;"
         with open(os.path.join(consts.ETC_BIRD, consts.BIRD_ROUTE_ANNOUNCEMENTS_DIR, str(subnet).replace('/', "-")), "w") as f:
-            f.write(route_announcement_content)  
+            f.write(route_announcement_content)
 
     # Import bird template configuration file
     content = ""
     with open("src/config/bird-template.conf", "r") as f:
         content = f.read()
-    
+
     # Substitute variables in template
     for k, v in {
         'KERNEL_TABLE_NUMBER': KERNEL_TABLE_NUMBER,
@@ -50,7 +50,7 @@ def setup():
         'SECURE_ROUTER_IP': local['secure-router-ip'],
         'SECURE_SUBPREFIX': local['secure-subprefix'],
         'SECURE_PREFIX_LIST': secure_prefix_filter_list,
-        'SBAS_ASN': sbas_asn 
+        'SBAS_ASN': sbas_asn
     }.items():
         content = content.replace(f"${k}", str(v))
 
@@ -63,14 +63,14 @@ def setup():
             include "route-announcements/*";
         ''')
 
-    for name, node in remote_pops.items(): 
+    for name, node in remote_pops.items():
         remote_nodename = name
         remote_asn = sbas_asn
         remote_subprefix = node['secure-subprefix']
         
         # Add static routes in the static protocol for each subprefix of the other PoPs
         # In multihop BGP sessions, BIRD cannot resolve the next hop and shows the learnt prefixes as unreachable.
-        # To resolve this issue, we need to explicitly specify routes to the next hops. Adding static routes for the 
+        # To resolve this issue, we need to explicitly specify routes to the next hops. Adding static routes for the
         # subprefixes of the PoPs resolves this issue.
         static_route = f'    route {remote_subprefix} via {local_router_ip};\n'
         static_protocol += static_route
@@ -78,20 +78,20 @@ def setup():
         # Define iBGP sessions with other PoPs
         ibgp_session = textwrap.dedent(f'''
         protocol bgp {remote_nodename}01 from iBGP_pop {{
-            neighbor {node['secure-router-ip']} as {remote_asn}; 
+            neighbor {node['secure-router-ip']} as {remote_asn};
         }}
 
         ''')
         content += ibgp_session
     
     # End configuration of static protocol
-    static_protocol += '}' 
+    static_protocol += '}'
 
     # Define eBGP sessions with connected customers
     connected_clients = local['connected-clients']
     for client in connected_clients:
         client_info = all_clients.get(client)
-        if client_info: 
+        if client_info:
             client_asn =  client_info['as-number']
             client_providers = client_info['providers']
 
@@ -108,7 +108,7 @@ def setup():
                                 accept;
                             }};
                         }};
-                    }} 
+                    }}
 
                     ''')
                     content += ebgp_session
