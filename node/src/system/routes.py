@@ -4,15 +4,17 @@ from src.config import parser
 from src.config import consts
 
 # Routing tables
-# - Secure customer prefixes
+# - Routing table for control packets
 table_control = 5
 priority_control = 5
 
+# - Routing table for data plane with optimized routes
 table_secure = 10
-priority_secure = 10 # highest priority
-# - Internet routing table
+priority_secure = 10
+
+# - General Internet routing table
 table_internet = 20
-priority_internet = 20 # lowest priority
+priority_internet = 20
 
 # NOTE: The SCION-IP gateway will also set up routes (default table)
 # -> check the documentation for a complete picture!
@@ -50,7 +52,7 @@ def setup():
     # 2) Add secure router ip address to loopback
     #    - required for BGP session configuration
     secure_router_ip = f"{local['secure-router-ip']}/32"
-    _run(["addr", "add", secure_router_ip, "dev", "lo"])   
+    _run(["addr", "add", secure_router_ip, "dev", "lo"])
 
     # 3) Set up GRE tunnels to remote SBAS nodes
     #    - create a tunnel device "sbas-{node}" for each remote node
@@ -122,13 +124,16 @@ def setup():
         "lookup", str(table_internet),
         "priority", str(priority_internet)
     ])
-    router_ip = local['secure-router-ip'] + '/32' 
+    router_ip = local['secure-router-ip'] + '/32'
     _run([
         "rule", "add",
         "from", router_ip,
         "lookup", str(table_control),
         "priority", str(priority_control)
     ])
+
+    # 7) Enable packet forwarding
+    subprocess.run(["iptables", "-I", "FORWARD", "-s", "0.0.0.0/0", "-j", "ACCEPT"]).check_returncode()
 
 def teardown():
     local = parser.get_local_node()

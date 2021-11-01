@@ -17,6 +17,7 @@ install: build/nodename
 	cp etc/sbas.service ${SYSTEMD}/sbas.service
 	systemctl daemon-reload
 	systemctl start sbas
+	sysctl -w net.ipv4.ip_forward=1
 
 build/nodename:
 	@ echo "Please run ./configure first."

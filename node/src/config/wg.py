@@ -6,16 +6,16 @@ EXTERNAL_PREFIX_LENGTH = 25
 def setup():
     # Get local node IP address and prefix space configuration from nodes.json
     local = parser.get_local_node()
-    
+
     # Read the template for the wireguard configuration file
     content = ""
     with open('src/config/wg0-template.conf', 'r') as f:
         content = f.read()
-    
+
     # Replace placeholders for VPN Server IP address and VPN subnet with local configuration information
     for k, v in {
         'SBAS_VPN_SERVER_IP_NO_MASK': local['secure-vpn-ip'],
-        'SBAS_VPN_NET': local['secure-subprefix'],
+        'LOCAL_SECURE_PREFIX': local['secure-subprefix'],
         'SBAS_VPN_SERVER_IP': local['secure-vpn-ip'] + '/' + str(EXTERNAL_PREFIX_LENGTH),
     }.items():
         content = content.replace(f"${k}", str(v))
