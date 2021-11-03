@@ -67,14 +67,14 @@ def setup():
         remote_nodename = name
         remote_asn = sbas_asn
         remote_subprefix = node['secure-subprefix']
-        
+
         # Add static routes in the static protocol for each subprefix of the other PoPs
         # In multihop BGP sessions, BIRD cannot resolve the next hop and shows the learnt prefixes as unreachable.
         # To resolve this issue, we need to explicitly specify routes to the next hops. Adding static routes for the
         # subprefixes of the PoPs resolves this issue.
         static_route = f'    route {remote_subprefix} via {local_router_ip};\n'
         static_protocol += static_route
-        
+
         # Define iBGP sessions with other PoPs
         ibgp_session = textwrap.dedent(f'''
         protocol bgp {remote_nodename}01 from iBGP_pop {{
@@ -83,7 +83,7 @@ def setup():
 
         ''')
         content += ibgp_session
-    
+
     # End configuration of static protocol
     static_protocol += '}'
 
