@@ -15,7 +15,7 @@ def setup():
 
     template_text = template_text.replace("$KERNEL_TABLE_NUMBER", str(kernel_table_number))
 
-    #Configure eBGP session with each provider    
+    #Configure eBGP session with each provider
     for provider in providers:
         remote_nodename = provider["id"]
         local_asn = local["as-number"]
@@ -46,4 +46,3 @@ def setup():
     bird_config = open("/etc/bird/bird.conf", "w")
     bird_config.write(template_text)
     bird_config.close()
-    

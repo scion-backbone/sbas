@@ -30,6 +30,6 @@ def get_sbas_config():
     return sbas_config
 
 def get_sbas_asn():
-    sbas_asn = get_sbas_config()["as-number"] 
-    return sbas_asn       
+    sbas_asn = get_sbas_config()["as-number"]
+    return sbas_asn
 
