@@ -3,6 +3,7 @@ import argparse
 import sys
 
 from src.vpn import wireguard
+from src.bird import bird
 
 def configure():
     # Re-generate the assets that depend on SBAS configuration
@@ -10,6 +11,7 @@ def configure():
 
 def start():
     wireguard.up()
+    bird.setup()
 
 def stop():
     wireguard.down()

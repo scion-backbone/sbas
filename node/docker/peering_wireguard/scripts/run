@@ -1,8 +1,0 @@
-#!/bin/bash
-
-# Entry point for Docker container
-/scripts/setup-wireguard
-/scripts/setup-peering
-
-sleep infinity &
-wait $!

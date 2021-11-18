@@ -5,17 +5,25 @@ function check {
     echo -n "$1..."
     if ! command -v $1 >/dev/null 2>&1; then
         echo " not installed!"
-        exit
+        exit 1
     fi
     echo " ok."
 }
 
 check scion-ip-gateway
-check docker
-check docker-compose
+check wg-quick
+check bird
 
-echo "Checking Python:"
-printf "version "; python3 --version
+echo -n "Checking Python:"
+MIN_PYTHON_MAJOR=3
+MIN_PYTHON_MINOR=8
+if python3 -c "import sys; v = sys.version_info; sys.exit(v.major < $MIN_PYTHON_MAJOR or v.major == $MIN_PYTHON_MAJOR and v.minor < $MIN_PYTHON_MINOR)"; then
+    echo " ok."
+else
+    echo " version too low! Minimum version: $MIN_PYTHON_MAJOR.$MIN_PYTHON_MINOR"
+    python3 --version
+    exit 1
+fi
 
 mkdir -p build
 
@@ -29,4 +37,7 @@ fi
 echo $NODE > build/nodename
 
 echo "Downloading topology configuration..."
-wget https://raw.githubusercontent.com/scion-backbone/config/master/nodes.json -O build/nodes.json
+#wget https://raw.githubusercontent.com/scion-backbone/config/master/nodes.json -O build/nodes.json
+#wget https://raw.githubusercontent.com/scion-backbone/config/master/clients.json -O build/clients.json
+wget https://raw.githubusercontent.com/scion-backbone/config/kyveli_wip/nodes.json -O build/nodes.json
+wget https://raw.githubusercontent.com/scion-backbone/config/kyveli_wip/clients.json -O build/clients.json

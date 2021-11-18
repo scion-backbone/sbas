@@ -4,12 +4,17 @@ from src.config import parser
 from src.config import consts
 
 # Routing tables
-# - Secure customer prefixes
+# - Routing table for control packets
+table_control = 5
+priority_control = 5
+
+# - Routing table for data plane with optimized routes
 table_secure = 10
-priority_secure = 10 # highest priority
-# - Internet routing table
+priority_secure = 10
+
+# - General Internet routing table
 table_internet = 20
-priority_internet = 20 # lowest priority
+priority_internet = 20
 
 # NOTE: The SCION-IP gateway will also set up routes (default table)
 # -> check the documentation for a complete picture!
@@ -40,48 +45,46 @@ def setup():
 
     # 1) Set up internal SBAS address
     #    - required for tunnel endpoints
-    int_addr = f"{local['int-sig-ip']}/{internal_prefix_len}"
+    int_addr = f"{local['internal-ip']}/{internal_prefix_len}"
     _run(["addr", "add", int_addr, "dev", "lo"])
 
-    # 2) Set up delivery to local customers across VPN tunnel
-    #    - use secure prefix
-    _run([
-        "route", "add", local['ext-prefix'],
-        "via", consts.VPN_GATEWAY_IP,
-        "table", str(table_secure)
-    ])
-    _run([
-        "rule", "add",
-        "from", "all",
-        "lookup", str(table_secure),
-        "priority", str(priority_secure)
-    ])
+
+    # 2) Add secure router ip address to loopback
+    #    - required for BGP session configuration
+    secure_router_ip = f"{local['secure-router-ip']}/32"
+    _run(["addr", "add", secure_router_ip, "dev", "lo"])
 
     # 3) Set up GRE tunnels to remote SBAS nodes
     #    - create a tunnel device "sbas-{node}" for each remote node
     #    - use internal SIG addresses as endpoints
     #    - route remote secure prefixes over the tunnel
-    local_sig = local['int-sig-ip']
+    local_sig = local['internal-ip']
     for name, node in remotes.items():
         tunnel_dev = f"sbas-{name}"
 
         _run([
             "tunnel", "add", tunnel_dev, "mode", "gre",
-            "remote", node['int-sig-ip'],
+            "remote", node['internal-ip'],
             "local", local_sig,
             "ttl", "255"
         ])
         _run(["link", "set", tunnel_dev, "up"])
         _run([
             "route", "add",
-            node['ext-prefix'], "dev", tunnel_dev,
+            node['secure-subprefix'], "dev", tunnel_dev,
             "table", str(table_secure)
+        ])
+
+        _run([
+            "route", "add",
+            node['secure-subprefix'], "dev", tunnel_dev,
+            "table", str(table_control)
         ])
 
     # 4) Set up gateway for outbound Internet traffic
     #    - either deliver through local Internet gateway, or
     #    - route everything to a remote SBAS node that has an Internet gateway
-    gateway = local['outbound-gateway']
+    gateway = local['global-gateway']
     if gateway == consts.GATEWAY_LOCAL:
         # Default route with lowest priority
         _run([
@@ -96,6 +99,8 @@ def setup():
                 "lookup", str(table_internet),
                 "priority", str(priority_internet)
             ])
+
+
     else:
         # Route all traffic from local customers to remote gateway
         _run([
@@ -104,22 +109,47 @@ def setup():
             "table", str(table_internet)
         ])
 
-    # Default rule for all traffic from local customers to Internet gateway
+    # 5) Default rule lookup for all traffic
     _run([
         "rule", "add",
-        "from", local['ext-prefix'],
+        "from", "all",
+        "lookup", str(table_secure),
+        "priority", str(priority_secure)
+    ])
+
+    # 6) Default rule for all traffic from local customers to Internet gateway
+    _run([
+        "rule", "add",
+        "from", local['secure-subprefix'],
         "lookup", str(table_internet),
         "priority", str(priority_internet)
     ])
+    router_ip = local['secure-router-ip'] + '/32'
+    _run([
+        "rule", "add",
+        "from", router_ip,
+        "lookup", str(table_control),
+        "priority", str(priority_control)
+    ])
+
+    # 7) Enable packet forwarding
+    subprocess.run(["iptables", "-I", "FORWARD", "-s", "0.0.0.0/0", "-j", "ACCEPT"]).check_returncode()
 
 def teardown():
     local = parser.get_local_node()
     remotes = parser.get_remote_nodes()
 
     # Remove addresses
-    int_addr = f"{local['int-sig-ip']}/{internal_prefix_len}"
+    int_addr = f"{local['internal-ip']}/{internal_prefix_len}"
     try:
         _run(["addr", "del", int_addr, "dev", "lo"])
+    except:
+        pass
+
+    # Remove secure ip address from loopback
+    secure_router_ip = f"{local['secure-router-ip']}/32"
+    try:
+        _run(["addr", "del", secure_router_ip, "dev", "lo"])
     except:
         pass
 
@@ -131,11 +161,11 @@ def teardown():
             pass
 
     # Flush routing tables
-    for table in [table_secure, table_internet]:
-        _run(["route", "flush", "table", str(table)])
+    for table in [table_secure, table_internet, table_control]:
 
         # Delete rules that belong to this table
         try:
+            _run(["route", "flush", "table", str(table)])
             while True: # need to call it multiple times, only one is deleted at a time
                 _run(["rule", "del", "lookup", str(table)], silent=True)
         except:
