@@ -34,11 +34,22 @@ net.ipv4.ip_forward=1
 net.ipv6.conf.all.forwarding=1
 ```
 
-Run ```sysctl -p``` for the changes to take effect on the current boot.
+Run ```sysctl -p``` for the changes to take effect on the current boot. To differentiate the two servers, we will referr to one of them as node 1 and the other as node 2 even though both VMs have the same initial parameters.
+
+Finally, we ran our VMs in the cloud provider Vultr (https://www.vultr.com/) which has low end options and a very simple default network configruation (no network firewall and no NAT). Other cloud providers should be similar, but care should be taken if they place VMs behind NAT or a network-level firewall enabled by default (which will not be disabled with ```ufw disable```) 
 
 ## 2. Joining SCIONLab
 
 Visit https://www.scionlab.org/ and click Join SCIONLab in blue. Complete the signup form and the CAPTCHA. Check the provided email for the verification email to complete the account setup and then log in.
 
 Once logged in with your SCIONLab account, click the blue button on your dashboard that reads "Create a new SCIONLab AS".
+
+In label at the top, give the AS a name that corresponds to which node it is for. We will use "aec-1". Note that this label is arbitrary, but later on the node ids in the nodes.json file HAVE A LENGTH CONSTRAINT OF 10 CHARACTERS. For consistency, we use the same labels here as in the file, so we recommend choosing a short node name.
+
+Select "SCION installation from packages". Scroll down to the section labeled Provider link. Using the drop-down for "Attachment point" select "18-ffaa:0:1206 (CMU AP)" This attachment point is currently active and we have had issues with other attachment points so we recommend this one. Next, put the **public IP address** of node 1. If you have an AWS EC2 node, please be mindful that they are given private IPs and the public IPs can be retrieved from the management console. Additionally, on EC2 (or any other node behind NAT), click "shown binding options for NAT" and enter the local private IP of the Internet interface in Bind IP address. Finally, EC2 and some cloud have a network firewall, so take care that the UDP port for SCIONLab (default 50000) is permitted through the firewall.
+
+Finally, click "Create AS"
+
+Repeat these steps to create a second AS and use the IP addresses of node 2 and set the label to correspond to node 2 (e.g., "aec-2"). Use the same attachment point and settings.
+
 
