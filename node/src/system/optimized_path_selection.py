@@ -25,11 +25,13 @@ OPTIMIZED_PRIORITY = 7
 #cached_sbas_hops = {'16-ffaa:0:100a':['16-ffaa:0:100b', '16-ffaa:0:1006', '16-ffaa:0:1007', '16-ffaa:0:100a'],'16-ffaa:0:1009': ['16-ffaa:0:100b', '16-ffaa:0:1006', '16-ffaa:0:1005', '16-ffaa:0:1001', '16-ffaa:0:1009'],'16-ffaa:0:1008':['16-ffaa:0:100b', '16-ffaa:0:1006', '16-ffaa:0:1005', '16-ffaa:0:1008']}
 cached_sbas_hops = {}
 
+scriptDir = os.path.dirname(os.path.realpath(__file__))
+
 # Fetch greenness data for the SCION and external ASes
-with open('../green_routing/scionAS_to_energy_mapping.json',  'r') as f:
+with open(scriptDir + '/../green_routing/scionAS_to_energy_mapping.json',  'r') as f:
     scionAS_to_energy = json.load(f)
 
-with open('../green_routing/asn_to_energy_mapping.json',  'r') as f:
+with open(scriptDir + '/../green_routing/asn_to_energy_mapping.json',  'r') as f:
     asn_to_energy = json.load(f)
 
 class RoutingError(Exception):
