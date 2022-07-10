@@ -38,5 +38,7 @@ Run ```sysctl -p``` for the changes to take effect on the current boot.
 
 ## 2. Joining SCIONLab
 
+Visit https://www.scionlab.org/ and click Join SCIONLab in blue. Complete the signup form and the CAPTCHA. Check the provided email for the verification email to complete the account setup and then log in.
 
+Once logged in with your SCIONLab account, click the blue button on your dashboard that reads "Create a new SCIONLab AS".
 
