@@ -194,3 +194,21 @@ MUST BE UPDATED ```scion-ia``` This is the SCIONLab AS of node 1 and node 2. Thi
 
 ```secure-router-ip``` The router IP on the secure prefix
 
+```global-gateway``` Says that this node can be used for outbound Internet traffic. Even though BGP is not configured, leave it for syntactic reasons.
+
+MUST BE UPDATED ```internet-ip-gateway``` This is the IP of the next hop on the default route. Although routing configurations may vary, this can usually be found by running ```ip route``` on the node and finding the IP address on the default route (i.e., the line that starts with ```default``` or ```0.0.0.0/0```) after ```via```. In the following routing output:
+```
+default via 207.148.24.1 dev enp1s0 proto dhcp src 207.148.24.134 metric 100 
+108.61.10.10 via 207.148.24.1 dev enp1s0 proto dhcp src 207.148.24.134 metric 100 
+169.254.169.254 via 207.148.24.1 dev enp1s0 proto dhcp src 207.148.24.134 metric 100 
+207.148.24.0/23 dev enp1s0 proto kernel scope link src 207.148.24.134 metric 100 
+207.148.24.1 dev enp1s0 proto dhcp scope link src 207.148.24.134 metric 100
+```
+"207.148.24.1" is the ```internet-ip-gateway```
+
+```vpn-public-key``` is the public IP of the wireguard VPN. This can be updated manually after the configuration if clients need to be connected.
+
+```connected-clients``` leave this as an empty list. Clients can be connected manually later.
+
+
+
