@@ -5,6 +5,9 @@ sudo apt install -y \
     scion-sig \
     wireguard
 
+sudo pip3 install mrtparse
+sudo pip3 install pyroute2
+
 # Install BIRD 2.0.8 manually
 # It is necessary to have at least version 2.0.8. Older versions do not support the necessary features for SBAS.
 # At the time of writing (September 2021), v2.0.8 is not available in apt-get and needs to be compiled from the source code.
