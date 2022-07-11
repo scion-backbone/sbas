@@ -176,7 +176,7 @@ To explain the values in detail. Values prefixed with MUST BE UPDATED must be up
 
 ```as-number``` in the root of the JSON file specifies the AS number for SBAS operations. The private ASN 65432 can simply be reused.
 
-```nodes``` contains info for all the nodes in this SBAS topology. The keys under nodes must match the node name given to ```./configure```. We use aec-1 and aec-2 and reusinng these is fine.
+MIGHT NEED TO BE UPDATED (depending on node name passed to ./configure) ```nodes``` contains info for all the nodes in this SBAS topology. The keys under nodes MUST MATCH the node name given to ```./configure```. We use aec-1 and aec-2 and reusinng these is fine.
 
 Below are keys within the node object:
 MUST BE UPDATED ```public-ip``` The public IP of that specific node. MUST BE UPDATED WITH THE TRUE PUBLIC IP of node 1 and node 2
@@ -210,5 +210,40 @@ default via 207.148.24.1 dev enp1s0 proto dhcp src 207.148.24.134 metric 100
 
 ```connected-clients``` leave this as an empty list. Clients can be connected manually later.
 
+With all these updates in place to ```nodes.json```, uplaod it to both 
+
+Before running make install, edit the file ```src/config/consts.py``` (once again relative to the ```sbas/node``` directory). Add the following line:
+```
+INTERNET_GATEWAY_IP = '<internet-ip-gateway>'
+```
+Where ```<internet-ip-gateway>``` is the ```internet-ip-gateway``` from above. So in our example that would be:
+```
+INTERNET_GATEWAY_IP = '207.148.24.1'
+```
+Make sure the IP is encapsulated in single quotes as shown.
+
+
+With all the configuration changes in place, run ```make install```
+
+Run ```service sbas start```
+
+At this point, check the status of the SBAS service with ```service sbas status```. It should show it as active if all configurations were correct. If the service has failed, keep in mind that when the service startup fails, the cleanup commands also fail so the first error message is usually the root cause. Most SBAS service failures have to do with improper values in ```build/nodes.json``` or ```src/config/consts.py```. Restaring the SBAS service with ```service sbas stop``` and ```service sbas start``` can occationally help resolve problems with stale configs/routes. If any changes are made to ```build/nodes.json```, be sure to rerun ```make install``` to copy new config file to the ```etc/sbas``` directory.
+
+Double check the status of the SIG with ```sudo systemctl status scion-ip-gateway.service```
+Lines that start with ```Start prefix discovery``` indicate the sig is searching for the prefixes available by the other SIG. Issues with the SIG configuration often have to do with improper values of ```scion-ia```. The sig can be restarted after a config change (which will happen when ```make install``` is run again on the SBAS repo) with: ```sudo systemctl stop scion-ip-gateway.service``` and ```sudo systemctl start scion-ip-gateway.service```.
+
+The SIG takes several seconds to connect and discover the other SIG, but an operational SIG will add a network device called ```sig``` which can be shown with ```ip a```.
+
+If all services are functional, and the ```sig``` device is listed, connectivity should be established. The first test of connectivity is to test the infrastructure prefixes (handled by the SIG) with a ping. On node 1 run:
+
+```ping 172.22.2.1```
+
+To ping the infrastructure IP of node 2. If this is successful, the SIG configuraiton is operational and allowing for IPs to ping over SCION.
+
+The next step to test connectivity is to ping from the secure VPN IPs. These IPs are in the secure prefix and routing is the same for them as it is for SBAS customers that connect to these PoPs. To run this ping run:
+
+```ping -I 10.22.0.1 10.22.1.1```
+
+This makes the source address the local secure VPN IP (required for proper reverse routing) and pings the remote secure VPN IP of node 2, If this ping is successful, the two SBAS nodes are communicating over SCIONLab and securly routing customer SBAS traffic.
 
 
