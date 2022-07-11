@@ -10,15 +10,15 @@ Components
 
 # USENIX 22 AEC Instructions
 
-Joining the current production SBAS network is not feasable because 1) we are upgrading the infrastructre and making changes which may disrupt connectivity and 2) the existing SBAS nodes would have to be manually configured to know the IPs of the artifact evaluator's nodes (in order to establish a connection with them) which could potenitally deanaymize the artifact evaluators and would require manual syncronzation during the evaluation process (as the new nodes would have to be added to nodes.json and then updated at all the production nodes).
+Joining the current production SBAS network is not feasible because 1) we are upgrading the infrastructure and making changes which may disrupt connectivity and 2) the existing SBAS nodes would have to be manually configured to know the IPs of the artifact evaluator's nodes (in order to establish a connection with them) which could potentially deanonymize the artifact evaluators and would require manual synchronization during the evaluation process (as the new nodes would have to be added to nodes.json and then updated at all the production nodes).
 
-Instead, we have instrctuions below for creating an entierly separate SBAS network consisting of two reviewer nodes configured from out-of-the-box Ubuntu VMs that are connected over SCIONLab and running the SBAS node software. While the SBAS prototype discussed in our paper uses the PEERING Testbed for BGP connectivity, giving access to the PEERING testbed to artifact evalurators would violate their Acceptable Use Policy and the prefix space we used is being reused for our current production infrastructure. Thus, these steps create a non-BGP version of SBAS that can only be used to route between secure prefixes attached to the different PoPs. Thus, these SBAS PoPs will not provide global routing connectivity to non-participating destinations (the way the discussed prototype does) but they will route between different PoPs over SCIONLab for secure traffic to participating destinations.
+Instead, we have instructions below for creating an entirely separate SBAS network consisting of two reviewer nodes configured from out-of-the-box Ubuntu VMs that are connected over SCIONLab and running the SBAS node software. While the SBAS prototype discussed in our paper uses the PEERING Testbed for BGP connectivity, giving access to the PEERING testbed to artifact evaluators would violate their Acceptable Use Policy and the prefix space we used is being reused for our current production infrastructure. Thus, these steps create a non-BGP version of SBAS that can only be used to route between secure prefixes attached to the different PoPs. Thus, these SBAS PoPs will not provide global routing connectivity to non-participating destinations (the way the discussed prototype does) but they will route between different PoPs over SCIONLab for secure traffic to participating destinations.
 
 There are four major steps: 1) Spinning up two VMs and installing and changing preliminary network settings 2) Joining SCIONLab with both VMs and 3) Installing and configuring the SBAS Node software 4) connecting a client.
 
 ## 1. VM Configuration
 
-Running SBAS requires a minimum of two VMs to serve as PoPs. The SBAS node software will securly route packets between them over SCION lab. For these instructions we used two VMs each running Ubuntu 22.04 x64 with 2048 MB RAM and 1 virtual CPU. Installation on other Ubuntu versions or other Debian systems should be similar, but this is the exact configuration used to generate these instructions.
+Running SBAS requires a minimum of two VMs to serve as PoPs. The SBAS node software will securely route packets between them over SCION lab. For these instructions we used two VMs each running Ubuntu 22.04 x64 with 2048 MB RAM and 1 virtual CPU. Installation on other Ubuntu versions or other Debian systems should be similar, but this is the exact configuration used to generate these instructions.
 
 Additionally, we had a root login on both VMs, so none of the commands in these instructions are prefixed with sudo. If you have a regular login, either elevate with `sudo -i` or add sudo where needed.
 
@@ -28,15 +28,15 @@ We recommend that you disable the firewall on the servers to prevent it from int
 ufw disable
 ```
 
-Also, enable IPv4 and IPv6 fowrading editing ```/etc/sysctl.conf``` and uncommenting the lines:
+Also, enable IPv4 and IPv6 forwarding editing ```/etc/sysctl.conf``` and uncommenting the lines:
 ```
 net.ipv4.ip_forward=1
 net.ipv6.conf.all.forwarding=1
 ```
 
-Run ```sysctl -p``` for the changes to take effect on the current boot. To differentiate the two servers, we will referr to one of them as node 1 and the other as node 2 even though both VMs have the same initial parameters.
+Run ```sysctl -p``` for the changes to take effect on the current boot. To differentiate the two servers, we will refer to one of them as node 1 and the other as node 2 even though both VMs have the same initial parameters.
 
-Finally, we ran our VMs in the cloud provider Vultr (https://www.vultr.com/) which has low end options and a very simple default network configruation (no network firewall and no NAT). Other cloud providers should be similar, but care should be taken if they place VMs behind NAT or a network-level firewall enabled by default (which will not be disabled with ```ufw disable```) 
+Finally, we ran our VMs in the cloud provider Vultr (https://www.vultr.com/) which has low end options and a very simple default network configuration (no network firewall and no NAT). Other cloud providers should be similar, but care should be taken if they place VMs behind NAT or a network-level firewall enabled by default (which will not be disabled with ```ufw disable```) 
 
 ## 2. Joining SCIONLab
 
@@ -52,7 +52,7 @@ If you have an AWS EC2 node, please be mindful that they are given private IPs a
 
 Finally, click "Create AS"
 
-Click "My ASes" to go back to the user dashbaord and click "Create a new SCIONLab AS" again.
+Click "My ASes" to go back to the user dashboard and click "Create a new SCIONLab AS" again.
 
 Repeat these steps to create a second AS and use the IP addresses of node 2 and set the label to correspond to node 2 (e.g., "aec-2"). Use the same attachment point and settings (but make sure to update the public IP to that of node 2).
 
@@ -129,9 +129,9 @@ CD to the node directory of the repo with ```cd sbas/node```
 
 Install dependencies with ```./deps``` (note that with the SCION repositories added to APT from the SCIONLab installation, scion-sig should be found correctly)
 
-Run ```./configure``` and specify a distinct node ID on each node. THIS NODE ID MUST BE UNDER 10 CHARS. We will use aec-1 and aec-2 in thid document. Unlike the labels on the SCIONLab ASes, these node ids must be consistant throughout the remainder of these instructions as this node ID will reference which config values that node will use.
+Run ```./configure``` and specify a distinct node ID on each node. THIS NODE ID MUST BE UNDER 10 CHARS. We will use aec-1 and aec-2 in this document. Unlike the labels on the SCIONLab ASes, these node ids must be consistent throughout the remainder of these instructions as this node ID will reference which config values that node will use.
 
-At this point, DO NOT RUN MAKE INSTALL. ```./configure``` downloaded a default configuraiton from our public repo, this will not work for your specific configuration as you are not connecting to the main SBAS deployment. The primary file that needs to be updated is ```build/nodes.json``` (note that this is relative to the ```sbas/node``` directory).
+At this point, DO NOT RUN MAKE INSTALL. ```./configure``` downloaded a default configuration from our public repo, this will not work for your specific configuration as you are not connecting to the main SBAS deployment. The primary file that needs to be updated is ```build/nodes.json``` (note that this is relative to the ```sbas/node``` directory).
 
 Below is a template config file that you can use as a starting point, but many of the values need to be updated for your specific install per the instructions below. Also, both nodes use the same nodes.json file so this template only needs to be filled out once with information about both nodes and then each node will load the configs specified under to that node's node id.
 
@@ -174,13 +174,13 @@ Below is a template config file that you can use as a starting point, but many o
 }
 ```
 
-To explain the values in detail. Values prefixed with MUST BE UPDATED must be updated to reflect the invoronment of that specific install. The others can be left as is.
+To explain the values in detail. Values prefixed with MUST BE UPDATED must be updated to reflect the environment of that specific install. The others can be left as is.
 
-```secure-prefix``` in the root of the JSON file specifies the overarching IP range used for all secure communication within SBAS. In our SBAS prototype this was also announced with BGP for reachability with non-participating destinations, but since this install is not connected to BGP, this can be any private IP range (or even a public range so long as it is not an IP used on the LAN of one of the nodes; secure routes are always prefered over Internet routes so the system is still fully funcitonal if this prefix is announced publically by a third party, as in a BGP hijack). While any IP range can be used, the ```10.22.0.0/23``` from this example can simply be reused.
+```secure-prefix``` in the root of the JSON file specifies the overarching IP range used for all secure communication within SBAS. In our SBAS prototype this was also announced with BGP for reachability with non-participating destinations, but since this install is not connected to BGP, this can be any private IP range (or even a public range so long as it is not an IP used on the LAN of one of the nodes; secure routes are always preferred over Internet routes so the system is still fully functional if this prefix is announced publicly by a third party, as in a BGP hijack). While any IP range can be used, the ```10.22.0.0/23``` from this example can simply be reused.
 
 ```as-number``` in the root of the JSON file specifies the AS number for SBAS operations. The private ASN 65432 can simply be reused.
 
-MIGHT NEED TO BE UPDATED (depending on node name passed to ./configure) ```nodes``` contains info for all the nodes in this SBAS topology. The keys under nodes MUST MATCH the node name given to ```./configure```. We use aec-1 and aec-2 and reusinng these is fine.
+MIGHT NEED TO BE UPDATED (depending on node name passed to ./configure) ```nodes``` contains info for all the nodes in this SBAS topology. The keys under nodes MUST MATCH the node name given to ```./configure```. We use aec-1 and aec-2 and reusing these is fine.
 
 Below are keys within the node object:
 
@@ -193,7 +193,7 @@ MUST BE UPDATED ```scion-ia``` This is the SCIONLab AS of node 1 and node 2. Thi
 
 ```internal-ip``` An IP in the internal prefix for GRE tunnels.
 
-```secure-subprefix``` A subprefix of ```secure-prefix``` used for customers of that sepcfici node.
+```secure-subprefix``` A subprefix of ```secure-prefix``` used for customers of that specific node.
 
 ```secure-vpn-ip``` The VPN IP on the secure prefix
 
@@ -215,7 +215,7 @@ default via 207.148.24.1 dev enp1s0 proto dhcp src 207.148.24.134 metric 100
 
 ```connected-clients``` leave this as an empty list. Clients can be connected manually later.
 
-With all these updates in place to ```nodes.json```, uplaod it to both 
+With all these updates in place to ```nodes.json```, upload it to both 
 
 Before running make install, edit the file ```src/config/consts.py``` (once again relative to the ```sbas/node``` directory). Add the following line:
 ```
@@ -232,7 +232,7 @@ With all the configuration changes in place, run ```make install```
 
 Run ```service sbas start``` followed by ```sudo systemctl start scion-ip-gateway.service``` to start the SBAS and SIG services.
 
-At this point, check the status of the SBAS service with ```service sbas status```. It should show it as active if all configurations were correct. If the service has failed, keep in mind that when the service startup fails, the cleanup commands also fail so the first error message is usually the root cause. Most SBAS service failures have to do with improper values in ```build/nodes.json``` or ```src/config/consts.py```. Restaring the SBAS service with ```service sbas stop``` and ```service sbas start``` can occationally help resolve problems with stale configs/routes. If any changes are made to ```build/nodes.json```, be sure to rerun ```make install``` to copy new config file to the ```etc/sbas``` directory.
+At this point, check the status of the SBAS service with ```service sbas status```. It should show it as active if all configurations were correct. If the service has failed, keep in mind that when the service startup fails, the cleanup commands also fail so the first error message is usually the root cause. Most SBAS service failures have to do with improper values in ```build/nodes.json``` or ```src/config/consts.py```. Restarting the SBAS service with ```service sbas stop``` and ```service sbas start``` can occasionally help resolve problems with stale configs/routes. If any changes are made to ```build/nodes.json```, be sure to rerun ```make install``` to copy new config file to the ```etc/sbas``` directory.
 
 Double check the status of the SIG with ```sudo systemctl status scion-ip-gateway.service```
 Lines that start with ```Start prefix discovery``` indicate the sig is searching for the prefixes available by the other SIG. Issues with the SIG configuration often have to do with improper values of ```scion-ia```. The sig can be restarted after a config change (which will happen when ```make install``` is run again on the SBAS repo) with: ```sudo systemctl stop scion-ip-gateway.service``` and ```sudo systemctl start scion-ip-gateway.service```.
@@ -243,13 +243,13 @@ If all services are functional, and the ```sig``` device is listed, connectivity
 
 ```ping 172.22.2.1```
 
-To ping the infrastructure IP of node 2. If this is successful, the SIG configuraiton is operational and allowing for IPs to ping over SCION.
+To ping the infrastructure IP of node 2. If this is successful, the SIG configuration is operational and allowing for IPs to ping over SCION.
 
 The next step to test connectivity is to ping from the secure VPN IPs. These IPs are in the secure prefix and routing is the same for them as it is for SBAS customers that connect to these PoPs. To run this ping run:
 
 ```ping -I 10.22.0.1 10.22.1.1```
 
-This makes the source address the local secure VPN IP (required for proper reverse routing) and pings the remote secure VPN IP of node 2, If this ping is successful, the two SBAS nodes are communicating over SCIONLab and securly routing customer SBAS traffic.
+This makes the source address the local secure VPN IP (required for proper reverse routing) and pings the remote secure VPN IP of node 2, If this ping is successful, the two SBAS nodes are communicating over SCIONLab and securely routing customer SBAS traffic.
 
 Pings from node 2 to node 1 can also be tested with:
 ```ping 172.22.1.1``` and ```ping -I 10.22.1.1 10.22.0.1```
@@ -287,7 +287,7 @@ AllowedIPs = 10.22.0.0/23
 
 Of this script the only value that must be changed is ```Endpoint``` under the ```[Peer]``` section. This should point to the public IP of the SBAS PoP node 1. Make sure UDP 55555 is permitted through all firewalls on node 1.
 
-If you used any address block other than 10.22.0.0/23 (for the secure prefix) and 10.22.0.3/24 (for the VPN prefix on node 1), change the addresses accordingly. Notice the use of the .3 address because the .1 and .2 addresses are already used by the wireguard interface IP and the BIRD router IP respectively on the SBAS PoP.
+If you used any address block other than 10.22.0.0/23 (for the secure prefix) and 10.22.0.0/24 (for the VPN prefix on node 1), change the addresses accordingly. Notice the use of the .3 address because the .1 and .2 addresses are already used by the wireguard interface IP and the BIRD router IP respectively on the SBAS PoP.
 
 Also, the private key values can be updated with newly generated keys (see https://www.digitalocean.com/community/tutorials/how-to-set-up-wireguard-on-ubuntu-20-04 for more details on key generation), but we will use the keys in this example config as is (these are functional wireguard keys).
 
@@ -307,12 +307,12 @@ PrivateKey = SFFAmcCizhqd1g0WqC0EputqaQbdzLreia0QJv8r3UE=
 PublicKey = 67l11hqm6cNkFQo1CyaLjpeuUo8SyqoT0I42Olt/N30=
 AllowedIPs = 10.22.0.0/24,10.0.0.0/24 # This denotes the clients IPs.
 ```
-(if the example keys are used, the above config does not need to be modified if installed on node 1).
+(if the example keys/prefixes are used, the above config does not need to be modified if installed on node 1).
 
 
 For reference, wireguard private keys can be generated with ```wg genkey``` and the public key can be derived from a private key with ```wg pubkey``` (which expects to read the key from stdin).
 
-With the congis updated, cycle wireguard on node 1 with ```wg-quick down wg0``` followed by ```wg-quick up wg0```.
+With the configs updated, cycle wireguard on node 1 with ```wg-quick down wg0``` followed by ```wg-quick up wg0```.
 
 Bring up the interface on the client: ```wg-quick up wg0```
 
@@ -323,11 +323,11 @@ If this ping goes through, the wireguard tunnel is configured correctly.
 
 Should this ping fail, it is likely an issue with wireguard (often the keys or the endpoint IP). Wireguard can be debugged with the instructions in https://www.procustodibus.com/blog/2021/03/wireguard-logs/
 
-Finally, the client can poing the VPN IP of node 2 with:
+Finally, the client can ping the VPN IP of node 2 with:
 ```ping 10.22.1.1```
 
 If this ping errors, it could be caused by an improperly specified "AllowedIPs" line on the client which will result in the error ```sendmsg: Required key not available``` when ping is run. The client's allowed "AllowedIPs" line should be the secure prefix (not just the VPN prefix for node 1) forcing all secure traffic through wireguard.
 
-This ping is going via wireguard from the client to node 1, node 1 is routing it via SCION and the SIG to node 2 which is answering it and securly routing it back allowing for the client to communicate with the secure prefix over SCION/SBAS. An additional client can optionally be installed at node 2 in a similar manner further allowing the node 1 and node 2 clients to communicate.
+This ping is going via wireguard from the client to node 1, node 1 is routing it via SCION and the SIG to node 2 which is answering it and securely routing it back allowing for the client to communicate with the secure prefix over SCION/SBAS. An additional client can optionally be installed at node 2 in a similar manner further allowing the node 1 and node 2 clients to communicate.
 
 
