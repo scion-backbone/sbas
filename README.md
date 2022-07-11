@@ -251,4 +251,9 @@ The next step to test connectivity is to ping from the secure VPN IPs. These IPs
 
 This makes the source address the local secure VPN IP (required for proper reverse routing) and pings the remote secure VPN IP of node 2, If this ping is successful, the two SBAS nodes are communicating over SCIONLab and securly routing customer SBAS traffic.
 
+Pings from node 2 to node 1 can also be tested with:
+```ping 172.22.1.1``` and ```ping -I 10.22.1.1 10.22.0.1```
+
+If all these pings are operational, the SBAS nodes are configured correctly.
+
 
