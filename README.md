@@ -52,6 +52,8 @@ If you have an AWS EC2 node, please be mindful that they are given private IPs a
 
 Finally, click "Create AS"
 
+Click "My ASes" to go back to the user dashbaord and click "Create a new SCIONLab AS" again.
+
 Repeat these steps to create a second AS and use the IP addresses of node 2 and set the label to correspond to node 2 (e.g., "aec-2"). Use the same attachment point and settings (but make sure to update the public IP to that of node 2).
 
 With both ASes created, go to "My ASes" (upper left) and click the AS for node 1. Be sure "SCION installation from packages" is selected and run the commands for the Ubuntu package install on node 1. For reference, they are:
