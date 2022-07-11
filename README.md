@@ -230,7 +230,7 @@ Make sure the IP is encapsulated in single quotes as shown.
 
 With all the configuration changes in place, run ```make install```
 
-Run ```service sbas start```
+Run ```service sbas start``` followed by ```sudo systemctl start scion-ip-gateway.service``` to start the SBAS and SIG services.
 
 At this point, check the status of the SBAS service with ```service sbas status```. It should show it as active if all configurations were correct. If the service has failed, keep in mind that when the service startup fails, the cleanup commands also fail so the first error message is usually the root cause. Most SBAS service failures have to do with improper values in ```build/nodes.json``` or ```src/config/consts.py```. Restaring the SBAS service with ```service sbas stop``` and ```service sbas start``` can occationally help resolve problems with stale configs/routes. If any changes are made to ```build/nodes.json```, be sure to rerun ```make install``` to copy new config file to the ```etc/sbas``` directory.
 
