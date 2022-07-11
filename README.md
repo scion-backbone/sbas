@@ -170,7 +170,8 @@ Below is a template config file that you can use as a starting point, but many o
 }
 ```
 
-To explain the values in detail:
+To explain the values in detail. Values prefixed with MUST BE UPDATED must be updated to reflect the invoronment of that specific install. The others can be left as is.
+
 ```secure-prefix``` in the root of the JSON file specifies the overarching IP range used for all secure communication within SBAS. In our SBAS prototype this was also announced with BGP for reachability with non-participating destinations, but since this install is not connected to BGP, this can be any private IP range (or even a public range so long as it is not an IP used on the LAN of one of the nodes; secure routes are always prefered over Internet routes so the system is still fully funcitonal if this prefix is announced publically by a third party, as in a BGP hijack). While any IP range can be used, the ```10.22.0.0/23``` from this example can simply be reused.
 
 ```as-number``` in the root of the JSON file specifies the AS number for SBAS operations. The private ASN 65432 can simply be reused.
@@ -183,4 +184,13 @@ MUST BE UPDATED ```public-ip``` The public IP of that specific node. MUST BE UPD
 MUST BE UPDATED ```scion-ia``` This is the SCIONLab AS of node 1 and node 2. This value must be accurate or the scion-ip-gateways (or SIGs) that SBAS nodes use will not be able to connect to each other. To get the full SCIONLab AS for each node goto the My ASes page (https://www.scionlab.org/user/) when logged into your SCIONLab account. DO NOT CLICK THE ASes, read the "AS ID" corresponding to node 1 and node 2 from this page and put them into the nodes.json file. If you click on an AS and use that to get the AS ID, it will give a truncated version at the top of the page which will not work. The full AS ID should contain a hyphen before the first colon (like "18-ffaa:1:fd6" not just "ffaa:1:fd6").
 
 
+```internal-prefix``` This is a prefix used by this SBAS node for GRE tunnels. It should be private and does not need to be changed. It is different from the secure prefix which is used for connecting customers and the routing control plane.
+
+```internal-ip``` An IP in the internal prefix for GRE tunnels.
+
+```secure-subprefix``` A subprefix of ```secure-prefix``` used for customers of that sepcfici node.
+
+```secure-vpn-ip``` The VPN IP on the secure prefix
+
+```secure-router-ip``` The router IP on the secure prefix
 
