@@ -46,7 +46,9 @@ Once logged in with your SCIONLab account, click the blue button on your dashboa
 
 In label at the top, give the AS a name that corresponds to which node it is for. We will use "aec-1". Note that this label is arbitrary, but later on the node ids in the nodes.json file HAVE A LENGTH CONSTRAINT OF 10 CHARACTERS. For consistency, we use the same labels here as in the file, so we recommend choosing a short node name.
 
-Select "SCION installation from packages". Scroll down to the section labeled Provider link. Using the drop-down for "Attachment point" select "18-ffaa:0:1206 (CMU AP)" This attachment point is currently active and we have had issues with other attachment points so we recommend this one. Next, put the **public IP address** of node 1. If you have an AWS EC2 node, please be mindful that they are given private IPs and the public IPs can be retrieved from the management console. Additionally, on EC2 (or any other node behind NAT), click "shown binding options for NAT" and enter the local private IP of the Internet interface in Bind IP address. Finally, EC2 and some cloud have a network firewall, so take care that the UDP port for SCIONLab (default 50000) is permitted through the firewall.
+Select "SCION installation from packages". Scroll down to the section labeled Provider link. Using the drop-down for "Attachment point" select "18-ffaa:0:1206 (CMU AP)" This attachment point is currently active and we have had issues with other attachment points so we recommend this one. Next, put the **public IP address** of node 1 in the field labeled "Public ip".
+
+If you have an AWS EC2 node, please be mindful that they are given private IPs and the public IPs can be retrieved from the management console. Additionally, on EC2 (or any other node behind NAT), click "shown binding options for NAT" and enter the local private IP of the Internet interface in Bind IP address. Finally, EC2 and some cloud have a network firewall, so take care that the UDP port for SCIONLab (default 50000) is permitted through the firewall.
 
 Finally, click "Create AS"
 
