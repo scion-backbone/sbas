@@ -169,3 +169,18 @@ Below is a template config file that you can use as a starting point, but many o
    }
 }
 ```
+
+To explain the values in detail:
+```secure-prefix``` in the root of the JSON file specifies the overarching IP range used for all secure communication within SBAS. In our SBAS prototype this was also announced with BGP for reachability with non-participating destinations, but since this install is not connected to BGP, this can be any private IP range (or even a public range so long as it is not an IP used on the LAN of one of the nodes; secure routes are always prefered over Internet routes so the system is still fully funcitonal if this prefix is announced publically by a third party, as in a BGP hijack). While any IP range can be used, the ```10.22.0.0/23``` from this example can simply be reused.
+
+```as-number``` in the root of the JSON file specifies the AS number for SBAS operations. The private ASN 65432 can simply be reused.
+
+```nodes``` contains info for all the nodes in this SBAS topology. The keys under nodes must match the node name given to ```./configure```. We use aec-1 and aec-2 and reusinng these is fine.
+
+Below are keys within the node object:
+MUST BE UPDATED ```public-ip``` The public IP of that specific node. MUST BE UPDATED WITH THE TRUE PUBLIC IP of node 1 and node 2
+
+MUST BE UPDATED ```scion-ia``` This is the SCIONLab AS of node 1 and node 2. This value must be accurate or the scion-ip-gateways (or SIGs) that SBAS nodes use will not be able to connect to each other. To get the full SCIONLab AS for each node goto the My ASes page (https://www.scionlab.org/user/) when logged into your SCIONLab account. DO NOT CLICK THE ASes, read the "AS ID" corresponding to node 1 and node 2 from this page and put them into the nodes.json file. If you click on an AS and use that to get the AS ID, it will give a truncated version at the top of the page which will not work. The full AS ID should contain a hyphen before the first colon (like "18-ffaa:1:fd6" not just "ffaa:1:fd6").
+
+
+
