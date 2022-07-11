@@ -1,0 +1,12 @@
+[submodule "node-and-client"]
+	path = node-and-client
+	url = https://github.com/scion-backbone/sbas.git
+	branch = usenix22
+[submodule "survey"]
+	path = survey
+	url = https://github.com/scion-backbone/sbas.git
+	branch = usenix22-survey
+[submodule "simulations"]
+	path = simulations
+	url = https://github.com/scion-backbone/sbas.git
+	branch = usenix22-simulations
