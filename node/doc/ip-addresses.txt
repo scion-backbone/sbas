@@ -1,9 +1,0 @@
-List of IP addresses used in SBAS configs.
-
-184.164.236.0/23: PEERING-allocated address block used for SBAS server customers. Globally routable (if announced with PEERING). This block is sub-divided between the different SBAS nodes. Currently 184.164.236.0/24 is at Oregon and 184.164.237.0/24 is at Frankfurt. If a client connects to their local wireguard instance, he/she is given an IP out of the local subnet of this prefix.
-
-10.99.0.0/24: This is the IP block of the docker network at each SBAS node. It is REUSED at each SBAS location. Packets with these source/destination IPs are NOT intended to be sent over the SBAS. At each node: 10.99.0.1 points to the host machine's docker interface, 10.99.0.2 points to the wireguard container's docker interface, 10.99.0.3 points to the router's docker interface. These IP addresses are primarily used in "ip route" commands to forward packets to the correct docker container.
-
-172.22.0.0/24: This is the IP address range used for the SBAS nodes that is recognized by the SIG's static IP->SCION table. Currently 172.22.0.11 is Oregon and 172.22.0.12 is Frankfurt.
-
-
