@@ -183,6 +183,7 @@ To explain the values in detail. Values prefixed with MUST BE UPDATED must be up
 MIGHT NEED TO BE UPDATED (depending on node name passed to ./configure) ```nodes``` contains info for all the nodes in this SBAS topology. The keys under nodes MUST MATCH the node name given to ```./configure```. We use aec-1 and aec-2 and reusinng these is fine.
 
 Below are keys within the node object:
+
 MUST BE UPDATED ```public-ip``` The public IP of that specific node. MUST BE UPDATED WITH THE TRUE PUBLIC IP of node 1 and node 2
 
 MUST BE UPDATED ```scion-ia``` This is the SCIONLab AS of node 1 and node 2. This value must be accurate or the scion-ip-gateways (or SIGs) that SBAS nodes use will not be able to connect to each other. To get the full SCIONLab AS for each node goto the My ASes page (https://www.scionlab.org/user/) when logged into your SCIONLab account. DO NOT CLICK THE ASes, read the "AS ID" corresponding to node 1 and node 2 from this page and put them into the nodes.json file. If you click on an AS and use that to get the AS ID, it will give a truncated version at the top of the page which will not work. The full AS ID should contain a hyphen before the first colon (like "18-ffaa:1:fd6" not just "ffaa:1:fd6").
