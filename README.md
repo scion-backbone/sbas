@@ -115,10 +115,57 @@ Additional documentation to configure SCIONLab can be found at https://docs.scio
 
 ## 3. Installing SBAS
 
-Clone the SBAS repository (i.e., this repo) with:
+On both node 1 and node 2, clone the SBAS repository (i.e., this repo) with:
 
 ```
 git clone https://github.com/scion-backbone/sbas.git
 ```
 
+CD to the node directory of the repo with ```cd sbas/node```
 
+Install dependencies with ```./deps``` (note that with the SCION repositories added to APT from the SCIONLab installation, scion-sig should be found correctly)
+
+Run ```./configure``` and specify a distinct node ID on each node. THIS NODE ID MUST BE UNDER 10 CHARS. We will use aec-1 and aec-2 in thid document. Unlike the labels on the SCIONLab ASes, these node ids must be consistant throughout the remainder of these instructions as this node ID will reference which config values that node will use.
+
+At this point, DO NOT RUN MAKE INSTALL. ```./configure``` downloaded a default configuraiton from our public repo, this will not work for your specific configuration as you are not connecting to the main SBAS deployment. The primary file that needs to be updated is ```build/nodes.json``` (note that this is relative to the ```sbas/node``` directory).
+
+Below is a template config file that you can use as a starting point, but many of the values need to be updated for your specific install per the instructions below. Also, both nodes use the same nodes.json file so this template only needs to be filled out once with information about both nodes and then each node will load the configs specified under to that node's node id.
+
+```
+{
+   "secure-prefix":"10.22.0.0/23",
+   "as-number":65432,
+   "nodes":{
+      "aec-1":{
+         "public-ip":"140.82.18.98",
+         "scion-ia":"18-ffaa:1:fd6",
+         "internal-prefix":"172.22.1.0/24",
+         "internal-ip":"172.22.1.1",
+         "secure-subprefix":"10.22.0.0/24",
+         "secure-vpn-ip":"10.22.0.1",
+         "secure-router-ip":"10.22.0.2",
+         "global-gateway":"local",
+         "internet-ip-gateway":"207.148.24.1",
+         "vpn-public-key":"67l11hqm6cNkFQo1CyaLjpeuUo8SyqoT0I42Olt/N30=",
+         "connected-clients":[
+            
+         ]
+      },
+      "aec-2":{
+         "public-ip":"140.82.18.98",
+         "scion-ia":"20-ffaa:1:fd7",
+         "internal-prefix":"172.22.2.0/24",
+         "internal-ip":"172.22.2.1",
+         "secure-subprefix":"10.22.1.0/24",
+         "secure-vpn-ip":"10.22.1.1",
+         "secure-router-ip":"10.22.1.2",
+         "global-gateway":"local",
+         "internet-ip-gateway":"140.82.18.1",
+         "vpn-public-key":"67l11hqm6cNkFQo1CyaLjpeuUo8SyqoT0I42Olt/N30=",
+         "connected-clients":[
+            
+         ]
+      }
+   }
+}
+```
