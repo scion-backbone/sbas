@@ -50,6 +50,75 @@ Select "SCION installation from packages". Scroll down to the section labeled Pr
 
 Finally, click "Create AS"
 
-Repeat these steps to create a second AS and use the IP addresses of node 2 and set the label to correspond to node 2 (e.g., "aec-2"). Use the same attachment point and settings.
+Repeat these steps to create a second AS and use the IP addresses of node 2 and set the label to correspond to node 2 (e.g., "aec-2"). Use the same attachment point and settings (but make sure to update the public IP to that of node 2).
+
+With both ASes created, go to "My ASes" (upper left) and click the AS for node 1. Be sure "SCION installation from packages" is selected and run the commands for the Ubuntu package install on node 1. For reference, they are:
+
+```
+sudo apt-get install apt-transport-https ca-certificates
+echo "deb [trusted=yes] https://packages.netsec.inf.ethz.ch/debian all main" | sudo tee /etc/apt/sources.list.d/scionlab.list
+sudo apt-get update
+sudo apt-get install scionlab
+```
+
+Then, configure the SCIONLab AS with:
+```
+sudo scionlab-config --host-id=<...> --host-secret=<...>
+```
+If you have already created your AS (as instructed in this document), the host id and host secret will be filled in on the webpage with the values specific to your SCIONLab AS.
+
+Repeat these instructions for node 2 and be sure to use the host id and host secret specific to node 2.
+
+On node 1 and node 2, run ```sudo systemctl start scionlab.target``` to start all SCION services.
+
+At this point, both node 1 and node 2 should be connected to SCIONLab.
+
+To test the configuration, check the status of the SCIONLab services:
+```
+sudo systemctl list-dependencies scionlab.target
+```
+All services running implies a successful configuration.
+
+Finally, install the SCION apps with:
+```
+sudo apt install scion-apps-*
+```
+
+You can also perform a bandwidth test with a public SCION bandwidth server with ```scion-bwtestclient -s 16-ffaa:0:1001,[172.31.0.23]:30100```
+Results of a successful bandwidth test look like:
+```
+root@usenix-aec-node-2:~# scion-bwtestclient -s 16-ffaa:0:1001,[172.31.0.23]:30100
+
+Test parameters:
+client->server: 3 seconds, 1000 bytes, 30 packets
+server->client: 3 seconds, 1000 bytes, 30 packets
+We need to sleep for 1 seconds before we can get the results
+
+S->C results
+Attempted bandwidth: 80000 bps / 0.08 Mbps
+Achieved bandwidth: 80000 bps / 0.08 Mbps
+Loss rate: 0.0%
+Interarrival time min/avg/max/mdev = 101.732/103.484/105.193/1.307 ms
+
+C->S results
+Attempted bandwidth: 80000 bps / 0.08 Mbps
+Achieved bandwidth: 80000 bps / 0.08 Mbps
+Loss rate: 0.0%
+Interarrival time min/avg/max/mdev = 101.236/103.484/105.831/1.532 ms
+root@usenix-aec-node-2:~#
+```
+
+A list of alternate public servers can be found at https://docs.scionlab.org/content/apps/bwtester.html
+
+
+Additional documentation to configure SCIONLab can be found at https://docs.scionlab.org/content/install/pkg.html 
+
+## 3. Installing SBAS
+
+Clone the SBAS repository (i.e., this repo) with:
+
+```
+git clone https://github.com/scion-backbone/sbas.git
+```
 
 
