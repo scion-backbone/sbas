@@ -14,7 +14,7 @@ Joining the current production SBAS network is not feasable because 1) we are up
 
 Instead, we have instrctuions below for creating an entierly separate SBAS network consisting of two reviewer nodes configured from out-of-the-box Ubuntu VMs that are connected over SCIONLab and running the SBAS node software. While the SBAS prototype discussed in our paper uses the PEERING Testbed for BGP connectivity, giving access to the PEERING testbed to artifact evalurators would violate their Acceptable Use Policy and the prefix space we used is being reused for our current production infrastructure. Thus, these steps create a non-BGP version of SBAS that can only be used to route between secure prefixes attached to the different PoPs. Thus, these SBAS PoPs will not provide global routing connectivity to non-participating destinations (the way the discussed prototype does) but they will route between different PoPs over SCIONLab for secure traffic to participating destinations.
 
-There are three major steps: 1) Spinning up two VMs and installing and changing preliminary network settings 2) Joining SCIONLab with both VMs and 3) Installing and configuring the SBAS Node software.
+There are four major steps: 1) Spinning up two VMs and installing and changing preliminary network settings 2) Joining SCIONLab with both VMs and 3) Installing and configuring the SBAS Node software 4) connecting a client.
 
 ## 1. VM Configuration
 
@@ -255,5 +255,79 @@ Pings from node 2 to node 1 can also be tested with:
 ```ping 172.22.1.1``` and ```ping -I 10.22.1.1 10.22.0.1```
 
 If all these pings are operational, the SBAS nodes are configured correctly.
+
+
+## 4. Connecting a Client
+
+SBAS clients connect over wireguard VPNs to their closest SBAS PoP. The simplest way to connect a client is to simply connect a single-server client to the secure prefix operating at a wireguard PoP. Clients connected like this get secure routing through SBAS to all other SBAS customers and improved resilience for routing to non-participating destinations when outbound BGP is set up.
+
+To connect a single-server client, create another clean VM and install wireguard. A full tutorial can be found at https://www.digitalocean.com/community/tutorials/how-to-set-up-wireguard-on-ubuntu-20-04
+but it mostly requires running
+
+```
+sudo apt update
+sudo apt install wireguard
+```
+
+With wireguard installed, edit the file ```/etc/wireguard/wg0.conf``` to create a wireguard config for the interface wg0.
+
+Below is a template configuration for connecting to a SBAS PoP (like the ones configured above) using the default values from these instructions.
+
+```
+[Interface]
+Address = 10.22.0.3/24
+PrivateKey = wD0LsXjNHVnee3VjfbJzA0Zuc9DJmIsHsXScf205hlk=
+ListenPort = 51820
+
+[Peer]
+PublicKey = eq4RO+DplvQlu6FUHQvJ6JmqwUIfTL6HBIsPuLs3qCI=
+Endpoint = 207.246.69.69:55555
+AllowedIPs = 10.22.0.0/23
+```
+
+Of this script the only value that must be changed is ```Endpoint``` under the ```[Peer]``` section. This should point to the public IP of the SBAS PoP node 1. Make sure UDP 55555 is permitted through all firewalls on node 1.
+
+If you used any address block other than 10.22.0.0/23 (for the secure prefix) and 10.22.0.3/24 (for the VPN prefix on node 1), change the addresses accordingly. Notice the use of the .3 address because the .1 and .2 addresses are already used by the wireguard interface IP and the BIRD router IP respectively on the SBAS PoP.
+
+Also, the private key values can be updated with newly generated keys (see https://www.digitalocean.com/community/tutorials/how-to-set-up-wireguard-on-ubuntu-20-04 for more details on key generation), but we will use the keys in this example config as is (these are functional wireguard keys).
+
+With this config running on the customer, some minor changes need to be made to the wireguard server config on node 1. Log into node 1 and edit ```/etc/wireguard/wg0.conf``` (this does not need to be done on node 2 unless you also want to connect a client to node 2).
+
+The primary change required is that the values for PrivateKey and PublicKey be updated correctly. They should be inverses of the client config. With our example keys this is:
+
+```
+[Interface]
+Address = 10.22.0.1/25 # This is the virtual IP address, with the subnet mask we will use for the VPN
+PostUp   = ip route add 10.22.0.0/24 dev wg0 proto kernel scope link src 10.22.0.1 table 10; ip route add 10.22.0.0/24 dev wg0 proto kernel scope link src 10.22.0.1 table 5 #; ip rule add from 10.22.0.0/24 lookup 10 priority 10
+PostDown = ip route del 10.22.0.0/24 dev wg0 table 10; ip route del 10.22.0.0/24 dev wg0 table 5
+ListenPort = 55555
+PrivateKey = SFFAmcCizhqd1g0WqC0EputqaQbdzLreia0QJv8r3UE=
+
+[Peer]
+PublicKey = 67l11hqm6cNkFQo1CyaLjpeuUo8SyqoT0I42Olt/N30=
+AllowedIPs = 10.22.0.0/24,10.0.0.0/24 # This denotes the clients IPs.
+```
+(if the example keys are used, the above config does not need to be modified if installed on node 1).
+
+
+For reference, wireguard private keys can be generated with ```wg genkey``` and the public key can be derived from a private key with ```wg pubkey``` (which expects to read the key from stdin).
+
+With the congis updated, cycle wireguard on node 1 with ```wg-quick down wg0``` followed by ```wg-quick up wg0```.
+
+Bring up the interface on the client: ```wg-quick up wg0```
+
+At this point, the client should be able to ping the VPN IP on node 1 with:
+```ping 10.22.0.1```
+
+If this ping goes through, the wireguard tunnel is configured correctly.
+
+Should this ping fail, it is likely an issue with wireguard (often the keys or the endpoint IP). Wireguard can be debugged with the instructions in https://www.procustodibus.com/blog/2021/03/wireguard-logs/
+
+Finally, the client can poing the VPN IP of node 2 with:
+```ping 10.22.1.1```
+
+If this ping errors, it could be caused by an improperly specified "AllowedIPs" line on the client which will result in the error ```sendmsg: Required key not available``` when ping is run. The client's allowed "AllowedIPs" line should be the secure prefix (not just the VPN prefix for node 1) forcing all secure traffic through wireguard.
+
+This ping is going via wireguard from the client to node 1, node 1 is routing it via SCION and the SIG to node 2 which is answering it and securly routing it back allowing for the client to communicate with the secure prefix over SCION/SBAS. An additional client can optionally be installed at node 2 in a similar manner further allowing the node 1 and node 2 clients to communicate.
 
 
