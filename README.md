@@ -1,6 +1,12 @@
 # SBAS Prototype
 
-Main code repository for the SBAS node and customer software.
+This is our core repository containing the operational code for SBAS as well as our simulation code and survey results.
+
+This branch contains the node and client code. Checkout the usenix22-simulations branch for the simulation code. Checkout the usenix22-survey branch for raw survey results.
+
+
+
+
 Check the `config` repository for centralized topology information.
 
 Components
