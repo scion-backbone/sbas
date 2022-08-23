@@ -4,9 +4,9 @@
 	branch = usenix22
 [submodule "survey"]
 	path = survey
-	url = https://github.com/scion-backbone/sbas.git
-	branch = usenix22-survey
+	url = https://github.com/scion-backbone/sbas-survey.git
+	branch = main
 [submodule "simulations"]
 	path = simulations
-	url = https://github.com/scion-backbone/sbas.git
-	branch = usenix22-simulations
+	url = https://github.com/scion-backbone/sbas-simulation.git
+	branch = main
