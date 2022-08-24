@@ -24,4 +24,4 @@ fi
 
 echo "Downloading topology configuration..."
 wget https://raw.githubusercontent.com/scion-backbone/config/master/gen/client-$CLIENT.json -O build/client.json
-wget https://raw.githubusercontent.com/scion-backbone/config/kyveli_wip/nodes.json -O build/nodes.json
+wget https://raw.githubusercontent.com/scion-backbone/config/usenix22/nodes.json -O build/nodes.json
