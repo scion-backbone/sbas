@@ -16,6 +16,8 @@ Components
 
 # USENIX 22 AEC Instructions
 
+Below are instructions for a manual dependency install. Dependencies can also be installed by creating a docker images from the dockerfile in the root directory of this repo.
+
 Joining the current production SBAS network is not feasible because 1) we are upgrading the infrastructure and making changes which may disrupt connectivity and 2) the existing SBAS nodes would have to be manually configured to know the IPs of the artifact evaluator's nodes (in order to establish a connection with them) which could potentially deanonymize the artifact evaluators and would require manual synchronization during the evaluation process (as the new nodes would have to be added to nodes.json and then updated at all the production nodes).
 
 Instead, we have instructions below for creating an entirely separate SBAS network consisting of two reviewer nodes configured from out-of-the-box Ubuntu VMs that are connected over SCIONLab and running the SBAS node software. While the SBAS prototype discussed in our paper uses the PEERING Testbed for BGP connectivity, giving access to the PEERING testbed to artifact evaluators would violate their Acceptable Use Policy and the prefix space we used is being reused for our current production infrastructure. Thus, these steps create a non-BGP version of SBAS that can only be used to route between secure prefixes attached to the different PoPs. Thus, these SBAS PoPs will not provide global routing connectivity to non-participating destinations (the way the discussed prototype does) but they will route between different PoPs over SCIONLab for secure traffic to participating destinations.
